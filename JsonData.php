@@ -22,7 +22,18 @@ $wgExtensionCredits['Tasks'][] = array(
 $wgExtensionMessagesFiles['JsonData'] = dirname( __FILE__ ) . '/JsonData.i18n.php';
 $wgAutoloadClasses['JsonDataHooks'] = dirname( __FILE__ ) . '/JsonData.hooks.php';
 
+$wgHooks['BeforePageDisplay'][] = 'JsonDataHooks::beforePageDisplay';
 $wgHooks['EditPage::showEditForm:initial'][] = 'JsonDataHooks::onEditPageShowEditFormInitial';
 
 $wgJsonDataNamespace = null;
+
+$wgResourceModules['ext.jsonwidget'] = array(
+	'scripts' => array(
+		'json.js',
+		'jsonedit.js'
+		),
+	'styles' => 'jsonwidget.css',
+	'localBasePath' => dirname( __FILE__ ) . '/resources',
+	'remoteExtPath' => 'JsonData/resources'
+);
 
