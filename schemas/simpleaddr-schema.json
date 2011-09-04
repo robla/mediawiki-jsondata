@@ -1,0 +1,57 @@
+{
+  "type":"map",
+  "title":"Address Book Entry",
+  "mapping":
+  {
+    "firstName":
+    {
+      "type":"str",
+      "title":"First Name",
+      "required":true
+    },
+    "lastName":
+    {
+      "type":"str",
+      "title":"Last Name",
+      "required":true
+    },
+    "streetAddress":
+    {
+      "type":"str",
+      "title":"Street Address",
+      "required":true
+    },
+    "city":
+    {
+      "type":"str",
+      "title":"City",
+      "required":true
+    },
+    "state":
+    {
+      "type":"str",
+      "title":"State",
+      "required":true
+    },
+    "postalCode":
+    {
+      "type":"str",
+      "title":"Postal (Zip) Code",
+      "required":true
+    },
+    "phoneNumbers":
+    {
+      "type":"seq",
+      "title":"Phone numbers",
+      "required":true,
+      "sequence":
+      [
+        {
+          "type":"str",
+          "required":true,
+          "title":"Phone number"
+        }
+      ]
+    }
+  }
+}
