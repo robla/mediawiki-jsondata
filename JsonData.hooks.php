@@ -19,7 +19,7 @@ class JsonDataHooks {
 	 * @param EditPage $editPage
 	 */
 	public static function onEditPageShowEditFormInitial( &$editPage ) {
-		global $wgOut, $wgJsonDataNamespace;
+		global $wgOut, $wgJsonDataNamespace, $wgJsonDataSchemaFile;
 		$article = $editPage->getArticle();
 		$title = $article->getTitle();
 		$ns = $title->getNamespace();
@@ -31,77 +31,24 @@ class JsonDataHooks {
 
 <div class="vectorTabs">
 	<ul>
-					<li class="selected"><span id="je_formbutton" style="cursor: pointer"><a>Edit w/Form</a></span></li>
-					<li class="new"><span id="je_sourcebutton" style="cursor: pointer"><a>Edit Source</a></span></li>
-			</ul>
+		<li class="selected"><span id="je_formbutton" style="cursor: pointer"><a>Edit w/Form</a></span></li>
+		<li class="new"><span id="je_sourcebutton" style="cursor: pointer"><a>Edit Source</a></span></li>
+	</ul>
 </div>
 
 <div id="je_formdiv" style="text-background: white">
 </div>
-
 <div>
 
 <div id="je_schemaformdiv" style="text-background: white">
 </div>
 
 <textarea id="je_schematextarea" style="display: none" rows="30" cols="80">
-{
-  "type":"map",
-  "title":"Address Book Entry",
-  "mapping":
-  {
-    "firstName":
-    {
-      "type":"str",
-      "title":"First Name",
-      "required":true
-    },
-    "lastName":
-    {
-      "type":"str",
-      "title":"Last Name",
-      "required":true
-    },
-    "streetAddress":
-    {
-      "type":"str",
-      "title":"Street Address",
-      "required":true
-    },
-    "city":
-    {
-      "type":"str",
-      "title":"City",
-      "required":true
-    },
-    "state":
-    {
-      "type":"str",
-      "title":"State",
-      "required":true
-    },
-    "postalCode":
-    {
-      "type":"str",
-      "title":"Postal (Zip) Code",
-      "required":true
-    },
-    "phoneNumbers":
-    {
-      "type":"seq",
-      "title":"Phone numbers",
-      "required":true,
-      "sequence":
-      [
-        {
-          "type":"str",
-          "required":true,
-          "title":"Phone number"
-        }
-      ]
-    }
-  }
-}
+HEREDOC
+			);
+			$wgOut->addHTML( file_get_contents( $wgJsonDataSchemaFile ) );			
+
+			$wgOut->addHTML( <<<HEREDOC
 </textarea>
 
 <form method='POST' id="je_sourcetextform">

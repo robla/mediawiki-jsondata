@@ -26,6 +26,7 @@ $wgHooks['BeforePageDisplay'][] = 'JsonDataHooks::beforePageDisplay';
 $wgHooks['EditPage::showEditForm:initial'][] = 'JsonDataHooks::onEditPageShowEditFormInitial';
 
 $wgJsonDataNamespace = null;
+$wgJsonDataSchemaFile = null;
 
 $wgResourceModules['ext.jsonwidget'] = array(
 	'scripts' => array(
