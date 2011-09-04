@@ -25,42 +25,16 @@ class JsonDataHooks {
 		$ns = $title->getNamespace();
 		if( $ns == $wgJsonDataNamespace  ) {
 			$wgOut->addHTML( <<<HEREDOC
-<html>
- 
-<head>
- 
-<title>JSON widget prototype</title>
-
-
-<script src="json.js"></script> 
-<script src="jsonedit.js"></script> 
-
-<link rel="stylesheet" type="text/css" href="jsonwidget.css" />
-
-<script type="text/javascript" language="javascript">
-
-function sample_init() {
-    jsonwidget.language = 'en';
-    var je=new jsonwidget.editor();
-
-    je.setView('form');
-}
-
-</script>
-
-</head>
- 
-<body onload="sample_init();">
-
 <div id="je_servererror">${servererror}</div>
 <div id="je_warningdiv">
 </div>
 
-<div>
-<span id="je_formbutton" style="cursor: pointer">[Edit w/Form]</span>
-<span id="je_sourcebutton" style="cursor: pointer">[Edit Source]</span>
+<div class="vectorTabs">
+	<ul>
+					<li class="selected"><span id="je_formbutton" style="cursor: pointer"><a>Edit w/Form</a></span></li>
+					<li class="new"><span id="je_sourcebutton" style="cursor: pointer"><a>Edit Source</a></span></li>
+			</ul>
 </div>
-
 
 <div id="je_formdiv" style="text-background: white">
 </div>
@@ -71,7 +45,63 @@ function sample_init() {
 </div>
 
 <textarea id="je_schematextarea" style="display: none" rows="30" cols="80">
-${schema}
+{
+  "type":"map",
+  "title":"Address Book Entry",
+  "mapping":
+  {
+    "firstName":
+    {
+      "type":"str",
+      "title":"First Name",
+      "required":true
+    },
+    "lastName":
+    {
+      "type":"str",
+      "title":"Last Name",
+      "required":true
+    },
+    "streetAddress":
+    {
+      "type":"str",
+      "title":"Street Address",
+      "required":true
+    },
+    "city":
+    {
+      "type":"str",
+      "title":"City",
+      "required":true
+    },
+    "state":
+    {
+      "type":"str",
+      "title":"State",
+      "required":true
+    },
+    "postalCode":
+    {
+      "type":"str",
+      "title":"Postal (Zip) Code",
+      "required":true
+    },
+    "phoneNumbers":
+    {
+      "type":"seq",
+      "title":"Phone numbers",
+      "required":true,
+      "sequence":
+      [
+        {
+          "type":"str",
+          "required":true,
+          "title":"Phone number"
+        }
+      ]
+    }
+  }
+}
 </textarea>
 
 <form method='POST' id="je_sourcetextform">
@@ -85,10 +115,6 @@ ${json}
 </form>
 
 </div>
-
-
-</body>
-</html>
 HEREDOC
 			);
 		}
