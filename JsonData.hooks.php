@@ -28,11 +28,13 @@ class JsonDataHooks {
 <div id="je_servererror">${servererror}</div>
 <div id="je_warningdiv"></div>
 
-<div class="vectorTabs">
-	<ul>
-		<li class="selected"><span id="je_formbutton" style="cursor: pointer"><a>Edit w/Form</a></span></li>
-		<li class="new"><span id="je_sourcebutton" style="cursor: pointer"><a>Edit Source</a></span></li>
-	</ul>
+<div style="height:20px;">
+	<div class="vectorTabs">
+		<ul>
+			<li><span id="je_formbutton"><a>Edit w/Form</a></span></li>
+			<li><span id="je_sourcebutton"><a>Edit Source</a></span></li>
+		</ul>
+	</div>
 </div>
 
 <div id="je_formdiv"></div>
