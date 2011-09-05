@@ -60,4 +60,10 @@ HEREDOC
 		}
 		return true;
 	}
+
+	function onEditPageBeforeEditToolbar(&$toolbar)
+	{
+		$toolbar = '';
+		return false;
+	}
 }

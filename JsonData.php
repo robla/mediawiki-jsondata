@@ -24,6 +24,7 @@ $wgAutoloadClasses['JsonDataHooks'] = dirname( __FILE__ ) . '/JsonData.hooks.php
 
 $wgHooks['BeforePageDisplay'][] = 'JsonDataHooks::beforePageDisplay';
 $wgHooks['EditPage::showEditForm:initial'][] = 'JsonDataHooks::onEditPageShowEditFormInitial';
+$wgHooks['EditPageBeforeEditToolbar'][] = 'JsonDataHooks::onEditPageBeforeEditToolbar';
 
 $wgJsonDataNamespace = null;
 $wgJsonDataSchemaFile = null;
