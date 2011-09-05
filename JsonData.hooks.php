@@ -46,11 +46,6 @@ HEREDOC
 
 			$wgOut->addHTML( <<<HEREDOC
 </textarea>
-<form method='POST' id="je_sourcetextform">
-<input type="hidden" name="jsonsubmit" value="true"/>
-<input type="hidden" value="Submit JSON"/>
-</p>
-</form>
 HEREDOC
 			);
 		}
