@@ -1177,12 +1177,15 @@ jsonwidget.editor.toggleToFormActual = function () {
         return null;
     }
 
+	jsontext = jsonarea.value.replace(/<json>/m, "");
+	jsontext = jsontext.replace(/<\/json>$/, "");
+
     try {
-        this.jsondata = JSON.parse(jsonarea.value);
+        this.jsondata = JSON.parse(jsontext);
     }
     catch (error) {
         var errorstring = '';
-        if(/^\s*$/.test(jsonarea.value)) {
+        if(/^\s*$/.test(jsontext)) {
 	        this.jsondata = jsonwidget.getNewValueForType(schema.type);
         }
         else {
@@ -1237,10 +1240,10 @@ jsonwidget.editor.updateJSON = function () {
     var nextsibling = jsonarea.nextSibling;
     parent.removeChild(jsonarea);
     if(this.jsondata == null) {
-        jsonarea.value = "";
+        jsonarea.value = "<json></json>";
     }
     else {
-        jsonarea.value = JSON.stringify(this.jsondata);
+        jsonarea.value = "<json>\n" + JSON.stringify(this.jsondata) + "\n</json>";
     }
     parent.insertBefore(jsonarea, nextsibling);
 }
