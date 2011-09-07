@@ -61,4 +61,13 @@ HEREDOC
 		$toolbar = '';
 		return false;
 	}
+
+	function onParserFirstCallInit( Parser &$parser ) {
+		$parser->setHook( 'json',  __CLASS__ . '::jsonTagRender' );
+		return true;
+	}
+ 
+	function jsonTagRender( $input, array $args, Parser $parser, PPFrame $frame ) {
+		return "<pre>" . htmlspecialchars( $input ) . "</pre>";
+	}
 }
