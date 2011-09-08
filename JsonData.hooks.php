@@ -23,7 +23,7 @@ class JsonDataHooks {
 		$article = $editPage->getArticle();
 		$title = $article->getTitle();
 		$ns = $title->getNamespace();
-		if( $ns == $wgJsonDataNamespace  ) {
+		if( array_key_exists($ns, $wgJsonDataNamespace ) ) {
 			$wgOut->addHTML( <<<HEREDOC
 <div id="je_servererror">${servererror}</div>
 <div id="je_warningdiv"></div>
@@ -42,7 +42,7 @@ class JsonDataHooks {
 <textarea id="je_schematextarea" style="display: none" rows="30" cols="80">
 HEREDOC
 			);
-			$wgOut->addHTML( file_get_contents( $wgJsonDataSchemaFile ) );			
+			$wgOut->addHTML( file_get_contents( $wgJsonDataSchemaFile[$ns] ) );			
 
 			$wgOut->addHTML( <<<HEREDOC
 </textarea>
