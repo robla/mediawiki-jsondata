@@ -19,7 +19,7 @@ class JsonDataHooks {
 	 * @param EditPage $editPage
 	 */
 	public static function onEditPageShowEditFormInitial( &$editPage ) {
-		global $wgOut, $wgJsonDataNamespace, $wgJsonDataSchemaFile;
+		global $wgOut, $wgJsonDataNamespace, $wgJsonDataSchemaFile, $wgJsonDataSchemaArticle;
 		$article = $editPage->getArticle();
 		$title = $article->getTitle();
 		$ns = $title->getNamespace();
@@ -42,8 +42,25 @@ class JsonDataHooks {
 <textarea id="je_schematextarea" style="display: none" rows="30" cols="80">
 HEREDOC
 			);
-			$wgOut->addHTML( file_get_contents( $wgJsonDataSchemaFile[$ns] ) );			
+			if( array_key_exists($ns, $wgJsonDataSchemaArticle) ) {
+				// copied from Lingo
+                $title = Title::newFromText( $wgJsonDataSchemaArticle[$ns] );
+                //if ( $title->getInterwiki() ) {
+                //        $this->getMessageLog()->addError( wfMsgForContent( 'lingo-terminologypagenotlocal' , $page ) );
+                //        return false;
+                //}
 
+                $rev = Revision::newFromTitle( $title );
+                //if ( !$rev ) {
+                //        $this->getMessageLog()->addWarning( wfMsgForContent( 'lingo-noterminologypage' , $page ) );
+                //        return false;
+                //}
+                $schema = preg_replace(array('/^<json[^>]*>/m', '/<\/json>$/m'), array("", ""), $rev->getText());
+				$wgOut->addHTML( $schema );
+			}
+			else {
+				$wgOut->addHTML( htmlspecialchars( file_get_contents( $wgJsonDataSchemaFile[$ns] ) ) );			
+			}
 			$wgOut->addHTML( <<<HEREDOC
 </textarea>
 HEREDOC
