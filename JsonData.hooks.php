@@ -56,10 +56,10 @@ HEREDOC
                 //        return false;
                 //}
                 $schema = preg_replace(array('/^<json[^>]*>/m', '/<\/json>$/m'), array("", ""), $rev->getText());
-				$wgOut->addHTML( $schema );
+				$wgOut->addHTML( htmlspecialchars( $schema ) );
 			}
 			else {
-				$wgOut->addHTML( htmlspecialchars( file_get_contents( $wgJsonDataSchemaFile[$ns] ) ) );			
+				$wgOut->addHTML( file_get_contents( $wgJsonDataSchemaFile[$ns] ) );			
 			}
 			$wgOut->addHTML( <<<HEREDOC
 </textarea>
