@@ -10,7 +10,12 @@ class JsonDataHooks {
 	 * @return Boolean: always true
 	 */
 	public static function beforePageDisplay( $out, $skin ) {
-		$out->addModules( 'ext.jsonwidget' );
+		global $wgJsonDataNamespace;
+		$title = $out->getTitle();
+		$ns = $title->getNamespace();
+		if( array_key_exists($ns, $wgJsonDataNamespace ) ) {
+			$out->addModules( 'ext.jsonwidget' );
+		}
 		return true;
 	}
 

@@ -1398,4 +1398,8 @@ function sample_init() {
 	je.htmlids.sourcetextform = 'editform';
     je.setView('form');
 }
-sample_init();
+
+if($("#je_formdiv").length > 0) {
+	sample_init();
+}
+
