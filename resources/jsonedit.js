@@ -1391,15 +1391,4 @@ jsonwidget.editor.setFormOnSubmit = function () {
     }
 }
 
-function sample_init() {
-    jsonwidget.language = 'en';
-    var je=new jsonwidget.editor();
-	je.htmlids.sourcetextarea = 'wpTextbox1';
-	je.htmlids.sourcetextform = 'editform';
-    je.setView('form');
-}
-
-if($("#je_formdiv").length > 0) {
-	sample_init();
-}
 

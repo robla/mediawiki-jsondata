@@ -33,7 +33,8 @@ $wgJsonDataSchemaFile = null;
 $wgResourceModules['ext.jsonwidget'] = array(
 	'scripts' => array(
 		'json.js',
-		'jsonedit.js'
+		'jsonedit.js',
+		'mw.jsondata.js'
 		),
 	'styles' => 'jsonwidget.css',
 	'localBasePath' => dirname( __FILE__ ) . '/resources',
