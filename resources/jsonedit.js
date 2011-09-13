@@ -1,5 +1,5 @@
-// Copyright (c) 2005 Rob Lanphier.
-// See http://robla.net/2005/jsonwidget/LICENSE for license (BSD style)
+// Copyright (c) 2005-2011 Rob Lanphier.
+// See http://robla.net/jsonwidget/LICENSE for license (BSD style)
 
 var jsonwidget = function() {}
 
