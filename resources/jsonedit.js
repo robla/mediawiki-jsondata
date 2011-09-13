@@ -364,6 +364,7 @@ jsonwidget.editor = function () {
     this.debugOut = jsonwidget.editor.debugOut;
     this.warningOut = jsonwidget.editor.warningOut;
     this.clearWarnings = jsonwidget.editor.clearWarnings;
+    this.handleParseError = jsonwidget.editor.handleParseError;
     this.contextHelp = jsonwidget.editor.contextHelp;
     this.confirmDelete = jsonwidget.editor.confirmDelete;
     this.getSchema = jsonwidget.editor.getSchema;
@@ -1183,28 +1184,11 @@ jsonwidget.editor.toggleToFormActual = function () {
         this.jsondata = JSON.parse(jsontext);
     }
     catch (error) {
-        var errorstring = '';
         if(/^\s*$/.test(jsontext)) {
 	        this.jsondata = jsonwidget.getNewValueForType(schema.type);
         }
         else {
-            if(error.at<40) {
-                errorstring += error.text.substr(0,error.at);
-            }
-            else {
-                errorstring += error.text.substr(error.at-40,40);
-            }
-            errorstring += "<span style='background-color: yellow'>";
-            errorstring += error.text.substr(error.at,1);
-            errorstring += "</span>";
-            errorstring += error.text.substr(error.at+1,39);
-            
-            try {
-                this.warningOut("JSON Parse error at char "+error.at+" near <pre>"+errorstring+"</pre>  Full error: "+error.toSource());
-            }
-            catch (error2) {
-                this.warningOut("JSON Parse error at char "+error.at+" near <pre>"+errorstring+"</pre>");
-            }
+            this.warningOut(this.handleParseError(error));
             this.currentView = 'source';
             this.setView('source');
             return;
@@ -1251,6 +1235,27 @@ jsonwidget.editor.error = function (m) {
     throw {
         name: 'jsonedit_error',
         message: m
+    }
+}
+
+jsonwidget.editor.handleParseError = function (error) {
+    var errorstring = '';
+    if(error.at<40) {
+        errorstring += error.text.substr(0,error.at);
+    }
+    else {
+        errorstring += error.text.substr(error.at-40,40);
+    }
+    errorstring += "<span style='background-color: yellow'>";
+    errorstring += error.text.substr(error.at,1);
+    errorstring += "</span>";
+    errorstring += error.text.substr(error.at+1,39);
+
+    try {
+        return "JSON Parse error at char "+error.at+" near <pre>"+errorstring+"</pre>  Full error: "+error.toSource();
+    }
+    catch (error2) {
+        return "JSON Parse error at char "+error.at+" near <pre>"+errorstring+"</pre>";
     }
 }
 
