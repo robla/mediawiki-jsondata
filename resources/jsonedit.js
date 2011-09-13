@@ -1177,12 +1177,14 @@ jsonwidget.editor.toggleToFormActual = function () {
         return null;
     }
 
+    var jsontext = jsonarea.value;
+
     try {
-        this.jsondata = JSON.parse(jsonarea.value);
+        this.jsondata = JSON.parse(jsontext);
     }
     catch (error) {
         var errorstring = '';
-        if(/^\s*$/.test(jsonarea.value)) {
+        if(/^\s*$/.test(jsontext)) {
 	        this.jsondata = jsonwidget.getNewValueForType(schema.type);
         }
         else {
