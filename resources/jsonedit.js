@@ -1289,7 +1289,7 @@ jsonwidget.editor.contextHelp = function(event, jsonnode) {
     sourcename.style.fontSize="smaller";
 
     var description = document.createElement("div");
-    description.innerHTML=jsonnode.schemaref.node.desc;
+    description.appendChild(document.createTextNode(jsonnode.schemaref.node.desc));
 
     helpdiv.appendChild(title);
     helpdiv.appendChild(sourcename);
