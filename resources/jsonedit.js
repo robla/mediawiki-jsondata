@@ -314,7 +314,7 @@ jsonwidget.editor = function () {
     this.views = ['form','source'];
     this.formview = 'form';
 
-	this.showByExampleButton = false;
+    this.showByExampleButton = false;
 
     this.htmlbuttons = {
         form: "je_formbutton",
@@ -364,6 +364,7 @@ jsonwidget.editor = function () {
     this.debugOut = jsonwidget.editor.debugOut;
     this.warningOut = jsonwidget.editor.warningOut;
     this.clearWarnings = jsonwidget.editor.clearWarnings;
+    this.handleParseError = jsonwidget.editor.handleParseError;
     this.contextHelp = jsonwidget.editor.contextHelp;
     this.confirmDelete = jsonwidget.editor.confirmDelete;
     this.getSchema = jsonwidget.editor.getSchema;
@@ -396,7 +397,7 @@ jsonwidget.editor.schemaEditInit = function () {
 }
 
 jsonwidget.editor.byExampleInit = function () {
-	this.showByExampleButton = true;
+    this.showByExampleButton = true;
 }
 
 jsonwidget.editor.createSchemaFromExample = function () {
@@ -654,7 +655,7 @@ jsonwidget.editor.getShowButton = function (jsonref) {
     retval.appendChild(document.createTextNode("["+_("show")+"]"));
     retval.style.display = "none";
     return retval;
-}		
+}
 
 jsonwidget.editor.getDeleteButton = function (jsonref) {
     var retval = document.createElement("span");
@@ -1128,6 +1129,7 @@ jsonwidget.editor.getStatusLightDelay = function (jsonref) {
 }
 
 jsonwidget.editor.setStatusLight = function (statustext) {
+    var statustextnode=document.createTextNode(statustext);
     if(this.statusLight == undefined) {
         this.statusLight = document.createElement("div");
         this.statusLight.id = "statusLight";
@@ -1136,11 +1138,12 @@ jsonwidget.editor.setStatusLight = function (statustext) {
         this.statusLight.style.right = "0";
         this.statusLight.style.background = "red";
         this.statusLight.style.color = "white";
-        this.statusLight.innerHTML=statustext;
+        this.statusLight.appendChild(statustextnode);
+
         this.statusLight = document.body.insertBefore(this.statusLight, document.body.firstChild);
     }
     else {
-        this.statusLight.innerHTML=statustext;
+        this.statusLight.appendChild(statustextnode);
         this.statusLight.style.visibility = "visible";
     }
 }
@@ -1177,6 +1180,7 @@ jsonwidget.editor.toggleToFormActual = function () {
         return null;
     }
 
+    var jsontext = jsonarea.value;
 	jsontext = jsonarea.value.replace(/<json>/m, "");
 	jsontext = jsontext.replace(/<\/json>$/, "");
 
@@ -1184,28 +1188,11 @@ jsonwidget.editor.toggleToFormActual = function () {
         this.jsondata = JSON.parse(jsontext);
     }
     catch (error) {
-        var errorstring = '';
         if(/^\s*$/.test(jsontext)) {
-	        this.jsondata = jsonwidget.getNewValueForType(schema.type);
+            this.jsondata = jsonwidget.getNewValueForType(schema.type);
         }
         else {
-            if(error.at<40) {
-                errorstring += error.text.substr(0,error.at);
-            }
-            else {
-                errorstring += error.text.substr(error.at-40,40);
-            }
-            errorstring += "<span style='background-color: yellow'>";
-            errorstring += error.text.substr(error.at,1);
-            errorstring += "</span>";
-            errorstring += error.text.substr(error.at+1,39);
-            
-            try {
-                this.warningOut("JSON Parse error at char "+error.at+" near <pre>"+errorstring+"</pre>  Full error: "+error.toSource());
-            }
-            catch (error2) {
-                this.warningOut("JSON Parse error at char "+error.at+" near <pre>"+errorstring+"</pre>");
-            }
+            this.warningOut(this.handleParseError(error));
             this.currentView = 'source';
             this.setView('source');
             return;
@@ -1255,14 +1242,37 @@ jsonwidget.editor.error = function (m) {
     }
 }
 
+jsonwidget.editor.handleParseError = function (error) {
+    var errorstring = '';
+    if(error.at<40) {
+        errorstring += error.text.substr(0,error.at);
+    }
+    else {
+        errorstring += error.text.substr(error.at-40,40);
+    }
+    errorstring += "<span style='background-color: yellow'>";
+    errorstring += error.text.substr(error.at,1);
+    errorstring += "</span>";
+    errorstring += error.text.substr(error.at+1,39);
+
+    try {
+        return "JSON Parse error at char "+error.at+" near <pre>"+errorstring+"</pre>  Full error: "+error.toSource();
+    }
+    catch (error2) {
+        return "JSON Parse error at char "+error.at+" near <pre>"+errorstring+"</pre>";
+    }
+}
+
 jsonwidget.editor.debugOut = function (level, text) {
     if(level<=this.debuglevel) {
-        this.debugwindow.innerHTML += text+"<br/>\n";
+        this.debugwindow.appendChild(document.createTextNode(text));
+        this.debugwindow.appendChild(document.createElement("br"));
     }
 }
 
 jsonwidget.editor.warningOut = function (text) {
-    this.warningwindow.innerHTML += text+"<br/>\n";
+    this.warningwindow.appendChild(document.createTextNode(text));
+    this.warningwindow.appendChild(document.createElement("br"));
 }
 
 jsonwidget.editor.clearWarnings = function () {
@@ -1285,7 +1295,7 @@ jsonwidget.editor.contextHelp = function(event, jsonnode) {
     sourcename.style.fontSize="smaller";
 
     var description = document.createElement("div");
-    description.innerHTML=jsonnode.schemaref.node.desc;
+    description.appendChild(document.createTextNode(jsonnode.schemaref.node.desc));
 
     helpdiv.appendChild(title);
     helpdiv.appendChild(sourcename);
@@ -1338,9 +1348,11 @@ jsonwidget.editor.confirmDelete = function (jsoneditobj, jsonref, el) {
     nobutton.onclick = function (event) {
         // ie workarounds:
         var target = window.event ? window.event.srcElement : event.target;
+        var parent = target.parentNode;
         if(!event) {event = window.event}
 
-        target.parentNode.innerHTML = "["+_("del")+"]";
+        parent.innerHTML="";
+        parent.appendChild(document.createTextNode("["+_("del")+"]"));
         if(undefined != event.stopPropagation) {
             event.stopPropagation();
         }
