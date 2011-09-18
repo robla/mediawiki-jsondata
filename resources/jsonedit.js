@@ -314,7 +314,7 @@ jsonwidget.editor = function () {
     this.views = ['form','source'];
     this.formview = 'form';
 
-	this.showByExampleButton = false;
+    this.showByExampleButton = false;
 
     this.htmlbuttons = {
         form: "je_formbutton",
@@ -397,7 +397,7 @@ jsonwidget.editor.schemaEditInit = function () {
 }
 
 jsonwidget.editor.byExampleInit = function () {
-	this.showByExampleButton = true;
+    this.showByExampleButton = true;
 }
 
 jsonwidget.editor.createSchemaFromExample = function () {
@@ -655,7 +655,7 @@ jsonwidget.editor.getShowButton = function (jsonref) {
     retval.appendChild(document.createTextNode("["+_("show")+"]"));
     retval.style.display = "none";
     return retval;
-}		
+}
 
 jsonwidget.editor.getDeleteButton = function (jsonref) {
     var retval = document.createElement("span");
@@ -1187,7 +1187,7 @@ jsonwidget.editor.toggleToFormActual = function () {
     }
     catch (error) {
         if(/^\s*$/.test(jsontext)) {
-	        this.jsondata = jsonwidget.getNewValueForType(schema.type);
+            this.jsondata = jsonwidget.getNewValueForType(schema.type);
         }
         else {
             this.warningOut(this.handleParseError(error));
