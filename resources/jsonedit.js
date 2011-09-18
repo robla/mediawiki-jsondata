@@ -1129,6 +1129,7 @@ jsonwidget.editor.getStatusLightDelay = function (jsonref) {
 }
 
 jsonwidget.editor.setStatusLight = function (statustext) {
+    var statustextnode=document.createTextNode(statustext);
     if(this.statusLight == undefined) {
         this.statusLight = document.createElement("div");
         this.statusLight.id = "statusLight";
@@ -1137,11 +1138,12 @@ jsonwidget.editor.setStatusLight = function (statustext) {
         this.statusLight.style.right = "0";
         this.statusLight.style.background = "red";
         this.statusLight.style.color = "white";
-        this.statusLight.innerHTML=statustext;
+        this.statusLight.appendChild(statustextnode);
+
         this.statusLight = document.body.insertBefore(this.statusLight, document.body.firstChild);
     }
     else {
-        this.statusLight.innerHTML=statustext;
+        this.statusLight.appendChild(statustextnode);
         this.statusLight.style.visibility = "visible";
     }
 }
@@ -1261,12 +1263,14 @@ jsonwidget.editor.handleParseError = function (error) {
 
 jsonwidget.editor.debugOut = function (level, text) {
     if(level<=this.debuglevel) {
-        this.debugwindow.innerHTML += text+"<br/>\n";
+        this.debugwindow.appendChild(document.createTextNode(text));
+        this.debugwindow.appendChild(document.createElement("br"));
     }
 }
 
 jsonwidget.editor.warningOut = function (text) {
-    this.warningwindow.innerHTML += text+"<br/>\n";
+    this.warningwindow.appendChild(document.createTextNode(text));
+    this.warningwindow.appendChild(document.createElement("br"));
 }
 
 jsonwidget.editor.clearWarnings = function () {
@@ -1342,9 +1346,11 @@ jsonwidget.editor.confirmDelete = function (jsoneditobj, jsonref, el) {
     nobutton.onclick = function (event) {
         // ie workarounds:
         var target = window.event ? window.event.srcElement : event.target;
+        var parent = target.parentNode;
         if(!event) {event = window.event}
 
-        target.parentNode.innerHTML = "["+_("del")+"]";
+        parent.innerHTML="";
+        parent.appendChild(document.createTextNode("["+_("del")+"]"));
         if(undefined != event.stopPropagation) {
             event.stopPropagation();
         }
