@@ -1181,7 +1181,7 @@ jsonwidget.editor.toggleToFormActual = function () {
     }
 
     var jsontext = jsonarea.value;
-	jsontext = jsonarea.value.replace(/<json>/m, "");
+	jsontext = jsontext.replace(/<json>/m, "");
 	jsontext = jsontext.replace(/<\/json>$/, "");
 
     try {
