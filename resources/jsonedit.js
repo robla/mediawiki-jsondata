@@ -296,12 +296,10 @@ jsonwidget.context = function () {
 }
 
 jsonwidget.context.addContextText = function (jsontext) {
-    return "<json>\n" + jsontext + "\n</json>";
+    return jsontext;
 }
 
 jsonwidget.context.removeContextText = function (jsontext) {
-    jsontext = jsontext.replace(/<json>/m, "");
-    jsontext = jsontext.replace(/<\/json>$/, "");
     return jsontext;
 }
 
