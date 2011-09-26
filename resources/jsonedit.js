@@ -285,6 +285,26 @@ jsonwidget.schemaIndex.newRef = function (node, parent, nodeindex, nodename) {
     return new jsonwidget.treeRef(node, parent, nodeindex, nodename);
 }
 
+//
+// Context object - this adds/strips context text.  For example, in MediaWiki, this
+// is used to add and remove <json>...</json> tags as appropriate.
+//
+
+jsonwidget.context = function () {
+    this.addContextText = jsonwidget.context.addContextText;
+    this.removeContextText = jsonwidget.context.removeContextText;
+}
+
+jsonwidget.context.addContextText = function (jsontext) {
+    return "<json>\n" + jsontext + "\n</json>";
+}
+
+jsonwidget.context.removeContextText = function (jsontext) {
+    jsontext = jsontext.replace(/<json>/m, "");
+    jsontext = jsontext.replace(/<\/json>$/, "");
+    return jsontext;
+}
+
 
 //
 // editor object
@@ -327,6 +347,8 @@ jsonwidget.editor = function () {
         fgbutton: "je_foreground",
         bgbutton: "je_background"
     }
+
+    this.context = new jsonwidget.context();
 
     this.formdiv = document.getElementById(this.htmlids.formdiv);
 
@@ -1181,8 +1203,7 @@ jsonwidget.editor.toggleToFormActual = function () {
     }
 
     var jsontext = jsonarea.value;
-	jsontext = jsontext.replace(/<json>/m, "");
-	jsontext = jsontext.replace(/<\/json>$/, "");
+    jsontext = this.context.removeContextText(jsontext);
 
     try {
         this.jsondata = JSON.parse(jsontext);
@@ -1225,13 +1246,17 @@ jsonwidget.editor.updateJSON = function () {
     var jsonarea = document.getElementById(this.htmlids.sourcetextarea);
     var parent = jsonarea.parentNode;
     var nextsibling = jsonarea.nextSibling;
+    var jsontext;
+
     parent.removeChild(jsonarea);
     if(this.jsondata == null) {
-        jsonarea.value = "<json></json>";
+        jsontext = "";
     }
     else {
-        jsonarea.value = "<json>\n" + JSON.stringify(this.jsondata) + "\n</json>";
+        jsontext = JSON.stringify(this.jsondata);
     }
+
+    jsonarea.value = this.context.addContextText(jsontext);
     parent.insertBefore(jsonarea, nextsibling);
 }
 
