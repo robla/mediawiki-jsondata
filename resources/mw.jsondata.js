@@ -44,8 +44,8 @@ if($("#je_formdiv").length > 0) {
     //initialize jsonwidget editor (jsonedit.js)
     jsonwidget.language = 'en';
     var je=new jsonwidget.editor();
-	je.htmlids.sourcetextarea = 'wpTextbox1';
-	je.htmlids.sourcetextform = 'editform';
+    je.htmlids.sourcetextarea = 'wpTextbox1';
+    je.htmlids.sourcetextform = 'editform';
     je.context = new mwjsondata.context();
     je.setView('form');
 }
