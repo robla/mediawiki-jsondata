@@ -13,15 +13,28 @@ var mwjsondata = function() {}
 mwjsondata.context = function () {
     this.addContextText = mwjsondata.context.addContextText;
     this.removeContextText = mwjsondata.context.removeContextText;
+    this.beginContext = "<json>\n";
+    this.endContext = "\n</json>";
 }
 
 mwjsondata.context.addContextText = function (jsontext) {
-    return "<json>\n" + jsontext + "\n</json>";
+    return this.beginContext + jsontext + this.endContext;
 }
 
+// remove and store context
 mwjsondata.context.removeContextText = function (jsontext) {
-    jsontext = jsontext.replace(/<json>/m, "");
-    jsontext = jsontext.replace(/<\/json>$/, "");
+    var begintag = /^\w*<json[^>]*>\w*\n?/m;
+    var endtag = /\n?\w*<\/json>\w*$/m;
+    var m = jsontext.match(begintag);
+    if(m != null) {
+        this.beginContext = m;
+    }
+    m = jsontext.match(endtag);
+    if(m != null) {
+        this.endContext = m;
+    }
+    jsontext = jsontext.replace(begintag, "");
+    jsontext = jsontext.replace(endtag, "");
     return jsontext;
 }
 
