@@ -48,19 +48,9 @@ class JsonDataHooks {
 HEREDOC
 			);
 			if( array_key_exists($ns, $wgJsonDataSchemaArticle) ) {
-				// copied from Lingo
-                $title = Title::newFromText( $wgJsonDataSchemaArticle[$ns] );
-                //if ( $title->getInterwiki() ) {
-                //        $this->getMessageLog()->addError( wfMsgForContent( 'lingo-terminologypagenotlocal' , $page ) );
-                //        return false;
-                //}
-
-                $rev = Revision::newFromTitle( $title );
-                //if ( !$rev ) {
-                //        $this->getMessageLog()->addWarning( wfMsgForContent( 'lingo-noterminologypage' , $page ) );
-                //        return false;
-                //}
-                $schema = preg_replace(array('/^<json[^>]*>/m', '/<\/json>$/m'), array("", ""), $rev->getText());
+				$title = Title::newFromText( $wgJsonDataSchemaArticle[$ns] );
+				$rev = Revision::newFromTitle( $title );
+				$schema = preg_replace(array('/^<json[^>]*>/m', '/<\/json>$/m'), array("", ""), $rev->getText());
 				$wgOut->addHTML( htmlspecialchars( $schema ) );
 			}
 			else {
