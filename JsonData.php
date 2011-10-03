@@ -21,6 +21,7 @@ $wgExtensionCredits['Tasks'][] = array(
 
 $wgExtensionMessagesFiles['JsonData'] = dirname( __FILE__ ) . '/JsonData.i18n.php';
 $wgAutoloadClasses['JsonDataHooks'] = dirname( __FILE__ ) . '/JsonData.hooks.php';
+$wgAutoloadClasses['JsonData'] = dirname( __FILE__ ) . '/JsonData_body.php';
 
 $wgHooks['BeforePageDisplay'][] = 'JsonDataHooks::beforePageDisplay';
 $wgHooks['EditPage::showEditForm:initial'][] = 'JsonDataHooks::onEditPageShowEditFormInitial';
@@ -29,6 +30,7 @@ $wgHooks['ParserFirstCallInit'][] = 'JsonDataHooks::onParserFirstCallInit';
 
 $wgJsonDataNamespace = null;
 $wgJsonDataSchemaFile = null;
+$wgJsonData = null;
 
 $wgResourceModules['ext.jsonwidget'] = array(
 	'scripts' => array(
