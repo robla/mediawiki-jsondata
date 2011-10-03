@@ -1,0 +1,128 @@
+{
+  "title":"Schema",
+  "type":"map",
+  "id":"schemanode",
+  "desc":"A schema describing a particular JSON format",
+  "required":true,
+  "mapping":
+  {
+    "type":
+    {
+      "type":"str",
+      "required":true,
+      "title":"Type (type)",
+      "desc":"The datatype of the property (e.g. number, boolean, etc), used for determining the semantics of the variable described",
+      "enum":
+      [
+        "any",
+        "str",
+        "int",
+        "number",
+        "bool",
+        "seq",
+        "map",
+        "idref"
+      ],
+      "desc_enum":
+      {
+        "any":"Any datatype allowed",
+        "str":"String",
+        "int":"Integer number",
+        "number":"Any number (floating point or integer)",
+        "bool":"Boolean (true or false) value",
+        "seq":"Nested sequence of items ('array' in many languages).  You must also have a 'sequence' property which is itself a sequence containing a single schema definition",
+        "map":"Nested mapping of key/value pairs (a.k.a. 'properties').  You must also have a 'mapping' property which is itself a sequence containing a single schema definition"
+      }
+    },
+    "title":
+    {
+      "type":"str",
+      "title":"Title (title)",
+      "desc":"A user-friendly title for the property"
+    },
+    "id":
+    {
+      "type":"str",
+      "title":"Identifier (id)",
+      "desc":"An identifier used to reference this property using the 'idref' property"
+    },
+    "desc":
+    {
+      "type":"str",
+      "title":"Description (desc)",
+      "desc":"A description for use in documentation and context help"
+    },
+    "user_key":
+    {
+      "type":"str",
+      "title":"User named key (user_key)",
+      "desc":"Key for properties named by the user.  Use only when type=map, and ensure there's a corresponding property schema in the mapping"
+    },
+    "idref":
+    {
+      "type":"str",
+      "title":"Identifier reference (idref)",
+      "desc":"Reference to a schema segment with the given 'id' property.  The 'type' attribute must be set to 'idref'."
+    },
+    "enum":
+    {
+      "type":"seq",
+      "sequence":
+      [
+        {
+          "type":"any"
+        }
+      ],
+      "title":"Enumeration (enum)",
+      "desc":"Enumerated sequence of valid values for this property."
+    },
+    "desc_enum":
+    {
+      "type":"map",
+      "user_key":"enumdesc",
+      "mapping":
+      {
+        "enumdesc":
+        {
+          "title":"Description for enum value",
+          "type":"str",
+          "desc":"A mapping containing a description for each possible value listed in the enumeration (enum) property.  Used for documentation and context help."
+        }
+      }
+    },
+    "required":
+    {
+      "type":"bool",
+      "title":"Required property? (required)",
+      "desc":"If 'true', then this property must always be present"
+    },
+    "mapping":
+    {
+      "type":"map",
+      "title":"Mapping (mapping)",
+      "desc":"A mapping containing schema segments describing each property in the mapping.  The 'type' property must be set to 'map' to use this property.",
+      "user_key":"schemachild",
+      "mapping":
+      {
+        "schemachild":
+        {
+          "type":"idref",
+          "idref":"schemanode"
+        }
+      }
+    },
+    "sequence":
+    {
+      "type":"seq",
+      "title":"Sequence (sequence)",
+      "desc":"A sequence containing a single schema segment",
+      "sequence":
+      [
+        {
+          "type":"idref",
+          "idref":"schemanode"
+        }
+      ]
+    }
+  }
+}
