@@ -837,14 +837,17 @@ jsonwidget.editor.showPropnameInput = function (jsonref,htmlnode) {
     var parent = htmlnode.parentNode;
     var putback = function () {
         jsonref.renamePropname(this.value);
-        parent.replaceChild(je.getPropnameSpan(jsonref),nameinput);
+        var propnamespan=je.getPropnameSpan(jsonref);
+        parent.replaceChild(propnamespan,nameinput);
         je.updateNode(jsonref);
         je.jsonLookupById[jsonref.fullindex]=jsonref;
         je.updateJSON();
     }
 
     nameinput.onblur = putback;
-    nameinput.onchange = putback;
+    //2011-10-08 - robla - commenting out onchange.  I'm guessing this was an IE5/6 hack
+    // I needed in 2005
+    //nameinput.onchange = putback;
     parent.replaceChild(nameinput, htmlnode);
     nameinput.focus();
 }
