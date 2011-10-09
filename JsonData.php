@@ -32,6 +32,18 @@ $wgJsonDataNamespace = null;
 $wgJsonDataSchemaFile = null;
 $wgJsonData = null;
 
+// Define these only for tags that don't have their own tag handlers, and thus
+// need the default tag handler
+$wgJsonDataDefaultTagHandlers=array('json','jsonschema');
+
+//
+$wgJsonDataPredefinedData = array();
+$wgJsonDataPredefinedData['openschema'] = "$IP/extensions/JsonData/schemas/openschema.json";
+$wgJsonDataPredefinedData['schemaschema'] = "$IP/extensions/JsonData/schemas/schemaschema.json";
+$wgJsonDataPredefinedData['configexample'] = "$IP/extensions/JsonData/configexample.json";
+
+$wgJsonDataConfig = array('srctype' => 'predefined', 'src' => 'configexample');
+
 $wgResourceModules['ext.jsonwidget'] = array(
 	'scripts' => array(
 		'json.js',

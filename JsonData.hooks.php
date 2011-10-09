@@ -28,8 +28,7 @@ class JsonDataHooks {
 		$ns = $title->getNamespace();
 
 		if( JsonData::isJsonDataNeeded( $ns ) ) {
-			$wgJsonData = new JsonData();
-			$wgJsonData->ns = $ns;
+			$wgJsonData = new JsonData( $ns );
 			$wgJsonData->outputEditor();
 		}
 		return true;
@@ -42,7 +41,10 @@ class JsonDataHooks {
 	}
 
 	public static function onParserFirstCallInit( Parser &$parser ) {
-		$parser->setHook( 'json',  __CLASS__ . '::jsonTagRender' );
+		global $wgJsonDataDefaultTagHandlers;
+		foreach ($wgJsonDataDefaultTagHandlers as $tag) {
+			$parser->setHook( $tag,  __CLASS__ . '::jsonTagRender' );
+		}
 		return true;
 	}
  

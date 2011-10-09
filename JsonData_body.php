@@ -16,9 +16,11 @@ class JsonData {
 		return array_key_exists( $ns, $wgJsonDataNamespace );
 	}
 
-	public function __construct() {
-		global $wgOut;
+	public function __construct( $ns ) {
+		global $wgOut, $wgJsonDataNamespace;
 		$this->out = $wgOut;
+		$this->ns = $ns;
+		$this->nsname = $wgJsonDataNamespace[$this->ns];
 	}
 	
 	/**
@@ -56,14 +58,35 @@ HEREDOC
 	public function outputSchema() {
 		global $wgJsonDataNamespace, $wgJsonDataSchemaFile, $wgJsonDataSchemaArticle;
 
-		if( array_key_exists($this->ns, $wgJsonDataSchemaArticle) ) {
-			$title = Title::newFromText( $wgJsonDataSchemaArticle[$this->ns] );
-			$rev = Revision::newFromTitle( $title );
-			$schema = preg_replace(array('/^<json[^>]*>/m', '/<\/json>$/m'), array("", ""), $rev->getText());
+		$configText = $this->readJsonFromArticle( "JsonConfig:Sample" );
+
+		$config = json_decode( $configText, TRUE );
+		$tag = $config['namespaces'][$this->nsname]['defaulttag'];
+
+		if($config['tags'][$tag]['schema']['srctype'] == 'article') {
+			$titleName = $config['tags'][$tag]['schema']['src'];
+			$schema = $this->readJsonFromArticle( $titleName );
 			$this->out->addHTML( htmlspecialchars( $schema ) );
 		}
-		else {
-			$this->out->addHTML( file_get_contents( $wgJsonDataSchemaFile[$this->ns] ) );			
+		elseif($config['tags'][$tag]['schema']['srctype'] == 'predefined') {
+			$filekey = $config['tags'][$tag]['schema']['src'];
+			$schema = $this->readJsonFromPredefined( $filekey );
+			$this->out->addHTML( $schema );
 		}
+		else {
+			print "Invalid srctype value";
+			exit();
+		}
+	}
+	
+	public function readJsonFromArticle( $titleText ) {
+		$title = Title::newFromText( $titleText );
+		$rev = Revision::newFromTitle( $title );
+		return preg_replace(array('/^<[\w]+[^>]*>/m', '/<\/[\w]+>$/m'), array("", ""), $rev->getText());
+	}
+	
+	public function readJsonFromPredefined( $filekey ) {
+		global $wgJsonDataPredefinedData;
+		return file_get_contents( $wgJsonDataPredefinedData[$filekey] );
 	}
 }

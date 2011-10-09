@@ -23,8 +23,8 @@ mwjsondata.context.addContextText = function (jsontext) {
 
 // remove and store context
 mwjsondata.context.removeContextText = function (jsontext) {
-    var begintag = /^\w*<json[^>]*>\w*\n?/m;
-    var endtag = /\n?\w*<\/json>\w*$/m;
+    var begintag = /^\s*<[\w]+[^>]*>\s*\n?/m;
+    var endtag = /\n?\s*<\/[\w]+>\s*$/m;
     var m = jsontext.match(begintag);
     if(m != null) {
         this.beginContext = m;
