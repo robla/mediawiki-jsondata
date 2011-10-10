@@ -38,9 +38,9 @@ $wgJsonDataDefaultTagHandlers=array('json','jsonschema');
 
 //
 $wgJsonDataPredefinedData = array();
-$wgJsonDataPredefinedData['openschema'] = "$IP/extensions/JsonData/schemas/openschema.json";
-$wgJsonDataPredefinedData['schemaschema'] = "$IP/extensions/JsonData/schemas/schemaschema.json";
-$wgJsonDataPredefinedData['configexample'] = "$IP/extensions/JsonData/configexample.json";
+$wgJsonDataPredefinedData['openschema'] =  dirname( __FILE__ ) . "/schemas/openschema.json";
+$wgJsonDataPredefinedData['schemaschema'] =  dirname( __FILE__ ) . "schemas/schemaschema.json";
+$wgJsonDataPredefinedData['configexample'] =  dirname( __FILE__ ) . "example/configexample.json";
 
 $wgJsonDataConfig = array('srctype' => 'predefined', 'src' => 'configexample');
 

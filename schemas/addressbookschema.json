@@ -1,0 +1,252 @@
+{
+  "type":"seq",
+  "title":"Address Book",
+  "sequence":
+  [
+    {
+      "type":"map",
+      "title":"Address Book Entry",
+      "mapping":
+      {
+        "firstName":
+        {
+          "type":"str",
+          "title":"First Name",
+          "required":true
+        },
+        "lastName":
+        {
+          "type":"str",
+          "title":"Last Name",
+          "required":true
+        },
+        "organizations":
+        {
+          "type":"seq",
+          "title":"Affiliations",
+          "description":"A list of organizations with which this person is affiliated.",
+          "sequence":
+          [
+            {
+              "type":"map",
+              "required":true,
+              "mapping":
+              {
+                "name":
+                {
+                  "type":"str",
+                  "required":true,
+                  "title":"Organization Name"
+                },
+                "title":
+                {
+                  "type":"str",
+                  "title":"Title/Role"
+                },
+                "department":
+                {
+                  "type":"str",
+                  "title":"Department"
+                },
+                "type":
+                {
+                  "type":"str",
+                  "description":"What is the nature of this person's affiliation with the organization?",
+                  "enum":
+                  [
+                    "job",
+                    "school",
+                    "other"
+                  ],
+                  "title":"Type"
+                }
+              },
+              "title":"Organization"
+            }
+          ]
+        },
+        "addresses":
+        {
+          "type":"seq",
+          "title":"Mailing/Street Addresses",
+          "sequence":
+          [
+            {
+              "type":"map",
+              "title":"Address",
+              "required":true,
+              "mapping":
+              {
+                "streetAddress":
+                {
+                  "type":"str",
+                  "title":"Street Address",
+                  "required":true
+                },
+                "locality":
+                {
+                  "type":"str",
+                  "title":"City (locality)",
+                  "required":true
+                },
+                "region":
+                {
+                  "type":"str",
+                  "title":"State/Provence/Region",
+                  "required":true
+                },
+                "postalCode":
+                {
+                  "type":"str",
+                  "title":"Postal (Zip) Code",
+                  "description":"Post office code, such as zip code in the U.S.  If editing this data in JSON or YAML format directly, be sure to quote this as a string so that leading zeros aren't stripped.",
+                  "required":true
+                },
+                "country":
+                {
+                  "type":"str",
+                  "title":"Country",
+                  "required":true
+                }
+              }
+            }
+          ]
+        },
+        "phoneNumbers":
+        {
+          "type":"seq",
+          "title":"Phone number(s)",
+          "sequence":
+          [
+            {
+              "type":"map",
+              "title":"Phone number",
+              "required":true,
+              "mapping":
+              {
+                "workhomeother":
+                {
+                  "type":"str",
+                  "required":true,
+                  "title":"Work/Home/Other",
+                  "description":"Is this number a work phone, home phone, etc?",
+                  "enum":
+                  [
+                    "Work",
+                    "Home",
+                    "Mobile",
+                    "Fax",
+                    "Other"
+                  ]
+                },
+                "Number":
+                {
+                  "type":"str",
+                  "required":true
+                },
+                "comment":
+                {
+                  "type":"str",
+                  "title":"Comment"
+                }
+              }
+            }
+          ]
+        },
+        "emails":
+        {
+          "type":"seq",
+          "title":"Email addresses",
+          "sequence":
+          [
+            {
+              "type":"map",
+              "title":"Email",
+              "required":true,
+              "mapping":
+              {
+                "type":
+                {
+                  "type":"str",
+                  "required":true,
+                  "title":"Work/Home/Other",
+                  "description":"Is this email address a work address, home address, etc?",
+                  "enum":
+                  [
+                    "work",
+                    "home",
+                    "other"
+                  ]
+                },
+                "value":
+                {
+                  "type":"str",
+                  "required":true,
+                  "title":"Address"
+                },
+                "primary":
+                {
+                  "type":"bool",
+                  "required":true,
+                  "description":"Is this the primary email address for this person?",
+                  "title":"Primary?"
+                }
+              }
+            }
+          ]
+        },
+        "ims":
+        {
+          "type":"seq",
+          "title":"IM Accounts",
+          "sequence":
+          [
+            {
+              "type":"map",
+              "title":"Account",
+              "required":true,
+              "mapping":
+              {
+                "type":
+                {
+                  "type":"str",
+                  "required":true,
+                  "title":"Service",
+                  "description":"What is the service provider/protocol associated with this instant messaging address?",
+                  "enum":
+                  [
+                    "aim",
+                    "gtalk",
+                    "icq",
+                    "xmpp",
+                    "msn",
+                    "skype",
+                    "qq",
+                    "yahoo"
+                  ],
+                  "desc_enum":
+                  {
+                    "aim":"AIM (AOL)",
+                    "gtalk":"GTalk (Google)",
+                    "icq":"ICQ",
+                    "xmpp":"XMPP/Jabber",
+                    "msn":"MSN (Microsoft)",
+                    "skype":"Skype",
+                    "qq":"QQ (Tencent)",
+                    "yahoo":"Yahoo!"
+                  }
+                },
+                "value":
+                {
+                  "type":"str",
+                  "required":true,
+                  "title":"Account ID"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

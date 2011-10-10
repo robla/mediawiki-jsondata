@@ -1,0 +1,74 @@
+{
+  "type":"seq",
+  "title":"Datatype example schema (datatype-example-schema.json)\n  Not terribly useful for anything other than demonstration purposes.  Edit one\n  of the existing schemas for your purpose, or generate one using the online\n  tool at http://robla.net/2005/jsonwidget\nData",
+  "desc":"Example with all datatypes in one place",
+  "sequence":
+  [
+    {
+      "type":"map",
+      "title":"Item",
+      "mapping":
+      {
+        "map_example":
+        {
+          "type":"map",
+          "title":"Map (map)",
+          "mapping":
+          {
+            "field1":
+            {
+              "type":"str"
+            },
+            "field2":
+            {
+              "type":"str"
+            }
+          }
+        },
+        "seq_example":
+        {
+          "type":"seq",
+          "title":"Sequence (seq)",
+          "sequence":
+          [
+            {
+              "title":"Item",
+              "type":"str"
+            }
+          ]
+        },
+        "num_example":
+        {
+          "title":"Number (num)",
+          "type":"number"
+        },
+        "int_example":
+        {
+          "title":"Integer (int)",
+          "type":"int"
+        },
+        "str_example":
+        {
+          "title":"String (str)",
+          "type":"str"
+        },
+        "bool_example":
+        {
+          "title":"Boolean (bool)",
+          "type":"bool"
+        },
+        "str_enum_example":
+        {
+          "title":"String Enumeration (str + enum)",
+          "type":"str",
+          "enum":
+          [
+            "value1",
+            "value2",
+            "value3"
+          ]
+        }
+      }
+    }
+  ]
+}
