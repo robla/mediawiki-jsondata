@@ -1,0 +1,70 @@
+{
+  "type":"map",
+  "mapping":
+  {
+    "namespaces":
+    {
+      "type":"map",
+      "title":"Namespaces",
+      "user_key":"nsname",
+      "mapping":
+      {
+        "nsname":
+        {
+          "title":"Namespace name",
+          "type":"map",
+          "mapping":
+          {
+            "defaulttag":
+            {
+              "type":"str",
+              "title":"Default tag"
+            }
+          }
+        }
+      }
+    },
+    "tags":
+    {
+      "type":"map",
+      "title":"Tags",
+      "user_key":"tagname",
+      "mapping":
+      {
+        "tagname":
+        {
+          "title":"Tag name",
+          "type":"map",
+          "mapping":
+          {
+            "schema":
+            {
+              "type":"map",
+              "mapping":
+              {
+                "srctype":
+                {
+                  "type":"str",
+                  "enum":
+                  [
+                    "article",
+                    "predefined"
+                  ],
+                  "desc_enum":
+                  {
+                    "article":"Article (on wiki)",
+                    "predefined":"Predefined file (from config)"
+                  }
+                },
+                "src":
+                {
+                  "type":"str"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
