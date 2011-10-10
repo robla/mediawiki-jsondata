@@ -1409,12 +1409,12 @@ jsonwidget.editor.getSchema = function () {
         else {
             errorstring += error.text.substr(error.at-40,40);
         }
-        errorstring += "<span style='background-color: yellow'>";
+        //errorstring += "<span style='background-color: yellow'>";
         errorstring += error.text.substr(error.at,1);
-        errorstring += "</span>";
+        //errorstring += "</span>";
         errorstring += error.text.substr(error.at+1,39);
         
-        this.warningOut("JSON Parse error at char "+error.at+" near <pre>"+errorstring+"</pre>  Full error: "+error.toSource());            
+        this.warningOut("JSON Parse error at char "+error.at+" near "+errorstring+"");            
     }
     return retval;
 }
