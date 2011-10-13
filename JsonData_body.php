@@ -16,10 +16,11 @@ class JsonData {
 		return array_key_exists( $ns, $wgJsonDataNamespace );
 	}
 
-	public function __construct( $ns ) {
+	public function __construct( $ns, $article ) {
 		global $wgOut, $wgJsonDataNamespace;
 		$this->out = $wgOut;
 		$this->ns = $ns;
+		$this->article = $article;
 		$this->nsname = $wgJsonDataNamespace[$this->ns];
 	}
 	
@@ -63,7 +64,27 @@ HEREDOC
 		$config = json_decode( $configText, TRUE );
 		$tag = $config['namespaces'][$this->nsname]['defaulttag'];
 
-		if($config['tags'][$tag]['schema']['srctype'] == 'article') {
+
+		$schemaconfig = $config['tags'][$tag]['schema'];
+		$schemaTitle = null;
+		if(isset($schemaconfig['schemaattr']) && (preg_match('/^(\w+)$/', $schemaconfig['schemaattr']) > 0)) {
+			$revtext = $this->article->getText();
+			if (preg_match('/^<[\w]+\s+([^>]+)>/m', $revtext, $matches) > 0) {
+				// Quick and dirty regex for parsing schema attributes that hits the 99% case.
+				// Bad matches: foo="bar' , foo='bar"
+				// Bad misses: foo='"r' , foo="'r"
+				// Works correctly in most common cases, though.
+				// \x27 is single quote
+				if (preg_match('/\b'.$schemaconfig['schemaattr'].'\s*=\s*["\x27]([^"\x27]+)["\x27]/', $matches[1], $subm) > 0) {
+					$schemaTitle = $subm[1];
+				}
+			}
+		}
+		if(!is_null($schemaTitle)) {
+			$schema = $this->readJsonFromArticle( $schemaTitle );
+			$this->out->addHTML( htmlspecialchars( $schema ) );
+		}
+		elseif($config['tags'][$tag]['schema']['srctype'] == 'article') {
 			$titleName = $config['tags'][$tag]['schema']['src'];
 			$schema = $this->readJsonFromArticle( $titleName );
 			$this->out->addHTML( htmlspecialchars( $schema ) );
@@ -80,11 +101,13 @@ HEREDOC
 	}
 	
 	public function readJsonFromArticle( $titleText ) {
+		$retval = array('json'=>null, 'tag'=>null, 'attrs'=>null);
 		$title = Title::newFromText( $titleText );
 		$rev = Revision::newFromTitle( $title );
-		return preg_replace(array('/^<[\w]+[^>]*>/m', '/<\/[\w]+>$/m'), array("", ""), $rev->getText());
+		$revtext = $rev->getText();
+		return preg_replace(array('/^<[\w]+[^>]*>/m', '/<\/[\w]+>$/m'), array("", ""), $revtext);
 	}
-	
+
 	public function readJsonFromPredefined( $filekey ) {
 		global $wgJsonDataPredefinedData;
 		return file_get_contents( $wgJsonDataPredefinedData[$filekey] );

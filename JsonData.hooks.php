@@ -28,7 +28,7 @@ class JsonDataHooks {
 		$ns = $title->getNamespace();
 
 		if( JsonData::isJsonDataNeeded( $ns ) ) {
-			$wgJsonData = new JsonData( $ns );
+			$wgJsonData = new JsonData( $ns, $article );
 			$wgJsonData->outputEditor();
 		}
 		return true;
