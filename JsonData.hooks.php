@@ -18,7 +18,7 @@ class JsonDataHooks {
 	}
 
 	/**
-	 * Muck with the editor interface
+	 * Load the JsonData object if we're in one of the configured namespaces
 	 * @param EditPage $editPage
 	 */
 	public static function onEditPageShowEditFormInitial( &$editPage ) {
@@ -34,12 +34,18 @@ class JsonDataHooks {
 		return true;
 	}
 
+	/**
+	 * Remove the edit toolbar from the form
+	 */
 	public static function onEditPageBeforeEditToolbar(&$toolbar)
 	{
 		$toolbar = '';
 		return false;
 	}
 
+	/**
+	 * Register the configured parser tags with default tag renderer.
+	 */
 	public static function onParserFirstCallInit( Parser &$parser ) {
 		global $wgJsonDataDefaultTagHandlers;
 		foreach ($wgJsonDataDefaultTagHandlers as $tag) {
@@ -48,6 +54,9 @@ class JsonDataHooks {
 		return true;
 	}
  
+	/**
+	 * Default parser tag renderer
+	 */
 	public static function jsonTagRender( $input, array $args, Parser $parser, PPFrame $frame ) {
 		return "<pre>" . htmlspecialchars( $input ) . "</pre>";
 	}

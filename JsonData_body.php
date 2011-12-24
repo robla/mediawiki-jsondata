@@ -54,11 +54,21 @@ HEREDOC
 	}
 	
 	/**
-	 * Output the schema in the right spot of the form
+	 * Find the correct schema and output that schema in the right spot of 
+	 * the form.  The schema may come from one of several places:
+	 * a.  If the "schemaattr" is defined for a namespace, then from the
+	 *     associated attribute of the json/whatever tag.
+	 * b.  A configured article
+	 * c.  A configured file in wgJsonDataPredefinedData
 	 */
 	public function outputSchema() {
 		global $wgJsonDataNamespace, $wgJsonDataSchemaFile, $wgJsonDataSchemaArticle;
 
+		/* Read the config text, which is currently hardcoded to come from 
+		 * a specific file.
+		 * TODO: break config reading code out into getConfig method
+		 * TODO: figure out alternative to hardcoded "JsonConfig:Sample" for the config
+		 */
 		$configText = $this->readJsonFromArticle( "JsonConfig:Sample" );
 
 		$config = json_decode( $configText, TRUE );
@@ -70,11 +80,13 @@ HEREDOC
 		if(isset($schemaconfig['schemaattr']) && (preg_match('/^(\w+)$/', $schemaconfig['schemaattr']) > 0)) {
 			$revtext = $this->article->getText();
 			if (preg_match('/^<[\w]+\s+([^>]+)>/m', $revtext, $matches) > 0) {
-				// Quick and dirty regex for parsing schema attributes that hits the 99% case.
-				// Bad matches: foo="bar' , foo='bar"
-				// Bad misses: foo='"r' , foo="'r"
-				// Works correctly in most common cases, though.
-				// \x27 is single quote
+				/* 
+				 * Quick and dirty regex for parsing schema attributes that hits the 99% case.
+				 * Bad matches: foo="bar' , foo='bar"
+				 * Bad misses: foo='"r' , foo="'r"
+				 * Works correctly in most common cases, though.
+				 * \x27 is single quote
+				 */
 				if (preg_match('/\b'.$schemaconfig['schemaattr'].'\s*=\s*["\x27]([^"\x27]+)["\x27]/', $matches[1], $subm) > 0) {
 					$schemaTitle = $subm[1];
 				}
@@ -99,7 +111,11 @@ HEREDOC
 			exit();
 		}
 	}
-	
+
+	/*
+	 * Read json-formatted data from an article, stripping off parser tags
+	 * surrounding it.
+	 */
 	public function readJsonFromArticle( $titleText ) {
 		$retval = array('json'=>null, 'tag'=>null, 'attrs'=>null);
 		$title = Title::newFromText( $titleText );
@@ -108,6 +124,9 @@ HEREDOC
 		return preg_replace(array('/^<[\w]+[^>]*>/m', '/<\/[\w]+>$/m'), array("", ""), $revtext);
 	}
 
+	/*
+	 * Read json-formatted data from a predefined data file.
+	 */
 	public function readJsonFromPredefined( $filekey ) {
 		global $wgJsonDataPredefinedData;
 		return file_get_contents( $wgJsonDataPredefinedData[$filekey] );
