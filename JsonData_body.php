@@ -54,6 +54,19 @@ HEREDOC
 	}
 	
 	/**
+	 * Read the config text, which is currently hardcoded to come from 
+	 * a specific file.
+	 */
+	public function getConfig() {
+		/* 
+		 * TODO: figure out alternative to hardcoded "JsonConfig:Sample" for the config
+		 */
+		$configText = $this->readJsonFromArticle( "JsonConfig:Sample" );
+		$config = json_decode( $configText, TRUE );
+		return $config;
+	}
+
+	/**
 	 * Find the correct schema and output that schema in the right spot of 
 	 * the form.  The schema may come from one of several places:
 	 * a.  If the "schemaattr" is defined for a namespace, then from the
@@ -64,14 +77,7 @@ HEREDOC
 	public function outputSchema() {
 		global $wgJsonDataNamespace, $wgJsonDataSchemaFile, $wgJsonDataSchemaArticle;
 
-		/* Read the config text, which is currently hardcoded to come from 
-		 * a specific file.
-		 * TODO: break config reading code out into getConfig method
-		 * TODO: figure out alternative to hardcoded "JsonConfig:Sample" for the config
-		 */
-		$configText = $this->readJsonFromArticle( "JsonConfig:Sample" );
-
-		$config = json_decode( $configText, TRUE );
+		$config = $this->getConfig();
 		$tag = $config['namespaces'][$this->nsname]['defaulttag'];
 
 
