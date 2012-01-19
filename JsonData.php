@@ -41,6 +41,7 @@ $wgJsonDataPredefinedData = array();
 $wgJsonDataPredefinedData['openschema'] =  dirname( __FILE__ ) . "/schemas/openschema.json";
 $wgJsonDataPredefinedData['schemaschema'] =  dirname( __FILE__ ) . "/schemas/schemaschema.json";
 $wgJsonDataPredefinedData['configexample'] =  dirname( __FILE__ ) . "/example/configexample.json";
+$wgJsonDataPredefinedData['jsondataconfig'] =  dirname( __FILE__ ) . "/schemas/jsondata-config-schema.json";
 
 $wgJsonDataConfig = array('srctype' => 'predefined', 'src' => 'configexample');
 

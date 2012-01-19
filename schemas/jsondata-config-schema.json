@@ -54,11 +54,18 @@
                   {
                     "article":"Article (on wiki)",
                     "predefined":"Predefined file (from config)"
-                  }
+                  },
+                  "required":true
                 },
                 "src":
                 {
-                  "type":"str"
+                  "type":"str",
+                  "required":true
+                },
+                "schemaattr":
+                {
+                  "type":"str",
+                  "title":"Schema attribute"
                 }
               }
             }
