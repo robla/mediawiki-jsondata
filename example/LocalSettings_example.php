@@ -15,7 +15,7 @@ $wgJsonDataDefaultTagHandlers[]='jsonconfig';
 
 # Further configuration can be performed on-wiki via this article if this 
 # variable is set
-# $wgJsonDataConfigArticle = "JsonConfig:Sample";
+# $wgJsonDataConfigArticle = "JsonConfig:Test";
 
 # Associate talk pages with each namespace
 foreach ($wgJsonDataNamespace as $nsnum => $nskey) {
