@@ -7,9 +7,13 @@ $wgJsonDataNamespace[204] = "Schema";
 $wgJsonDataNamespace[206] = "JsonConfig";
 $wgJsonDataNamespace[208] = "Address";
 
+# Default tag handlers. Define these only for tags that don't have their own
+# separately-defined tag handlers (e.g. by another extension), and thus need 
+# the default tag handler.
 $wgJsonDataDefaultTagHandlers[]='address';
 $wgJsonDataDefaultTagHandlers[]='jsonconfig';
 
+# Associate talk pages with each namespace
 foreach ($wgJsonDataNamespace as $nsnum => $nskey) {
 	$wgExtraNamespaces[$nsnum] = $nskey;
 	$wgExtraNamespaces[$nsnum+1] = $nskey . "_Talk";
