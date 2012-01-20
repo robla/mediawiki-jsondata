@@ -58,10 +58,24 @@ HEREDOC
 	 * a specific file.
 	 */
 	public function getConfig() {
-		/* 
-		 * TODO: figure out alternative to hardcoded "JsonConfig:Sample" for the config
-		 */
-		$configText = $this->readJsonFromArticle( "JsonConfig:Sample" );
+		global $wgJsonDataConfigArticle, $wgJsonDataConfigFile;
+		if( !is_null( $wgJsonDataConfigArticle ) ) {
+			$configText = $this->readJsonFromArticle( $wgJsonDataConfigArticle );
+			$config = json_decode( $configText, TRUE );
+		}
+		elseif( !is_null( $wgJsonDataConfigFile ) ) {
+			$configText = file_get_contents( $wgJsonDataConfigFile );
+			$config = json_decode( $configText, TRUE );
+		}
+		else {
+			$config = $this->getDefaultConfig();
+		}
+		return $config;
+	}
+
+	public function getDefaultConfig() {
+		// TODO - better default config mechanism
+		$configText = $this->readJsonFromPredefined( 'configexample' );
 		$config = json_decode( $configText, TRUE );
 		return $config;
 	}
@@ -126,8 +140,13 @@ HEREDOC
 		$retval = array('json'=>null, 'tag'=>null, 'attrs'=>null);
 		$title = Title::newFromText( $titleText );
 		$rev = Revision::newFromTitle( $title );
-		$revtext = $rev->getText();
-		return preg_replace(array('/^<[\w]+[^>]*>/m', '/<\/[\w]+>$/m'), array("", ""), $revtext);
+		if( is_null( $rev ) ) {
+			return "";
+		}
+		else {
+			$revtext = $rev->getText();
+			return preg_replace(array('/^<[\w]+[^>]*>/m', '/<\/[\w]+>$/m'), array("", ""), $revtext);
+		}
 	}
 
 	/*

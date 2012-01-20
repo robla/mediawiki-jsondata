@@ -40,16 +40,16 @@
     {
       "schema":
       {
-        "srctype":"article",
-        "src":"Schema:SimpleAddr"
+        "srctype":"predefined",
+        "src":"simpleaddr"
       }
     },
     "jsonconfig":
     {
       "schema":
       {
-        "srctype":"article",
-        "src":"Schema:JsonConfig"
+        "srctype":"predefined",
+        "src":"configschema"
       }
     }
   }

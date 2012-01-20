@@ -32,6 +32,11 @@ $wgJsonDataNamespace = null;
 $wgJsonDataSchemaFile = null;
 $wgJsonData = null;
 
+// On-wiki configuration article
+$wgJsonDataConfigArticle = null;
+
+$wgJsonDataConfigFile = null;
+
 // Define these only for tags that don't have their own tag handlers, and thus
 // need the default tag handler
 $wgJsonDataDefaultTagHandlers=array('json','jsonschema');
@@ -41,7 +46,8 @@ $wgJsonDataPredefinedData = array();
 $wgJsonDataPredefinedData['openschema'] =  dirname( __FILE__ ) . "/schemas/openschema.json";
 $wgJsonDataPredefinedData['schemaschema'] =  dirname( __FILE__ ) . "/schemas/schemaschema.json";
 $wgJsonDataPredefinedData['configexample'] =  dirname( __FILE__ ) . "/example/configexample.json";
-$wgJsonDataPredefinedData['jsondataconfig'] =  dirname( __FILE__ ) . "/schemas/jsondata-config-schema.json";
+$wgJsonDataPredefinedData['configschema'] =  dirname( __FILE__ ) . "/schemas/jsondata-config-schema.json";
+$wgJsonDataPredefinedData['simpleaddr'] =  dirname( __FILE__ ) . "/schemas/simpleaddr-schema.json";
 
 $wgJsonDataConfig = array('srctype' => 'predefined', 'src' => 'configexample');
 
