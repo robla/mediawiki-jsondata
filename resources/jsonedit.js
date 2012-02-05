@@ -323,6 +323,7 @@ jsonwidget.editor = function () {
         "schemaformdiv": "je_schemaformdiv",
         "sourcetextarea": "je_sourcetextarea",
         "schematextarea": "je_schematextarea",
+        "schemaexamplearea": "je_schemaexamplearea",
         "schemaschematextarea": "je_schemaschematextarea",
         "byexamplebutton": "je_byexamplebutton",
         "sourcetextform": "je_sourcetextform"
@@ -338,7 +339,8 @@ jsonwidget.editor = function () {
         form: "je_formbutton",
         source: "je_sourcebutton",
         schemasource: "je_schemasourcebutton",
-        schemaform: "je_schemaformbutton"
+        schemaform: "je_schemaformbutton",
+        schemaexample: "je_schemaexamplebutton"
     }
     
     this.classname = {
@@ -379,7 +381,9 @@ jsonwidget.editor = function () {
     this.setStatusLight = jsonwidget.editor.setStatusLight;
     this.clearStatusLight = jsonwidget.editor.clearStatusLight;
     this.toggleToFormActual = jsonwidget.editor.toggleToFormActual;
+    this.updateArea = jsonwidget.editor.updateArea;
     this.updateJSON = jsonwidget.editor.updateJSON;
+    this.updateSchemaExample = jsonwidget.editor.updateSchemaExample;
     this.error = jsonwidget.editor.error;
     this.debugOut = jsonwidget.editor.debugOut;
     this.warningOut = jsonwidget.editor.warningOut;
@@ -1086,6 +1090,9 @@ jsonwidget.editor.setView = function setView (viewtoset) {
             case 'schemaform':
                 this.schemaedit.formdiv.style.display="none";
                 break;
+            case 'schemaexample':
+                document.getElementById(this.htmlids.schemaexamplearea).style.display="none";
+                break;
             }
             currentbutton.onclick = this.getSetViewFunction(this.views[i]);
             currentbutton.className = this.classname.bgbutton;
@@ -1130,6 +1137,14 @@ jsonwidget.editor.setView = function setView (viewtoset) {
         break;
     case "schemaform":
         setTimeout(function () {je.schemaedit.toggleToFormActual()},this.getStatusLightDelay(this.schemaedit.rootjson));
+        break;
+    case "schemaexample":
+        setTimeout(function () {
+            je.updateJSON();
+            je.updateSchemaExample();
+            document.getElementById(je.htmlids.schemaexamplearea).style.display="inline";
+            je.clearStatusLight();
+        },this.getStatusLightDelay(null));
         break;
     }
     this.currentView = viewtoset;
@@ -1242,23 +1257,38 @@ jsonwidget.editor.toggleToFormActual = function () {
     this.attachHandlers();
     this.clearStatusLight();
 }
- 
-jsonwidget.editor.updateJSON = function () {
-    var jsonarea = document.getElementById(this.htmlids.sourcetextarea);
-    var parent = jsonarea.parentNode;
-    var nextsibling = jsonarea.nextSibling;
+
+// fills textarea with JSON serialization of data, wrapping the JSON with
+// context text
+jsonwidget.editor.updateArea = function (textarea, data, context) {
+    var parent = textarea.parentNode;
+    var nextsibling = textarea.nextSibling;
     var jsontext;
 
-    parent.removeChild(jsonarea);
-    if(this.jsondata == null) {
+    parent.removeChild(textarea);
+    if(data == null) {
         jsontext = "";
     }
     else {
-        jsontext = JSON.stringify(this.jsondata);
+        jsontext = JSON.stringify(data);
     }
 
-    jsonarea.value = this.context.addContextText(jsontext);
-    parent.insertBefore(jsonarea, nextsibling);
+    textarea.value = context.addContextText(jsontext);
+    parent.insertBefore(textarea, nextsibling);
+}
+
+jsonwidget.editor.updateJSON = function () {
+    var textarea = document.getElementById(this.htmlids.sourcetextarea);
+    var data = this.jsondata;
+    var context = this.context;
+    this.updateArea(textarea, data, context);
+}
+
+jsonwidget.editor.updateSchemaExample = function () {
+    var textarea = document.getElementById(this.htmlids.schemaexamplearea);
+    var data = jsonwidget.getSchemaArray(je.jsondata);
+    var context = this.context;
+    this.updateArea(textarea, data, context);
 }
 
 jsonwidget.editor.error = function (m) {

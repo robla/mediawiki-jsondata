@@ -37,11 +37,14 @@ class JsonData {
 		<ul>
 			<li><span id="je_formbutton"><a>Edit w/Form</a></span></li>
 			<li><span id="je_sourcebutton"><a>Edit Source</a></span></li>
+			<li><span id="je_schemaexamplebutton"><a>Generate Schema</a></span></li>
 		</ul>
 	</div>
 </div>
 
 <div id="je_formdiv"></div>
+<textarea id="je_schemaexamplearea" style="display: none" rows="30" cols="80">
+</textarea>
 
 <textarea id="je_schematextarea" style="display: none" rows="30" cols="80">
 HEREDOC

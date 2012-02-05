@@ -47,6 +47,7 @@ if($("#je_formdiv").length > 0) {
     je.htmlids.sourcetextarea = 'wpTextbox1';
     je.htmlids.sourcetextform = 'editform';
     je.context = new mwjsondata.context();
+    je.views = ['form','source','schemaexample'];
     je.setView('form');
 }
 
