@@ -9,7 +9,7 @@
  * @licence GNU General Public Licence 2.0 or later
  */
 
-if( !defined( 'MEDIAWIKI' ) ) die();
+if ( !defined( 'MEDIAWIKI' ) ) die();
 
 $wgExtensionCredits['Tasks'][] = array(
 	'path'           => __FILE__,
@@ -39,7 +39,7 @@ $wgJsonDataConfigFile = null;
 
 // Define these only for tags that don't have their own tag handlers, and thus
 // need the default tag handler
-$wgJsonDataDefaultTagHandlers=array('json','jsonschema');
+$wgJsonDataDefaultTagHandlers = array( 'json', 'jsonschema' );
 
 //
 $wgJsonDataPredefinedData = array();
@@ -49,7 +49,7 @@ $wgJsonDataPredefinedData['configexample'] =  dirname( __FILE__ ) . "/example/co
 $wgJsonDataPredefinedData['configschema'] =  dirname( __FILE__ ) . "/schemas/jsondata-config-schema.json";
 $wgJsonDataPredefinedData['simpleaddr'] =  dirname( __FILE__ ) . "/schemas/simpleaddr-schema.json";
 
-$wgJsonDataConfig = array('srctype' => 'predefined', 'src' => 'configexample');
+$wgJsonDataConfig = array( 'srctype' => 'predefined', 'src' => 'configexample' );
 
 $wgResourceModules['ext.jsonwidget'] = array(
 	'scripts' => array(

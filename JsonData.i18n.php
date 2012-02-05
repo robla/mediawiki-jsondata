@@ -14,7 +14,7 @@ $messages = array();
 /** English
  * @author Rob Lanphier
  */
-$messages['en'] = array( 
+$messages['en'] = array(
 	'jsondata' => 'JsonData',
 	'jsondata_desc' => 'An extension to edit and template JSON-formatted data',
 	'jsondata-schemaedit-pref' => 'Use JsonData schema editing tools',

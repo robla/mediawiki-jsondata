@@ -23,7 +23,7 @@ class JsonData {
 		$this->article = $article;
 		$this->nsname = $wgJsonDataNamespace[$this->ns];
 	}
-	
+
 	/**
 	 * All of the PHP-generated HTML associated with JsonData goes here
 	 */
@@ -65,18 +65,18 @@ HEREDOC
 HEREDOC
 			);
 	}
-	
+
 	/**
-	 * Read the config text, which is currently hardcoded to come from 
+	 * Read the config text, which is currently hardcoded to come from
 	 * a specific file.
 	 */
 	public function getConfig() {
 		global $wgJsonDataConfigArticle, $wgJsonDataConfigFile;
-		if( !is_null( $wgJsonDataConfigArticle ) ) {
+		if ( !is_null( $wgJsonDataConfigArticle ) ) {
 			$configText = $this->readJsonFromArticle( $wgJsonDataConfigArticle );
 			$config = json_decode( $configText, TRUE );
 		}
-		elseif( !is_null( $wgJsonDataConfigFile ) ) {
+		elseif ( !is_null( $wgJsonDataConfigFile ) ) {
 			$configText = file_get_contents( $wgJsonDataConfigFile );
 			$config = json_decode( $configText, TRUE );
 		}
@@ -94,7 +94,7 @@ HEREDOC
 	}
 
 	/**
-	 * Find the correct schema and output that schema in the right spot of 
+	 * Find the correct schema and output that schema in the right spot of
 	 * the form.  The schema may come from one of several places:
 	 * a.  If the "schemaattr" is defined for a namespace, then from the
 	 *     associated attribute of the json/whatever tag.
@@ -110,31 +110,31 @@ HEREDOC
 
 		$schemaconfig = $config['tags'][$tag]['schema'];
 		$schemaTitle = null;
-		if(isset($schemaconfig['schemaattr']) && (preg_match('/^(\w+)$/', $schemaconfig['schemaattr']) > 0)) {
+		if ( isset( $schemaconfig['schemaattr'] ) && ( preg_match( '/^(\w+)$/', $schemaconfig['schemaattr'] ) > 0 ) ) {
 			$revtext = $this->article->getText();
-			if (preg_match('/^<[\w]+\s+([^>]+)>/m', $revtext, $matches) > 0) {
-				/* 
+			if ( preg_match( '/^<[\w]+\s+([^>]+)>/m', $revtext, $matches ) > 0 ) {
+				/*
 				 * Quick and dirty regex for parsing schema attributes that hits the 99% case.
 				 * Bad matches: foo="bar' , foo='bar"
 				 * Bad misses: foo='"r' , foo="'r"
 				 * Works correctly in most common cases, though.
 				 * \x27 is single quote
 				 */
-				if (preg_match('/\b'.$schemaconfig['schemaattr'].'\s*=\s*["\x27]([^"\x27]+)["\x27]/', $matches[1], $subm) > 0) {
+				if ( preg_match( '/\b' . $schemaconfig['schemaattr'] . '\s*=\s*["\x27]([^"\x27]+)["\x27]/', $matches[1], $subm ) > 0 ) {
 					$schemaTitle = $subm[1];
 				}
 			}
 		}
-		if(!is_null($schemaTitle)) {
+		if ( !is_null( $schemaTitle ) ) {
 			$schema = $this->readJsonFromArticle( $schemaTitle );
 			$this->out->addHTML( htmlspecialchars( $schema ) );
 		}
-		elseif($config['tags'][$tag]['schema']['srctype'] == 'article') {
+		elseif ( $config['tags'][$tag]['schema']['srctype'] == 'article' ) {
 			$titleName = $config['tags'][$tag]['schema']['src'];
 			$schema = $this->readJsonFromArticle( $titleName );
 			$this->out->addHTML( htmlspecialchars( $schema ) );
 		}
-		elseif($config['tags'][$tag]['schema']['srctype'] == 'predefined') {
+		elseif ( $config['tags'][$tag]['schema']['srctype'] == 'predefined' ) {
 			$filekey = $config['tags'][$tag]['schema']['src'];
 			$schema = $this->readJsonFromPredefined( $filekey );
 			$this->out->addHTML( $schema );
@@ -150,15 +150,15 @@ HEREDOC
 	 * surrounding it.
 	 */
 	public function readJsonFromArticle( $titleText ) {
-		$retval = array('json'=>null, 'tag'=>null, 'attrs'=>null);
+		$retval = array( 'json' => null, 'tag' => null, 'attrs' => null );
 		$title = Title::newFromText( $titleText );
 		$rev = Revision::newFromTitle( $title );
-		if( is_null( $rev ) ) {
+		if ( is_null( $rev ) ) {
 			return "";
 		}
 		else {
 			$revtext = $rev->getText();
-			return preg_replace(array('/^<[\w]+[^>]*>/m', '/<\/[\w]+>$/m'), array("", ""), $revtext);
+			return preg_replace( array( '/^<[\w]+[^>]*>/m', '/<\/[\w]+>$/m' ), array( "", "" ), $revtext );
 		}
 	}
 

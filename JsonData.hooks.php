@@ -11,7 +11,7 @@ class JsonDataHooks {
 	 */
 	public static function beforePageDisplay( $out, $skin ) {
 		global $wgJsonData;
-		if( !is_null( $wgJsonData ) ) {
+		if ( !is_null( $wgJsonData ) ) {
 			$out->addModules( 'ext.jsonwidget' );
 		}
 		return true;
@@ -27,7 +27,7 @@ class JsonDataHooks {
 		$title = $article->getTitle();
 		$ns = $title->getNamespace();
 
-		if( JsonData::isJsonDataNeeded( $ns ) ) {
+		if ( JsonData::isJsonDataNeeded( $ns ) ) {
 			$wgJsonData = new JsonData( $ns, $article );
 			$wgJsonData->outputEditor();
 		}
@@ -37,7 +37,7 @@ class JsonDataHooks {
 	/**
 	 * Remove the edit toolbar from the form
 	 */
-	public static function onEditPageBeforeEditToolbar(&$toolbar)
+	public static function onEditPageBeforeEditToolbar( &$toolbar )
 	{
 		$toolbar = '';
 		return false;
@@ -48,12 +48,12 @@ class JsonDataHooks {
 	 */
 	public static function onParserFirstCallInit( Parser &$parser ) {
 		global $wgJsonDataDefaultTagHandlers;
-		foreach ($wgJsonDataDefaultTagHandlers as $tag) {
+		foreach ( $wgJsonDataDefaultTagHandlers as $tag ) {
 			$parser->setHook( $tag,  __CLASS__ . '::jsonTagRender' );
 		}
 		return true;
 	}
- 
+
 	/**
 	 * Default parser tag renderer
 	 */
