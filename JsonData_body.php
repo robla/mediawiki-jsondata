@@ -107,11 +107,10 @@ HEREDOC
 		$config = $this->getConfig();
 		$tag = $config['namespaces'][$this->nsname]['defaulttag'];
 
-
 		$schemaconfig = $config['tags'][$tag]['schema'];
 		$schemaTitle = null;
 		if ( isset( $schemaconfig['schemaattr'] ) && ( preg_match( '/^(\w+)$/', $schemaconfig['schemaattr'] ) > 0 ) ) {
-			$revtext = $this->article->getText();
+			$revtext = $this->out->getRequest()->getText( 'wpTextbox1' );
 			if ( preg_match( '/^<[\w]+\s+([^>]+)>/m', $revtext, $matches ) > 0 ) {
 				/*
 				 * Quick and dirty regex for parsing schema attributes that hits the 99% case.
