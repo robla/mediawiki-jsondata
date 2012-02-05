@@ -29,8 +29,16 @@ class JsonData {
 	 */
 	public function outputEditor() {
 		global $wgUser;
+		$servererror = '';
+		try {
+			$schema = $this->getSchema();
+		}
+		catch ( Exception $e ) {
+			$schema = $this->readJsonFromPredefined( 'openschema' );
+			$servererror .= htmlspecialchars( $e->getMessage() );
+		}
 		$this->out->addHTML( <<<HEREDOC
-<div id="je_servererror"></div>
+<div id="je_servererror">${servererror}</div>
 <div id="je_warningdiv"></div>
 
 <div style="height:20px;">
@@ -59,7 +67,7 @@ HEREDOC
 <textarea id="je_schematextarea" style="display: none" rows="30" cols="80">
 HEREDOC
 			);
-			$this->outputSchema();
+			$this->out->addHTML( htmlspecialchars( $schema ) );
 			$this->out->addHTML( <<<HEREDOC
 </textarea>
 HEREDOC
@@ -101,7 +109,7 @@ HEREDOC
 	 * b.  A configured article
 	 * c.  A configured file in wgJsonDataPredefinedData
 	 */
-	public function outputSchema() {
+	public function getSchema() {
 		global $wgJsonDataNamespace, $wgJsonDataSchemaFile, $wgJsonDataSchemaArticle;
 
 		$config = $this->getConfig();
@@ -126,22 +134,25 @@ HEREDOC
 		}
 		if ( !is_null( $schemaTitle ) ) {
 			$schema = $this->readJsonFromArticle( $schemaTitle );
-			$this->out->addHTML( htmlspecialchars( $schema ) );
+			if ( $schema == '' ) {
+				throw new Exception( "Invalid schema definition in ${schemaTitle}" );
+			}
 		}
 		elseif ( $config['tags'][$tag]['schema']['srctype'] == 'article' ) {
 			$titleName = $config['tags'][$tag]['schema']['src'];
 			$schema = $this->readJsonFromArticle( $titleName );
-			$this->out->addHTML( htmlspecialchars( $schema ) );
+			if ( $schema == '' ) {
+				throw new Exception( "Invalid schema definition in ${titleName}.  Check your site configuation for this tag." );
+			}
 		}
 		elseif ( $config['tags'][$tag]['schema']['srctype'] == 'predefined' ) {
 			$filekey = $config['tags'][$tag]['schema']['src'];
 			$schema = $this->readJsonFromPredefined( $filekey );
-			$this->out->addHTML( $schema );
 		}
 		else {
-			print "Invalid srctype value";
-			exit();
+			throw new Exception( "Invalid srctype value in JsonData site config" );
 		}
+		return $schema;
 	}
 
 	/*
