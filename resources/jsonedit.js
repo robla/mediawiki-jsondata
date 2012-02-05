@@ -1208,7 +1208,17 @@ jsonwidget.editor.toggleToFormActual = function () {
     endTime=new Date().getTime();
     this.debugOut(1, '#1a Elapsed time: '+((endTime-startTime)/1000));
 
-    var schema = this.getSchema();
+    try {
+        var schema = this.getSchema();
+    }
+    catch (error) {
+        if(error.name == 'jsonedit_schemaerror') {
+            this.warningOut(error.message);
+            this.currentView = 'source';
+            this.setView('source');
+            return;
+        }
+    }
     this.schemaindex = new jsonwidget.schemaIndex(schema);
 
     endTime=new Date().getTime();
@@ -1443,8 +1453,8 @@ jsonwidget.editor.getSchema = function () {
         errorstring += error.text.substr(error.at,1);
         //errorstring += "</span>";
         errorstring += error.text.substr(error.at+1,39);
-        
-        this.warningOut("JSON Parse error at char "+error.at+" near "+errorstring+"");            
+        var fullerror = "Schema parse error at char "+error.at+" near "+errorstring+"";
+        throw {name : "jsonedit_schemaerror", message : fullerror};
     }
     return retval;
 }
