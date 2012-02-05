@@ -28,6 +28,7 @@ class JsonData {
 	 * All of the PHP-generated HTML associated with JsonData goes here
 	 */
 	public function outputEditor() {
+		global $wgUser;
 		$this->out->addHTML( <<<HEREDOC
 <div id="je_servererror"></div>
 <div id="je_warningdiv"></div>
@@ -37,7 +38,16 @@ class JsonData {
 		<ul>
 			<li><span id="je_formbutton"><a>Edit w/Form</a></span></li>
 			<li><span id="je_sourcebutton"><a>Edit Source</a></span></li>
+HEREDOC
+			);
+
+		if ( $wgUser->isLoggedIn() && $wgUser->getOption( 'jsondata-schemaedit' ) ) {
+			$this->out->addHTML( <<<HEREDOC
 			<li><span id="je_schemaexamplebutton"><a>Generate Schema</a></span></li>
+HEREDOC
+			);
+		}
+		$this->out->addHTML( <<<HEREDOC
 		</ul>
 	</div>
 </div>

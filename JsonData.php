@@ -62,3 +62,6 @@ $wgResourceModules['ext.jsonwidget'] = array(
 	'remoteExtPath' => 'JsonData/resources'
 );
 
+
+$wgHooks['GetPreferences'][] = 'JsonDataHooks::onGetPreferences';
+

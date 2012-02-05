@@ -60,4 +60,13 @@ class JsonDataHooks {
 	public static function jsonTagRender( $input, array $args, Parser $parser, PPFrame $frame ) {
 		return "<pre>" . htmlspecialchars( $input ) . "</pre>";
 	}
+
+	public static function onGetPreferences( $user, &$preferences ) {
+        $preferences['jsondata-schemaedit'] = array(
+                'type' => 'toggle',
+                'label-message' => 'jsondata-schemaedit-pref',
+                'section' => 'misc/jsondata',
+        );
+        return true;
+	}
 }
