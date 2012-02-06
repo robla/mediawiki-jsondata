@@ -331,6 +331,7 @@ jsonwidget.editor = function () {
     this.debuglevel=0;
 
     this.views = ['form','source'];
+    this.viewHandler = [];
     this.formview = 'form';
 
     this.showByExampleButton = false;
@@ -1093,6 +1094,8 @@ jsonwidget.editor.setView = function setView (viewtoset) {
             case 'schemaexample':
                 document.getElementById(this.htmlids.schemaexamplearea).style.display="none";
                 break;
+            default:
+                this.viewHandler[this.views[i]]['hide']();
             }
             currentbutton.onclick = this.getSetViewFunction(this.views[i]);
             currentbutton.className = this.classname.bgbutton;
@@ -1146,6 +1149,11 @@ jsonwidget.editor.setView = function setView (viewtoset) {
             je.clearStatusLight();
         },this.getStatusLightDelay(null));
         break;
+    default:
+        setTimeout(function () {
+            je.viewHandler[je.views[i]]['show']();
+            je.clearStatusLight();
+        },this.getStatusLightDelay(null));
     }
     this.currentView = viewtoset;
 }

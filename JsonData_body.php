@@ -44,6 +44,15 @@ class JsonData {
 <div style="height:20px;">
 	<div class="vectorTabs">
 		<ul>
+HEREDOC
+			);
+		if ( $this->out->getRequest()->getVal( 'wpPreview' ) ) {
+			$this->out->addHTML( <<<HEREDOC
+			<li><span id="je_previewpane"><a>Preview</a></span></li>
+HEREDOC
+				);
+		}
+		$this->out->addHTML( <<<HEREDOC
 			<li><span id="je_formbutton"><a>Edit w/Form</a></span></li>
 			<li><span id="je_sourcebutton"><a>Edit Source</a></span></li>
 HEREDOC

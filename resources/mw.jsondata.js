@@ -44,6 +44,7 @@ if($("#je_formdiv").length > 0) {
     //initialize jsonwidget editor (jsonedit.js)
     jsonwidget.language = 'en';
     var je=new jsonwidget.editor();
+    var defaultView = 'form';
     je.htmlids.sourcetextarea = 'wpTextbox1';
     je.htmlids.sourcetextform = 'editform';
     je.context = new mwjsondata.context();
@@ -51,6 +52,16 @@ if($("#je_formdiv").length > 0) {
         je.schemaEditInit();
         je.views = je.views.concat(['schemaexample']);
     }
-    je.setView('form');
+    if($("#je_previewpane").length > 0) {
+        je.views = je.views.concat(['preview']);
+        $(".previewnote").insertAfter("#jump-to-nav");
+        $("#wikiPreview").prependTo("#editpage-copywarn");
+        je.htmlbuttons.preview = 'je_previewpane';
+        var previewHandler = {'show': function () {$("#wikiPreview").show();},
+                              'hide': function () {$("#wikiPreview").hide();}};
+        je.viewHandler['preview']=previewHandler;
+        defaultView = 'preview';
+    }
+    je.setView(defaultView);
 }
 
