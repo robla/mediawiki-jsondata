@@ -1,0 +1,46 @@
+[
+  {
+    "firstName":"Barack",
+    "lastName":"Obama",
+    "organizations":
+    [
+      {
+        "department":"Executive Branch",
+        "name":"United States Government",
+        "title":"President of the United States",
+        "type":"job"
+      }
+    ],
+    "addresses":
+    [
+      {
+        "country":"United States",
+        "locality":"Washington",
+        "postalCode":"20500",
+        "region":"DC",
+        "streetAddress":"1600 Pennsylvania Avenue NW"
+      }
+    ],
+    "phoneNumbers":
+    [
+      {
+        "Number":"202-456-1111",
+        "comment":"Leave comments",
+        "workhomeother":"Work"
+      },
+      {
+        "Number":"202-456-1414",
+        "comment":"Switchboard",
+        "workhomeother":"Work"
+      }
+    ],
+    "emails":
+    [
+      {
+        "primary":false,
+        "type":"work",
+        "value":"president@whitehouse.gov"
+      }
+    ]
+  }
+]
