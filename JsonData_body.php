@@ -127,7 +127,13 @@ HEREDOC
 		$schemaconfig = $config['tags'][$tag]['schema'];
 		$schemaTitle = null;
 		if ( isset( $schemaconfig['schemaattr'] ) && ( preg_match( '/^(\w+)$/', $schemaconfig['schemaattr'] ) > 0 ) ) {
+			// on preview, pull $revtext out from the submitted text, so that the author can change
+			// schemas during preview
 			$revtext = $this->out->getRequest()->getText( 'wpTextbox1' );
+			// wpTextbox1 is empty in normal editing, so pull it from article->getText() instead
+			if ( empty( $revtext ) ) {
+				$revtext = $this->article->getText();
+			}
 			if ( preg_match( '/^<[\w]+\s+([^>]+)>/m', $revtext, $matches ) > 0 ) {
 				/*
 				 * Quick and dirty regex for parsing schema attributes that hits the 99% case.
