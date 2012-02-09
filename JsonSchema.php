@@ -4,14 +4,14 @@
 		function stringToId( $var ) {
 			// performs the easiest transformation to safe id, but is lossy
 
-			if ( is_bool( $var ) ) {
-				return str( $var );
+			if ( is_int( $var ) ) {
+				return (string)$var;
 			}
 
 			elseif ( is_string( $var ) ) {
-				return preg_replace( '/[^a-z0-9\-_:\.]/gi', '', $var );
+				return preg_replace( '/[^a-z0-9\-_:\.]/i', '', $var );
 			} else {
-				throw new Exception( 'Cannot convert var to id' );
+				throw new Exception( 'Cannot convert var to id'.print_r($var, true) );
 			}
 
 		}
@@ -211,7 +211,18 @@ class JsonTreeRef {
 
 	}
 
+	public
+	function getChildRef( $key ) {
+		// TODO: add if(isuserkey) statement
+		$userkeyflag = false;
+		$value = $this->node[$key];
+		$nodename = JsonUtil::getTitleFromNode($this->schemaref->node['mapping'][$key], $key);
+		$schemai = $this->schemaindex->newRef($this->schemaref->node['mapping'][$key], $this->schemaref, $key, $key);
+		$jsoni = new JsonTreeRef($value, $this, $key, $nodename, $schemai);
+		return $jsoni;
+	}
 }
+
 
 //
 // schemaIndex object
