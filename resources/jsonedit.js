@@ -619,8 +619,10 @@ jsonwidget.editor.getArrayInputAttrs = function (jsonref) {
             jsoni = new jsonwidget.jsonTreeRef(jsonref.node[i], jsonref, i, nodename, schemai);
         }
         else if (jsonref.getType()=='seq') {
+            itemname = jsonwidget.getTitleFromNode(jsonref.schemaref.node.sequence[0], 0);
+			nodename = itemname + " #" + (parseInt(i)+1);
             schemai = this.schemaindex.newRef(jsonref.schemaref.node.sequence[0], jsonref.schemaref, 0, i);
-            jsoni = new jsonwidget.jsonTreeRef(jsonref.node[i], jsonref, i, i, schemai);
+            jsoni = new jsonwidget.jsonTreeRef(jsonref.node[i], jsonref, i, nodename, schemai);
         }
         jsoni.userkeyflag = userkeyflag;
         jsoni.domparent = rownode;
