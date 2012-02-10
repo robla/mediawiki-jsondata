@@ -129,18 +129,28 @@ class TreeRef {
 
 class JsonTreeRef {
 	public
-	function __construct( $node, $parent, $nodeindex, $nodename, $schemaref ) {
+	function __construct( $node, $parent = null, $nodeindex = null, $nodename = null, $schemaref = null ) {
 		$this->node = $node;
 		$this->parent = $parent;
 		$this->nodeindex = $nodeindex;
 		$this->nodename = $nodename;
 		$this->schemaref = $schemaref;
 		$this->fullindex = $this->getFullIndex();
-		$this->attachSchema();
+		if (!is_null($schemaref)) {
+			$this->attachSchema();
+		}
 	}
 
 	public
-	function attachSchema() {
+	function attachSchema( $schema = null ) {
+		if ( !is_null( $schema ) ) {
+			$this->schemaindex = new JsonSchemaIndex( $schema );
+			$this->nodename = JsonUtil::getTitleFromNode($schema, "Root node");
+			$this->schemaref = $this->schemaindex->newRef($schema, null, null, $this->nodename);
+		}
+		elseif ( !is_null( $this->parent ) ) {
+			$this->schemaindex = $this->parent->schemaindex;
+		}
 		if ( $this->schemaref->node['type'] == 'any' ) {
 			if ( $this->getType() == 'map' ) {
 				$this->schemaref->node['mapping'] = array( "extension" => array(                "title" => "extension field",                 "type" => "any"            )        );
