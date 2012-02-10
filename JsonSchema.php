@@ -212,7 +212,7 @@ class JsonTreeRef {
 	}
 
 	public
-	function getChildRef( $key ) {
+	function getMappingChildRef( $key ) {
 		// TODO: add if(isuserkey) statement
 		$userkeyflag = false;
 		$value = $this->node[$key];
@@ -221,6 +221,16 @@ class JsonTreeRef {
 		$jsoni = new JsonTreeRef($value, $this, $key, $nodename, $schemai);
 		return $jsoni;
 	}
+
+	public
+	function getSequenceChildRef( $i ) {
+		$itemname = JsonUtil::getTitleFromNode($this->schemaref->node['sequence'][0], 0);
+		$nodename = $itemname . " #" . ((string)$i+1);
+		$schemai = $this->schemaindex->newRef($this->schemaref->node['sequence'][0], $this->schemaref, 0, $i);
+		$jsoni = new JsonTreeRef($this->node[$i], $this, $i, $nodename, $schemai);
+		return $jsoni;
+	}
+
 }
 
 
