@@ -23,12 +23,11 @@ class JsonDataHooks {
 	 */
 	public static function onEditPageShowEditFormInitial( &$editPage ) {
 		global $wgJsonData;
-		$article = $editPage->getArticle();
-		$title = $article->getTitle();
+		$title = $editPage->getTitle();
 		$ns = $title->getNamespace();
 
 		if ( JsonData::isJsonDataNeeded( $ns ) ) {
-			$wgJsonData = new JsonData( $ns, $article );
+			$wgJsonData = new JsonData( $title );
 			$wgJsonData->outputEditor();
 		}
 		return true;
@@ -58,7 +57,17 @@ class JsonDataHooks {
 	 * Default parser tag renderer
 	 */
 	public static function jsonTagRender( $input, array $args, Parser $parser, PPFrame $frame ) {
-		return "<pre>" . htmlspecialchars( $input ) . "</pre>";
+
+		global $wgJsonData;
+		$wgJsonData = new JsonData( $frame->title );
+
+		$json = $input;
+		$schematext = $wgJsonData->getSchema();
+		$data = json_decode( $json, true );
+		$schema = json_decode( $schematext, true );
+		$rootjson = new JsonTreeRef( $data );
+		$rootjson->attachSchema( $schema );
+		return JsonDataMarkup::getMarkup( $rootjson, 0 );		// return "<pre>" . htmlspecialchars( $input ) . "</pre>";
 	}
 
 	public static function onGetPreferences( $user, &$preferences ) {

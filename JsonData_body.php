@@ -16,12 +16,11 @@ class JsonData {
 		return array_key_exists( $ns, $wgJsonDataNamespace );
 	}
 
-	public function __construct( $ns, $article ) {
+	public function __construct( $title ) {
 		global $wgOut, $wgJsonDataNamespace;
 		$this->out = $wgOut;
-		$this->ns = $ns;
-		$this->article = $article;
-		$this->nsname = $wgJsonDataNamespace[$this->ns];
+		$this->title = $title;
+		$this->nsname = $wgJsonDataNamespace[$this->title->getNamespace()];
 	}
 
 	/**
@@ -132,7 +131,8 @@ HEREDOC
 			$revtext = $this->out->getRequest()->getText( 'wpTextbox1' );
 			// wpTextbox1 is empty in normal editing, so pull it from article->getText() instead
 			if ( empty( $revtext ) ) {
-				$revtext = $this->article->getText();
+				$rev = Revision::newFromTitle( $this->title );
+				$revtext = $rev->getText();
 			}
 			if ( preg_match( '/^<[\w]+\s+([^>]+)>/m', $revtext, $matches ) > 0 ) {
 				/*
@@ -174,7 +174,7 @@ HEREDOC
 	 * Read json-formatted data from an article, stripping off parser tags
 	 * surrounding it.
 	 */
-	public function readJsonFromArticle( $titleText ) {
+	public static function readJsonFromArticle( $titleText ) {
 		$retval = array( 'json' => null, 'tag' => null, 'attrs' => null );
 		$title = Title::newFromText( $titleText );
 		$rev = Revision::newFromTitle( $title );
@@ -190,7 +190,7 @@ HEREDOC
 	/*
 	 * Read json-formatted data from a predefined data file.
 	 */
-	public function readJsonFromPredefined( $filekey ) {
+	public static function readJsonFromPredefined( $filekey ) {
 		global $wgJsonDataPredefinedData;
 		return file_get_contents( $wgJsonDataPredefinedData[$filekey] );
 	}
