@@ -62,7 +62,13 @@ class JsonDataHooks {
 		$wgJsonData = new JsonData( $frame->title );
 
 		$json = $input;
-		$schematext = $wgJsonData->getSchema();
+		try {
+			$schematext = $wgJsonData->getSchema();
+		}
+		catch ( Exception $e ) {
+			$schematext = $wgJsonData->readJsonFromPredefined( 'openschema' );
+			wfDebug( __METHOD__ . ": " . htmlspecialchars( $e->getMessage() ) . "\n" );
+		}
 		$data = json_decode( $json, true );
 		$schema = json_decode( $schematext, true );
 		$rootjson = new JsonTreeRef( $data );

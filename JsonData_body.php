@@ -34,7 +34,7 @@ class JsonData {
 		}
 		catch ( Exception $e ) {
 			$schema = $this->readJsonFromPredefined( 'openschema' );
-			$servererror .= htmlspecialchars( $e->getMessage() );
+			$servererror .= "<i>Server warning: " . htmlspecialchars( $e->getMessage() ) . "</i>";
 		}
 		$this->out->addHTML( <<<HEREDOC
 <div id="je_servererror">${servererror}</div>
@@ -154,18 +154,21 @@ HEREDOC
 			}
 		}
 		elseif ( $config['tags'][$tag]['schema']['srctype'] == 'article' ) {
-			$titleName = $config['tags'][$tag]['schema']['src'];
-			$schema = $this->readJsonFromArticle( $titleName );
+			$schemaTitle = $config['tags'][$tag]['schema']['src'];
+			$schema = $this->readJsonFromArticle( $schemaTitle );
 			if ( $schema == '' ) {
-				throw new Exception( "Invalid schema definition in ${titleName}.  Check your site configuation for this tag." );
+				throw new Exception( "Invalid schema definition in ${schemaTitle}.  Check your site configuation for this tag." );
 			}
 		}
 		elseif ( $config['tags'][$tag]['schema']['srctype'] == 'predefined' ) {
-			$filekey = $config['tags'][$tag]['schema']['src'];
-			$schema = $this->readJsonFromPredefined( $filekey );
+			$schemaTitle = $config['tags'][$tag]['schema']['src'];
+			$schema = $this->readJsonFromPredefined( $schemaTitle );
 		}
 		else {
 			throw new Exception( "Invalid srctype value in JsonData site config" );
+		}
+		if ( strlen( $schema ) == 0 ) {
+			throw new Exception( "Zero-length schema: ". $schemaTitle );
 		}
 		return $schema;
 	}
