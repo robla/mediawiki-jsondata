@@ -287,9 +287,8 @@ class JsonSchemaIndex {
 
 	public
 	function newRef( $node, $parent, $nodeindex, $nodename ) {
-
 		if ( $node['type'] == 'idref' ) {
-			$node = $this->idtable[$node->idref];
+			$node = $this->idtable[$node['idref']];
 		}
 
 		return new TreeRef( $node, $parent, $nodeindex, $nodename );
