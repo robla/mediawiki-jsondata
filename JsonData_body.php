@@ -132,7 +132,12 @@ HEREDOC
 			// wpTextbox1 is empty in normal editing, so pull it from article->getText() instead
 			if ( empty( $revtext ) ) {
 				$rev = Revision::newFromTitle( $this->title );
-				$revtext = $rev->getText();
+				if( is_object( $rev ) ) {
+					$revtext = $rev->getText();
+				}
+				else {
+					$revtext = "";
+				}
 			}
 			if ( preg_match( '/^<[\w]+\s+([^>]+)>/m', $revtext, $matches ) > 0 ) {
 				/*
