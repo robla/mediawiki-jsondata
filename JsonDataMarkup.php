@@ -4,17 +4,6 @@
  * schema
  */
 class JsonDataMarkup {
-	public static function testMarkup() {
-		$testdata = array();
-		$json = file_get_contents( 'example/addressexample.json' );
-		$schematext = file_get_contents( 'schemas/addressbookschema.json' );
-		$data = json_decode( $json, true );
-		$schema = json_decode( $schematext, true );
-		$rootjson = new JsonTreeRef( $data );
-		$rootjson->attachSchema( $schema );
-		return JsonDataMarkup::getMarkup( $rootjson, 0 );
-	}
-
 	public static function getMarkup( $jsonref, $depth ) {
 		switch ( $jsonref->getType() ) {
 			case 'map':
