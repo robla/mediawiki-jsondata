@@ -223,11 +223,19 @@ class JsonTreeRef {
 
 	public
 	function getMappingChildRef( $key ) {
-		// TODO: add if(isuserkey) statement
-		$userkeyflag = false;
+		if( array_key_exists( 'user_key', $this->schemaref->node ) && 
+			!array_key_exists( $key, $this->schemaref->node['mapping'] ) ) {
+			$userkeyflag = true;
+			$masterkey = $this->schemaref->node['user_key'];
+			$schemadata = $this->schemaref->node['mapping'][$masterkey];
+		}
+		else {
+			$userkeyflag = false;
+			$schemadata = $this->schemaref->node['mapping'][$key];
+		}
 		$value = $this->node[$key];
-		$nodename = JsonUtil::getTitleFromNode($this->schemaref->node['mapping'][$key], $key);
-		$schemai = $this->schemaindex->newRef($this->schemaref->node['mapping'][$key], $this->schemaref, $key, $key);
+		$nodename = JsonUtil::getTitleFromNode($schemadata, $key);
+		$schemai = $this->schemaindex->newRef($schemadata, $this->schemaref, $key, $key);
 		$jsoni = new JsonTreeRef($value, $this, $key, $nodename, $schemai);
 		return $jsoni;
 	}
