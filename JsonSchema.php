@@ -62,7 +62,6 @@
 
 			switch( gettype( $foo ) ) {
 				case "array":
-
 					if ( array_keys( $foo ) == range( 0, count( $foo ) - 1 ) ) {
 						return "seq";
 					} else {
@@ -71,18 +70,18 @@
 
 					break;
 				case "integer":
-					case "double":
-						return "number";
-						break;
-					case "boolean":
-						return "bool";
-						break;
-					case "string":
-						return "str";
-						break;
-					default:
-						return null;
-						break;
+				case "double":
+					return "number";
+					break;
+				case "boolean":
+					return "bool";
+					break;
+				case "string":
+					return "str";
+					break;
+				default:
+					return null;
+					break;
 			}
 
 		}
