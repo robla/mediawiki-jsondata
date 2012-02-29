@@ -54,5 +54,15 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($rootjson->getTitle(), 'Address Book');
 		return $schemaIndex;
     }
+
+	public function testJsonSchemaValidateAddressExample() {
+		$json = file_get_contents('example/addressexample.json');
+		$schematext = file_get_contents('schemas/addressbookschema.json');
+		$data = json_decode($json, true);
+		$schema = json_decode($schematext, true);
+		$jsonref = new JsonTreeRef( $data );
+		$jsonref->attachSchema( $schema );
+		$jsonref->validate();
+	}
 }
 

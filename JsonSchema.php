@@ -248,6 +248,30 @@ class JsonTreeRef {
 		return $jsoni;
 	}
 
+	public function validate() {
+		$datatype = JsonUtil::getType( $this->node );
+		$schematype = $this->getType();
+		if ( $datatype != $schematype ) {
+			throw new Exception( 'Invalid node: expecting ' . $schematype . ', got ' . $datatype );
+		}
+		switch ( $schematype ) {
+			case 'map':
+				foreach ( $this->node as $key => $value ) {
+					$jsoni = $this->getMappingChildRef( $key );
+					$jsoni->validate();
+				}
+				break;
+			case 'seq':
+				for ( $i = 0; $i < count( $this->node ); $i++ ) {
+					$jsoni = $this->getSequenceChildRef( $i );
+					$jsoni->validate();
+				}
+				break;
+		}
+		return true;
+
+	}
+
 }
 
 
