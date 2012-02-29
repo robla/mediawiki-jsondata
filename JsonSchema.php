@@ -56,7 +56,7 @@
 		public static
 		function getType ( $foo ) {
 
-			if ( $foo == null ) {
+			if ( is_null( $foo ) ) {
 				return null;
 			}
 
