@@ -64,5 +64,16 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref->attachSchema( $schema );
 		$jsonref->validate();
 	}
+
+	public function testJsonSchemaValidateSuccessfulExample() {
+		$json = file_get_contents('tests/phpunit/data/2/test5.json');
+		$schematext = file_get_contents('tests/phpunit/data/2/schematest5.json');
+		$data = json_decode($json, true);
+		$schema = json_decode($schematext, true);
+		$jsonref = new JsonTreeRef( $data );
+		$jsonref->attachSchema( $schema );
+		$jsonref->validate();
+	}
+
 }
 
