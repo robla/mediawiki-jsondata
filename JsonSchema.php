@@ -1,9 +1,11 @@
 <?php
 	class JsonUtil {
+		/*
+		 * Converts the string into something safe for an HTML id.
+		 * performs the easiest transformation to safe id, but is lossy
+		 */
 		public static
 		function stringToId( $var ) {
-			// performs the easiest transformation to safe id, but is lossy
-
 			if ( is_int( $var ) ) {
 				return (string)$var;
 			}
@@ -16,6 +18,12 @@
 
 		}
 
+
+		/*
+		 * Return the title defined for $schemanode.
+		 * TODO: ditch this function; it's kinda useless, and needs to get
+		 * folded into JsonTreeRef
+		 */
 		public static
 		function getTitleFromNode( $schemanode, $nodeindex ) {
 			if ( isset( $schemanode['title'] ) ) {
@@ -26,6 +34,10 @@
 
 		}
 
+		/*
+		 * Given a type (e.g. 'map', 'int', 'str'), return the default/empty
+		 * value for that type. 
+		 */
 		public static
 		function getNewValueForType( $thistype ) {
 			switch( $thistype ) {
@@ -53,6 +65,9 @@
 			return $newvalue;
 		}
 
+		/*
+		 * Return a JSON-schema type for arbitrary data $foo
+		 */
 		public static
 		function getType ( $foo ) {
 
