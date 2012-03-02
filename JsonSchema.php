@@ -1,4 +1,8 @@
 <?php
+
+class JsonSchemaException extends Exception {
+}
+
 class JsonUtil {
 	/*
 	 * Converts the string into something safe for an HTML id.
@@ -262,9 +266,9 @@ class JsonTreeRef {
 		$datatype = JsonUtil::getType( $this->node );
 		$schematype = $this->getType();
 		if ( $datatype != $schematype ) {
-			throw new Exception( 'Invalid node: expecting ' . $schematype .
-								 ', got ' . $datatype . ' path: ' .
-								 print_r( $this->getDataPath(), true ) );
+			throw new JsonSchemaException( 'Invalid node: expecting ' . $schematype .
+				', got ' . $datatype . ' path: ' .
+				print_r( $this->getDataPath(), true ) );
 		}
 		switch ( $schematype ) {
 			case 'map':
@@ -325,7 +329,12 @@ class JsonSchemaIndex {
 
 	public function newRef( $node, $parent, $nodeindex, $nodename ) {
 		if ( $node['type'] == 'idref' ) {
-			$node = $this->idtable[$node['idref']];
+			try {
+				$node = $this->idtable[$node['idref']];
+			}
+			catch ( Exception $e ) {
+				throw new JsonSchemaException( 'Bad idref: ' . $node['idref'] );
+			}
 		}
 
 		return new TreeRef( $node, $parent, $nodeindex, $nodename );
