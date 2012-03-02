@@ -62,12 +62,13 @@
 
 			switch( gettype( $foo ) ) {
 				case "array":
-					if ( array_keys( $foo ) == range( 0, count( $foo ) - 1 ) ) {
-						return "seq";
-					} else {
-						return "map";
+					$retval = "seq";
+					foreach ( array_keys( $foo ) as $key ) {
+						if( !is_int( $key ) ) {
+							$retval = "map";
+						}
 					}
-
+					return $retval;
 					break;
 				case "integer":
 				case "double":
@@ -212,7 +213,7 @@ class JsonTreeRef {
 	public
 	function getFullIndex() {
 
-		if ( $this->parent == null ) {
+		if ( is_null( $this->parent ) ) {
 			return "json_root";
 		} else {
 			return $this->parent->getFullIndex() + "." + JsonUtil::stringToId( $this->nodeindex );
