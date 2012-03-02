@@ -221,6 +221,22 @@ class JsonTreeRef {
 
 	}
 
+	/*
+	 *  Get a path to the element in the array.  if $foo['a'][1] would load the
+	 *  node, then the return value of this would be array('a',1)
+	 */
+	public
+	function getDataPath() {
+		if ( !is_array( $this->parent ) ) {
+			return array();
+		} else {
+			//TODO: confirm this is doing a proper deep copy
+			$retval = $this->parent;
+			$retval[] = $this->nodeindex;
+			return $retval;
+		}
+	}
+
 	public
 	function getMappingChildRef( $key ) {
 		if( array_key_exists( 'user_key', $this->schemaref->node ) && 
@@ -253,7 +269,9 @@ class JsonTreeRef {
 		$datatype = JsonUtil::getType( $this->node );
 		$schematype = $this->getType();
 		if ( $datatype != $schematype ) {
-			throw new Exception( 'Invalid node: expecting ' . $schematype . ', got ' . $datatype );
+			throw new Exception( 'Invalid node: expecting ' . $schematype . 
+								 ', got ' . $datatype . ' path: ' . 
+								 print_r( $this->getDataPath(), true) );
 		}
 		switch ( $schematype ) {
 			case 'map':
