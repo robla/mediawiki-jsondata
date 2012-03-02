@@ -1,5 +1,18 @@
 <?php
 require_once('JsonSchema.php');
+
+class JsonSchemaTestFuncs {
+	public static function loadJsonRef($jsonfile, $schemafile) {
+		$json = file_get_contents($jsonfile);
+		$schematext = file_get_contents($schemafile);
+		$data = json_decode($json, true);
+		$schema = json_decode($schematext, true);
+		$jsonref = new JsonTreeRef( $data );
+		$jsonref->attachSchema( $schema );
+		return $jsonref;
+	}
+}
+
 class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 {
 	public function getSimpleTestData() {
@@ -56,22 +69,16 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
     }
 
 	public function testJsonSchemaValidateAddressExample() {
-		$json = file_get_contents('example/addressexample.json');
-		$schematext = file_get_contents('schemas/addressbookschema.json');
-		$data = json_decode($json, true);
-		$schema = json_decode($schematext, true);
-		$jsonref = new JsonTreeRef( $data );
-		$jsonref->attachSchema( $schema );
+		$jsonfile = 'example/addressexample.json';
+		$schemafile = 'schemas/addressbookschema.json';
+		$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemafile);
 		$jsonref->validate();
 	}
 
 	public function testJsonSchemaValidateSuccessfulExample() {
-		$json = file_get_contents('tests/phpunit/data/2/test5.json');
-		$schematext = file_get_contents('tests/phpunit/data/2/schematest5.json');
-		$data = json_decode($json, true);
-		$schema = json_decode($schematext, true);
-		$jsonref = new JsonTreeRef( $data );
-		$jsonref->attachSchema( $schema );
+		$jsonfile = 'tests/phpunit/data/2/test5.json';
+		$schemafile = 'tests/phpunit/data/2/schematest5.json';
+		$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemafile);
 		$jsonref->validate();
 	}
 
