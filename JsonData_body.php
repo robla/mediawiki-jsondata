@@ -1,5 +1,7 @@
 <?php
 
+class JsonDataException extends Exception {
+}
 
 class JsonData {
 	/**
@@ -32,7 +34,7 @@ class JsonData {
 		try {
 			$schema = $this->getSchema();
 		}
-		catch ( Exception $e ) {
+		catch ( JsonDataException $e ) {
 			$schema = $this->readJsonFromPredefined( 'openschema' );
 			$servererror .= "<i>Server warning: " . htmlspecialchars( $e->getMessage() ) . "</i>";
 		}
@@ -155,14 +157,14 @@ HEREDOC
 		if ( !is_null( $schemaTitle ) ) {
 			$schema = $this->readJsonFromArticle( $schemaTitle );
 			if ( $schema == '' ) {
-				throw new Exception( "Invalid schema definition in ${schemaTitle}" );
+				throw new JsonDataException( "Invalid schema definition in ${schemaTitle}" );
 			}
 		}
 		elseif ( $config['tags'][$tag]['schema']['srctype'] == 'article' ) {
 			$schemaTitle = $config['tags'][$tag]['schema']['src'];
 			$schema = $this->readJsonFromArticle( $schemaTitle );
 			if ( $schema == '' ) {
-				throw new Exception( "Invalid schema definition in ${schemaTitle}.  Check your site configuation for this tag." );
+				throw new JsonDataException( "Invalid schema definition in ${schemaTitle}.  Check your site configuation for this tag." );
 			}
 		}
 		elseif ( $config['tags'][$tag]['schema']['srctype'] == 'predefined' ) {
@@ -170,10 +172,10 @@ HEREDOC
 			$schema = $this->readJsonFromPredefined( $schemaTitle );
 		}
 		else {
-			throw new Exception( "Invalid srctype value in JsonData site config" );
+			throw new JsonDataException( "Invalid srctype value in JsonData site config" );
 		}
 		if ( strlen( $schema ) == 0 ) {
-			throw new Exception( "Zero-length schema: ". $schemaTitle );
+			throw new JsonDataException( "Zero-length schema: ". $schemaTitle );
 		}
 		return $schema;
 	}

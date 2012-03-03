@@ -16,7 +16,7 @@ class JsonUtil {
 		elseif ( is_string( $var ) ) {
 			return preg_replace( '/[^a-z0-9\-_:\.]/i', '', $var );
 		} else {
-			throw new Exception( 'Cannot convert var to id' . print_r( $var, true ) );
+			throw new JsonSchemaException( 'Cannot convert var to id' . print_r( $var, true ) );
 		}
 
 	}

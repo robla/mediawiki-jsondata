@@ -65,7 +65,7 @@ class JsonDataHooks {
 		try {
 			$schematext = $wgJsonData->getSchema();
 		}
-		catch ( Exception $e ) {
+		catch ( JsonDataException $e ) {
 			$schematext = $wgJsonData->readJsonFromPredefined( 'openschema' );
 			wfDebug( __METHOD__ . ": " . htmlspecialchars( $e->getMessage() ) . "\n" );
 		}
