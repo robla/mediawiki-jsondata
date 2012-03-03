@@ -1,0 +1,25 @@
+[
+  {
+    "level1":
+    [
+      {
+        "level2":
+        [
+          {
+            "field1":"value1",
+            "field2":"value2 "
+          }
+        ]
+      },
+      {
+        "level2":
+        [
+          {
+            "field1":"value1",
+            "field2":"value2 "
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,28 @@
+{
+  "type":"seq",
+  "id":"bloblist",
+  "sequence":
+  [
+    {
+      "type":"map",
+      "title":"Level 1 item",
+      "user_key":"sublevel",
+      "mapping":
+      {
+        "field1":
+        {
+          "type":"str"
+        },
+        "field2":
+        {
+          "type":"str"
+        },
+        "sublevel":
+        {
+          "type":"idref",
+          "idref":"bloblist"
+        }
+      }
+    }
+  ]
+}

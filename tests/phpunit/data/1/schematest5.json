@@ -1,0 +1,27 @@
+{
+  "type":"seq",
+  "sequence":
+  [
+    {
+      "type":"map",
+      "title":"Level 1 item",
+      "mapping":
+      {
+        "field1":
+        {
+          "type":"str"
+        },
+        "field2":
+        {
+          "type":"str"
+        },
+        "sublevel":
+        {
+          "type":"idref",
+          "idref":"bloblist"
+        }
+      },
+      "user_key":"sublevel"
+    }
+  ]
+}
