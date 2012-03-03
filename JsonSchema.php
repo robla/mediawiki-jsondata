@@ -185,12 +185,16 @@ class JsonTreeRef {
 		}
 		if ( $this->schemaref->node['type'] == 'any' ) {
 			if ( $this->getType() == 'map' ) {
-				$this->schemaref->node['mapping'] = array( "extension" => array(                "title" => "extension field",                 "type" => "any"            )        );
+				$this->schemaref->node['mapping'] =
+					array( "extension" => array( "title" => "extension field",
+												 "type" => "any" ) );
 				$this->schemaref->node['user_key'] = "extension";
 			}
 
 			elseif ( $this->getType() == 'seq' ) {
-				$this->schemaref->node['sequence'] = array( array( "title" => "extension field",                   "type" => "any" )        );
+				$this->schemaref->node['sequence'] =
+					array( array( "title" => "extension field",
+								  "type" => "any" ) );
 				$this->schemaref->node['user_key'] = "extension";
 			}
 
@@ -238,13 +242,11 @@ class JsonTreeRef {
 		$nodetype = $this->schemaref->node['type'];
 
 		if ( $nodetype == 'any' ) {
-
 			if ( $this->node == null ) {
 				return null;
 			} else {
 				return JsonUtil::getType( $this->node );
 			}
-
 		} else {
 			return $nodetype;
 		}
@@ -253,7 +255,7 @@ class JsonTreeRef {
 
 	/*
 	 * Return a unique identifier that may be used to find a node.  This
-	 * is only as robust as stringToId is (i.e. not that robust), but is 
+	 * is only as robust as stringToId is (i.e. not that robust), but is
 	 * good enough for many cases.
 	 */
 	public function getFullIndex() {
@@ -390,7 +392,7 @@ class JsonSchemaIndex {
 	}
 
 	/*
-	 *  Generate a new schema ref, or return an existing one from the index if 
+	 *  Generate a new schema ref, or return an existing one from the index if
 	 *  the node is an idref.
 	 */
 	public function newRef( $node, $parent, $nodeindex, $nodename ) {
