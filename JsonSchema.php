@@ -101,6 +101,9 @@ class JsonUtil {
 
 	}
 
+	/*
+	 * Generate a schema from a data example ($parent)
+	 */
 	public static function getSchemaArray( $parent ) {
 		$schema = array();
 		$schema['type'] = JsonUtil::getType( $parent );
@@ -116,13 +119,26 @@ class JsonUtil {
 				$schema['sequence'] = array();
 				$schema['sequence'][0] = JsonUtil::getSchemaArray( $parent[0] );
 				break;
-	}
+		}
 
-	return $schema;
+		return $schema;
 	}
 
 }
 
+
+/*
+ * Internal terminology:
+ *   Node: "node" in the graph theory sense, but specifically, a node in the
+ *    raw PHP data representation of the structure
+ *   Ref: a node in the object tree.  Refs contain nodes and metadata about the
+ *    nodes, as well as pointers to parent refs
+ */
+
+/*
+ * Structure for representing a generic tree which each node is aware of its
+ * context (can refer to its parent).  Used for schema refs.
+ */
 
 class TreeRef {
 	public $node;
@@ -137,6 +153,10 @@ class TreeRef {
 	}
 }
 
+/*
+ * Structure for representing a data tree, where each node (ref) is aware of its
+ * context and associated schema.
+ */
 
 class JsonTreeRef {
 	public function __construct( $node, $parent = null, $nodeindex = null, $nodename = null, $schemaref = null ) {
@@ -151,6 +171,9 @@ class JsonTreeRef {
 		}
 	}
 
+	/*
+	 * Associate the relevant node of the JSON schema to this node in the JSON
+	 */
 	public function attachSchema( $schema = null ) {
 		if ( !is_null( $schema ) ) {
 			$this->schemaindex = new JsonSchemaIndex( $schema );
@@ -175,6 +198,10 @@ class JsonTreeRef {
 
 	}
 
+	/*
+	 *  Return the title for this ref, typically defined in the schema as the
+	 *  user-friendly string for this node.
+	 */
 	public function getTitle() {
 		if ( isset( $this->nodename ) ) {
 			return $this->nodename;
@@ -183,10 +210,17 @@ class JsonTreeRef {
 		}
 	}
 
+	/*
+	 *  Is this node a "user key", as defined in http://jsonwidget.org/jsonschema/
+	 */
 	public function isUserKey() {
 		return $this->userkeyflag;
 	}
 
+	/*
+	 * Rename a user key.  Useful for interactive editing/modification, but not
+	 * so helpful for static interpretation.
+	 */
 	public function renamePropname( $newindex ) {
 		$oldindex = $this->nodeindex;
 		$this->parent->node[$newindex] = $this->node;
@@ -196,6 +230,10 @@ class JsonTreeRef {
 		unset( $this->parent->node[$oldindex] );
 	}
 
+	/*
+	 * Return the type of this node as specified in the schema.  If "any",
+	 * infer it from the data.
+	 */
 	public function getType() {
 		$nodetype = $this->schemaref->node['type'];
 
@@ -213,6 +251,11 @@ class JsonTreeRef {
 
 	}
 
+	/*
+	 * Return a unique identifier that may be used to find a node.  This
+	 * is only as robust as stringToId is (i.e. not that robust), but is 
+	 * good enough for many cases.
+	 */
 	public function getFullIndex() {
 		if ( is_null( $this->parent ) ) {
 			return "json_root";
@@ -236,6 +279,9 @@ class JsonTreeRef {
 		}
 	}
 
+	/*
+	 * Return the child ref for $this ref associated with a given $key
+	 */
 	public function getMappingChildRef( $key ) {
 		if ( array_key_exists( 'user_key', $this->schemaref->node ) &&
 			!array_key_exists( $key, $this->schemaref->node['mapping'] ) ) {
@@ -254,6 +300,9 @@ class JsonTreeRef {
 		return $jsoni;
 	}
 
+	/*
+	 * Return the child ref for $this ref associated with a given index $i
+	 */
 	public function getSequenceChildRef( $i ) {
 		$itemname = JsonUtil::getTitleFromNode( $this->schemaref->node['sequence'][0], 0 );
 		$nodename = $itemname . " #" . ( (string)$i + 1 );
@@ -262,6 +311,10 @@ class JsonTreeRef {
 		return $jsoni;
 	}
 
+	/*
+	 * Validate the JSON node in this ref against the attached schema ref.
+	 * Return true on success, and throw a JsonSchemaException on failure.
+	 */
 	public function validate() {
 		$datatype = JsonUtil::getType( $this->node );
 		$schematype = $this->getType();
@@ -289,12 +342,17 @@ class JsonTreeRef {
 }
 
 
-//
-// schemaIndex object
-//
+/*
+ * The JsonSchemaIndex object holds all schema refs with an "id", and is used
+ * to resolve an idref to a schema ref.  This also holds the root of the schema
+ * tree.  This also serves as sort of a class factory for schema refs.
+ */
 class JsonSchemaIndex {
 	public $root;
 	public $idtable;
+	/*
+	 * The whole tree is indexed on instantiation of this class.
+	 */
 	public function __construct( $schema ) {
 		$this->root = $schema;
 		$this->idtable = array();
@@ -306,6 +364,10 @@ class JsonSchemaIndex {
 		$this->indexSubtree( $this->root );
 	}
 
+	/*
+	 * Recursively find all of the ids in this schema, and store them in the
+	 * index.
+	 */
 	public function indexSubtree( $schemanode ) {
 		$nodetype = $schemanode['type'];
 		switch( $nodetype ) {
@@ -327,6 +389,10 @@ class JsonSchemaIndex {
 		}
 	}
 
+	/*
+	 *  Generate a new schema ref, or return an existing one from the index if 
+	 *  the node is an idref.
+	 */
 	public function newRef( $node, $parent, $nodeindex, $nodename ) {
 		if ( $node['type'] == 'idref' ) {
 			try {
