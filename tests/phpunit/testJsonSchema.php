@@ -30,7 +30,7 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
     public function testJsonSimpleTestValidate($data, $schema) {
 		$schemaIndex = new JsonSchemaIndex( $schema );
         $this->assertEquals($schemaIndex->root['type'], 'any');
-		$nodename = JsonUtil::getTitleFromNode($schema, "Root node");
+		$nodename = isset( $schema['title'] ) ? $schema['title'] : "Root node";
     	$rootschema = $schemaIndex->newRef($schema, null, null, $nodename);
     	$rootjson = new JsonTreeRef($data, null, null, $nodename, $rootschema);
         $this->assertEquals($rootjson->getTitle(), 'Unrestricted JSON');
@@ -41,7 +41,7 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
      * @dataProvider getSimpleTestData
      */
     public function testJsonUtilGetTitleFromNode($data, $schema) {
-		$nodename = JsonUtil::getTitleFromNode($schema, "Root node");
+		$nodename = isset( $schema['title'] ) ? $schema['title'] : "Root node";
         $this->assertEquals($nodename, "Unrestricted JSON");
 		return $nodename;
     }
@@ -61,7 +61,7 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
     public function testJsonAddressTestValidate($data, $schema) {
 		$schemaIndex = new JsonSchemaIndex( $schema );
         $this->assertEquals($schemaIndex->root['type'], 'seq');
-		$nodename = JsonUtil::getTitleFromNode($schema, "Root node");
+		$nodename = isset( $schema['title'] ) ? $schema['title'] : "Root node";
     	$rootschema = $schemaIndex->newRef($schema, null, null, $nodename);
     	$rootjson = new JsonTreeRef($data, null, null, $nodename, $rootschema);
         $this->assertEquals($rootjson->getTitle(), 'Address Book');

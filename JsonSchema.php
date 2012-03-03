@@ -21,21 +21,6 @@ class JsonUtil {
 
 	}
 
-
-	/*
-	 * Return the title defined for $schemanode.
-	 * TODO: ditch this function; it's kinda useless, and needs to get
-	 * folded into JsonTreeRef
-	 */
-	public static function getTitleFromNode( $schemanode, $nodeindex ) {
-		if ( isset( $schemanode['title'] ) ) {
-			return $schemanode['title'];
-		} else {
-			return $nodeindex;
-		}
-
-	}
-
 	/*
 	 * Given a type (e.g. 'map', 'int', 'str'), return the default/empty
 	 * value for that type.
@@ -177,7 +162,8 @@ class JsonTreeRef {
 	public function attachSchema( $schema = null ) {
 		if ( !is_null( $schema ) ) {
 			$this->schemaindex = new JsonSchemaIndex( $schema );
-			$this->nodename = JsonUtil::getTitleFromNode( $schema, "Root node" );
+			$this->nodename =
+				isset( $schema['title'] ) ? $schema['title'] : "Root node";
 			$this->schemaref = $this->schemaindex->newRef( $schema, null, null, $this->nodename );
 		}
 		elseif ( !is_null( $this->parent ) ) {
@@ -209,8 +195,10 @@ class JsonTreeRef {
 	public function getTitle() {
 		if ( isset( $this->nodename ) ) {
 			return $this->nodename;
+		} elseif ( isset( $this->node['title'] ) ) {
+			return $this->node['title'];
 		} else {
-			return JsonUtil::getTitleFromNode( $this->node, $this->nodeindex );
+			return $this->nodeindex;
 		}
 	}
 
@@ -274,7 +262,6 @@ class JsonTreeRef {
 		if ( !is_array( $this->parent ) ) {
 			return array();
 		} else {
-			// TODO: confirm this is doing a proper deep copy
 			$retval = $this->parent;
 			$retval[] = $this->nodeindex;
 			return $retval;
@@ -296,7 +283,7 @@ class JsonTreeRef {
 			$schemadata = $this->schemaref->node['mapping'][$key];
 		}
 		$value = $this->node[$key];
-		$nodename = JsonUtil::getTitleFromNode( $schemadata, $key );
+		$nodename = isset( $schemadata['title'] ) ? $schemadata['title'] : $key;
 		$schemai = $this->schemaindex->newRef( $schemadata, $this->schemaref, $key, $key );
 		$jsoni = new JsonTreeRef( $value, $this, $key, $nodename, $schemai );
 		return $jsoni;
@@ -306,7 +293,8 @@ class JsonTreeRef {
 	 * Return the child ref for $this ref associated with a given index $i
 	 */
 	public function getSequenceChildRef( $i ) {
-		$itemname = JsonUtil::getTitleFromNode( $this->schemaref->node['sequence'][0], 0 );
+		$schemanode = $this->schemaref->node['sequence'][0];
+		$itemname = isset( $schemanode['title'] ) ? $schemanode['title'] : "Item";
 		$nodename = $itemname . " #" . ( (string)$i + 1 );
 		$schemai = $this->schemaindex->newRef( $this->schemaref->node['sequence'][0], $this->schemaref, 0, $i );
 		$jsoni = new JsonTreeRef( $this->node[$i], $this, $i, $nodename, $schemai );
