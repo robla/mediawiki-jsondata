@@ -102,5 +102,15 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref->validate();
 	}
 
+	public function testExtensionFieldGetTitle () {
+		$jsonfile = 'tests/phpunit/data/ab.json';
+		$schemafile = 'schemas/openschema.json';
+		$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemafile);
+		// if the titles for two different extension fields is the same, that
+		// means the titles are probably pretty useless.
+		$atitle = $jsonref->getMappingChildRef( 'a' )->getTitle();
+		$btitle = $jsonref->getMappingChildRef( 'b' )->getTitle();
+		$this->assertNotEquals( $atitle, $btitle );
+	}
 }
 

@@ -172,15 +172,13 @@ class JsonTreeRef {
 		if ( $this->schemaref->node['type'] == 'any' ) {
 			if ( $this->getType() == 'map' ) {
 				$this->schemaref->node['mapping'] =
-					array( "extension" => array( "title" => "extension field",
-												 "type" => "any" ) );
+					array( "extension" => array( "type" => "any" ) );
 				$this->schemaref->node['user_key'] = "extension";
 			}
 
 			elseif ( $this->getType() == 'seq' ) {
 				$this->schemaref->node['sequence'] =
-					array( array( "title" => "extension field",
-								  "type" => "any" ) );
+					array( array( "type" => "any" ) );
 				$this->schemaref->node['user_key'] = "extension";
 			}
 
