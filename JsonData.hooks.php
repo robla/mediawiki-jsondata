@@ -73,7 +73,8 @@ class JsonDataHooks {
 		$schema = json_decode( $schematext, true );
 		$rootjson = new JsonTreeRef( $data );
 		$rootjson->attachSchema( $schema );
-		return JsonDataMarkup::getMarkup( $rootjson, 0 );		// return "<pre>" . htmlspecialchars( $input ) . "</pre>";
+		$markup = JsonDataMarkup::getMarkup( $rootjson, 0 );
+		return $parser->recursiveTagParse( $markup, $frame );
 	}
 
 	public static function onGetPreferences( $user, &$preferences ) {
