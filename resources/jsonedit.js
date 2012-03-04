@@ -620,7 +620,7 @@ jsonwidget.editor.getArrayInputAttrs = function (jsonref) {
         }
         else if (jsonref.getType()=='seq') {
             itemname = jsonwidget.getTitleFromNode(jsonref.schemaref.node.sequence[0], 0);
-			nodename = itemname + " #" + (parseInt(i)+1);
+            nodename = itemname + " #" + (parseInt(i)+1);
             schemai = this.schemaindex.newRef(jsonref.schemaref.node.sequence[0], jsonref.schemaref, 0, i);
             jsoni = new jsonwidget.jsonTreeRef(jsonref.node[i], jsonref, i, nodename, schemai);
         }
@@ -1320,23 +1320,33 @@ jsonwidget.editor.error = function (m) {
 
 jsonwidget.editor.handleParseError = function (error) {
     var errorstring = '';
+    var errorpre = document.createElement("pre");
     if(error.at<40) {
-        errorstring += error.text.substr(0,error.at);
+        errorstring = error.text.substr(0,error.at);
+        errorpre.appendChild(document.createTextNode(errorstring));
     }
     else {
-        errorstring += error.text.substr(error.at-40,40);
+        errorstring = error.text.substr(error.at-40,40);
+        errorpre.appendChild(document.createTextNode(errorstring));
     }
-    errorstring += "<span style='background-color: yellow'>";
-    errorstring += error.text.substr(error.at,1);
-    errorstring += "</span>";
-    errorstring += error.text.substr(error.at+1,39);
 
+    var highlighted = document.createElement("span");
+    highlighted.style.background = "yellow";
+    highlighted.appendChild(document.createTextNode(error.text.substr(error.at,1)));
+    errorpre.appendChild(highlighted);
+    errorpre.appendChild(document.createTextNode(error.text.substr(error.at+1,39)));
+
+    var retval = document.createElement("span");
+    var errorstart = "JSON Parse error at char "+error.at+" near the following text:";
+    retval.appendChild(document.createTextNode(errorstart));
+    retval.appendChild(errorpre);
     try {
-        return "JSON Parse error at char "+error.at+" near <pre>"+errorstring+"</pre>  Full error: "+error.toSource();
+        retval.appendChild(document.createTextNode("  Full error: "+error.toSource()));
     }
     catch (error2) {
-        return "JSON Parse error at char "+error.at+" near <pre>"+errorstring+"</pre>";
+        // can't get the full error.  oh well
     }
+    return retval;
 }
 
 jsonwidget.editor.debugOut = function (level, text) {
@@ -1347,7 +1357,11 @@ jsonwidget.editor.debugOut = function (level, text) {
 }
 
 jsonwidget.editor.warningOut = function (text) {
-    this.warningwindow.appendChild(document.createTextNode(text));
+    if(text instanceof Node) {
+        this.warningwindow.appendChild(text);
+    } else {
+        this.warningwindow.appendChild(document.createTextNode(text));
+    }
     this.warningwindow.appendChild(document.createElement("br"));
 }
 
