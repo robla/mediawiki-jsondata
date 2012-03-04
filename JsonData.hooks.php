@@ -98,6 +98,11 @@ class JsonDataHooks {
 			wfDebug( __METHOD__ . ": " . htmlspecialchars( $e->getMessage() ) . "\n" );
 		}
 		$data = json_decode( $json, true );
+		if( is_null( $data ) ) {
+			$error = "<b>" . wfMessage( 'jsondata-servervalidationerror' ) . "</b>: ";
+			$error .= wfMessage( 'jsondata-invalidjson' );
+			return true;
+		}
 		$schema = json_decode( $schematext, true );
 		$rootjson = new JsonTreeRef( $data );
 		$rootjson->attachSchema( $schema );

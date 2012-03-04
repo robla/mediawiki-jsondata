@@ -20,6 +20,7 @@ $messages['en'] = array(
 	'jsondata-schemaedit-pref' => 'Use JsonData schema editing tools',
 	'prefs-jsondata' => 'JsonData',
 	'jsondata-servervalidationerror' => 'Server validation error',
+	'jsondata-invalidjson' => 'Invalid JSON',
 );
 
 
