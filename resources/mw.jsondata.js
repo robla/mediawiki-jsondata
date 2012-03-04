@@ -62,6 +62,15 @@ if($("#je_formdiv").length > 0) {
         je.viewHandler['preview']=previewHandler;
         defaultView = 'preview';
     }
+    if($("#je_diffpane").length > 0) {
+        je.views = je.views.concat(['diff']);
+        $("#wikiDiff").prependTo("#editpage-copywarn");
+        je.htmlbuttons.diff = 'je_diffpane';
+        var diffHandler = {'show': function () {$("#wikiDiff").show();},
+                           'hide': function () {$("#wikiDiff").hide();}};
+        je.viewHandler['diff']=diffHandler;
+        defaultView = 'diff';
+    }
     je.setView(defaultView);
 }
 
