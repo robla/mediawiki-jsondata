@@ -57,7 +57,6 @@ class JsonDataHooks {
 	 * Default parser tag renderer
 	 */
 	public static function jsonTagRender( $input, array $args, Parser $parser, PPFrame $frame ) {
-
 		global $wgJsonData;
 		$wgJsonData = new JsonData( $frame->title );
 
@@ -84,5 +83,31 @@ class JsonDataHooks {
                 'section' => 'misc/jsondata',
         );
         return true;
+	}
+
+	public static function validateDataEditFilter( $editor, $text, $section, &$error, $summary ) {
+		// I can't remember if jsondataobj needs to be a singleton/global, but
+		// will chance calling a new instance here.
+		$jsondataobj = new JsonData( $editor->getTitle() );
+		$json = JsonData::stripOuterTagsFromText( $text );
+		try {
+			$schematext = $jsondataobj->getSchema();
+		}
+		catch ( JsonDataException $e ) {
+			$schematext = $jsondataobj->readJsonFromPredefined( 'openschema' );
+			wfDebug( __METHOD__ . ": " . htmlspecialchars( $e->getMessage() ) . "\n" );
+		}
+		$data = json_decode( $json, true );
+		$schema = json_decode( $schematext, true );
+		$rootjson = new JsonTreeRef( $data );
+		$rootjson->attachSchema( $schema );
+		try {
+			$rootjson->validate();
+		} 
+		catch ( JsonSchemaException $e ) {
+			$error = "<b>" . wfMessage( 'jsondata-servervalidationerror' ) . "</b>: ";
+			$error .= htmlspecialchars( $e->getMessage() );
+		}
+		return true;
 	}
 }

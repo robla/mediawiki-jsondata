@@ -66,4 +66,5 @@ $wgResourceModules['ext.jsonwidget'] = array(
 
 
 $wgHooks['GetPreferences'][] = 'JsonDataHooks::onGetPreferences';
+$wgHooks['EditFilter'][] = 'JsonDataHooks::validateDataEditFilter';
 

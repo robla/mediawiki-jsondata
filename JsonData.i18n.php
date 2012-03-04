@@ -19,6 +19,7 @@ $messages['en'] = array(
 	'jsondata_desc' => 'An extension to edit and template JSON-formatted data',
 	'jsondata-schemaedit-pref' => 'Use JsonData schema editing tools',
 	'prefs-jsondata' => 'JsonData',
+	'jsondata-servervalidationerror' => 'Server validation error',
 );
 
 

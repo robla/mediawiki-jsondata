@@ -151,6 +151,7 @@ class JsonTreeRef {
 		$this->nodename = $nodename;
 		$this->schemaref = $schemaref;
 		$this->fullindex = $this->getFullIndex();
+		$this->datapath = array();
 		if ( !is_null( $schemaref ) ) {
 			$this->attachSchema();
 		}
@@ -257,12 +258,40 @@ class JsonTreeRef {
 	 *  node, then the return value of this would be array('a',1)
 	 */
 	public function getDataPath() {
-		if ( !is_array( $this->parent ) ) {
+		if ( !is_object( $this->parent ) ) {
 			return array();
 		} else {
-			$retval = $this->parent;
+			$retval = $this->parent->getDataPath();
 			$retval[] = $this->nodeindex;
 			return $retval;
+		}
+	}
+
+	/*
+	 *  Return path in something that looks like an array path.  For example,
+	 *  for this data: [{'0a':1,'0b':{'0ba':2,'0bb':3}},{'1a':4}]
+	 *  the leaf node with a value of 4 would have a data path of '[1]["1a"]',
+	 *  while the leaf node with a value of 2 would have a data path of
+	 *  '[0]["0b"]["oba"]'
+	 */
+	public function getDataPathAsString() {
+		$retval = "";
+		foreach( $this->getDataPath() as $item ) {
+			$retval .= '[' . json_encode( $item ) . ']';
+		}
+		return $retval;
+	}
+
+	/*
+	 *  Return data path in user-friendly terms.  This will use the same
+	 *  terminology as used in the user interface (1-indexed arrays)
+	 */
+	public function getDataPathTitles() {
+		if ( !is_object( $this->parent ) ) {
+			return $this->getTitle();
+		} else {
+			return $this->parent->getDataPathTitles() . ' -> ' 
+				. $this->getTitle();
 		}
 	}
 
@@ -278,7 +307,12 @@ class JsonTreeRef {
 		}
 		else {
 			$userkeyflag = false;
-			$schemadata = $this->schemaref->node['mapping'][$key];
+			if( array_key_exists( $key, $this->schemaref->node['mapping'] ) ) {
+				$schemadata = $this->schemaref->node['mapping'][$key];
+			} else {
+				throw new JsonSchemaException( 'Invalid key ' . $key .
+					" in ". $this->getDataPathTitles() );
+			}
 		}
 		$value = $this->node[$key];
 		$nodename = isset( $schemadata['title'] ) ? $schemadata['title'] : $key;
@@ -309,7 +343,7 @@ class JsonTreeRef {
 		if ( $datatype != $schematype ) {
 			throw new JsonSchemaException( 'Invalid node: expecting ' . $schematype .
 				', got ' . $datatype . ' path: ' .
-				print_r( $this->getDataPath(), true ) );
+				$this->getDataPathTitles() );
 		}
 		switch ( $schematype ) {
 			case 'map':

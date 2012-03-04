@@ -102,6 +102,16 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref->validate();
 	}
 
+    /**
+     * @expectedException JsonSchemaException
+     */
+	public function testJsonSchemaValidateBadDataLocation() {
+		$jsonfile = 'tests/phpunit/data/invalidlocation.json';
+		$schemafile = 'tests/phpunit/data/schemalocation.json';
+		$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemafile);
+		$jsonref->validate();
+	}
+
 	public function testExtensionFieldGetTitle () {
 		$jsonfile = 'tests/phpunit/data/ab.json';
 		$schemafile = 'schemas/openschema.json';
@@ -112,5 +122,6 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$btitle = $jsonref->getMappingChildRef( 'b' )->getTitle();
 		$this->assertNotEquals( $atitle, $btitle );
 	}
+
 }
 

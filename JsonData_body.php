@@ -25,6 +25,8 @@ class JsonData {
 		$this->nsname = $wgJsonDataNamespace[$this->title->getNamespace()];
 	}
 
+
+
 	/**
 	 * All of the PHP-generated HTML associated with JsonData goes here
 	 */
@@ -195,6 +197,13 @@ HEREDOC
 			$revtext = $rev->getText();
 			return preg_replace( array( '/^<[\w]+[^>]*>/m', '/<\/[\w]+>$/m' ), array( "", "" ), $revtext );
 		}
+	}
+
+	/*
+	 * Strip the outer parser tags from some text
+	 */
+	public static function stripOuterTagsFromText( $text ) {
+		return preg_replace( array( '/^<[\w]+[^>]*>/m', '/<\/[\w]+>$/m' ), array( "", "" ), $text );
 	}
 
 	/*
