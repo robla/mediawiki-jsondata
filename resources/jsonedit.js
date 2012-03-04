@@ -601,7 +601,7 @@ jsonwidget.editor.getArrayInputAttrs = function (jsonref) {
             var nodename = i;
             if(jsonref.schemaref.node.mapping[i]==undefined) {
                 if(jsonref.schemaref.node.user_key==undefined) {
-                    this.warningOut("warning: unrecognized key: "+i+"<br/>");
+                    this.warningOut("warning: unrecognized key: "+i);
                     continue;
                 }
                 else {
@@ -1003,8 +1003,6 @@ jsonwidget.editor.getTypeSelectInput = function (jsonref) {
 jsonwidget.editor.getBoolInput = function getBoolInput(jsonref) {
     var jsoneditobj = this;
     var inputid = 'inputid.'+jsonref.fullindex;
-
-    var control = '<input class="jeclass" id="'+inputid+'" type="checkbox"';
 
     var inputelement = document.createElement("input");
     inputelement.id=inputid;
