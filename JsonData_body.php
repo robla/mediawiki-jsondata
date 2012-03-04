@@ -85,8 +85,8 @@ HEREDOC
 	}
 
 	/**
-	 * Read the config text, which is currently hardcoded to come from
-	 * a specific file.
+	 * Read the config text from either $wgJsonDataConfigArticle or
+	 * $wgJsonDataConfigFile
 	 */
 	public function getConfig() {
 		global $wgJsonDataConfigArticle, $wgJsonDataConfigFile;
