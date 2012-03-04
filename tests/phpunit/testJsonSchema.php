@@ -123,5 +123,18 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$this->assertNotEquals( $atitle, $btitle );
 	}
 
+	public function testJsonSchemaValidateEmptyMap() {
+		$jsonfile = 'tests/phpunit/data/emptymap.json';
+		$schemafile = 'schemas/datatype-example-schema.json';
+		$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemafile);
+		$jsonref->validate();
+	}
+
+	public function testJsonSchemaValidateInteger() {
+		$jsonfile = 'tests/phpunit/data/inttest.json';
+		$schemafile = 'schemas/datatype-example-schema.json';
+		$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemafile);
+		$jsonref->validate();
+	}
 }
 

@@ -340,6 +340,15 @@ class JsonTreeRef {
 	public function validate() {
 		$datatype = JsonUtil::getType( $this->node );
 		$schematype = $this->getType();
+		if ( $datatype == 'seq' && $schematype == 'map' ) {
+			// PHP datatypes are kinda loose, so we'll fudge
+			$datatype = 'map';
+		}
+		if ( $datatype == 'number' && $schematype == 'int' &&
+			 $this->node == (int)$this->node) {
+			// Alright, it'll work as an int
+			$datatype = 'int';
+		}
 		if ( $datatype != $schematype ) {
 			throw new JsonSchemaException( 'Invalid node: expecting ' . $schematype .
 				', got ' . $datatype . ' path: ' .
