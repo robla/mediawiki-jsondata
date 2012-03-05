@@ -28,6 +28,14 @@ class JsonDataHooks {
 
 		if ( JsonData::isJsonDataNeeded( $ns ) ) {
 			$wgJsonData = new JsonData( $title );
+			$jsonref = $wgJsonData->getJsonRef();
+			try {
+				$jsonref->validate();
+			}
+			catch ( JsonSchemaException $e ) {
+				//TODO: clean up server error mechanism
+				$wgJsonData->servererror .= "<b>Server error</b>: " . htmlspecialchars( $e->getMessage() ) . "<br/>";
+			}
 			$wgJsonData->outputEditor();
 		}
 		return true;

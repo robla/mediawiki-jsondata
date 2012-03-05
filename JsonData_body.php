@@ -27,6 +27,7 @@ class JsonData {
 		$this->config = null;
 		$this->schematext = null;
 		$this->jsonref = null;
+		$this->servererror = '';
 	}
 
 
@@ -36,13 +37,14 @@ class JsonData {
 	 */
 	public function outputEditor() {
 		global $wgUser;
-		$servererror = '';
+		$servererror = $this->servererror;
 		try {
 			$schema = $this->getSchemaText();
 		}
 		catch ( JsonDataException $e ) {
 			$schema = $this->readJsonFromPredefined( 'openschema' );
-			$servererror .= "<i>Server warning: " . htmlspecialchars( $e->getMessage() ) . "</i>";
+			//TODO: clean up server error mechanism
+			$servererror .= "<b>Server error</b>: " . htmlspecialchars( $e->getMessage() );
 		}
 		$this->out->addHTML( <<<HEREDOC
 <div id="je_servererror">${servererror}</div>
