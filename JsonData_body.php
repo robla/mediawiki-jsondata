@@ -23,6 +23,9 @@ class JsonData {
 		$this->out = $wgOut;
 		$this->title = $title;
 		$this->nsname = $wgJsonDataNamespace[$this->title->getNamespace()];
+		$this->editortext = null;
+		$this->config = null;
+		$this->schematext = null;
 	}
 
 
@@ -34,7 +37,7 @@ class JsonData {
 		global $wgUser;
 		$servererror = '';
 		try {
-			$schema = $this->getSchema();
+			$schema = $this->getSchemaText();
 		}
 		catch ( JsonDataException $e ) {
 			$schema = $this->readJsonFromPredefined( 'openschema' );
@@ -98,18 +101,20 @@ HEREDOC
 	 */
 	public function getConfig() {
 		global $wgJsonDataConfigArticle, $wgJsonDataConfigFile;
-		if ( !is_null( $wgJsonDataConfigArticle ) ) {
-			$configText = $this->readJsonFromArticle( $wgJsonDataConfigArticle );
-			$config = json_decode( $configText, TRUE );
+		if ( is_null( $this->config ) ) {
+			if ( !is_null( $wgJsonDataConfigArticle ) ) {
+				$configText = $this->readJsonFromArticle( $wgJsonDataConfigArticle );
+				$this->config = json_decode( $configText, TRUE );
+			}
+			elseif ( !is_null( $wgJsonDataConfigFile ) ) {
+				$configText = file_get_contents( $wgJsonDataConfigFile );
+				$this->config = json_decode( $configText, TRUE );
+			}
+			else {
+				$this->config = $this->getDefaultConfig();
+			}
 		}
-		elseif ( !is_null( $wgJsonDataConfigFile ) ) {
-			$configText = file_get_contents( $wgJsonDataConfigFile );
-			$config = json_decode( $configText, TRUE );
-		}
-		else {
-			$config = $this->getDefaultConfig();
-		}
-		return $config;
+		return $this->config;
 	}
 
 	public function getDefaultConfig() {
@@ -117,6 +122,57 @@ HEREDOC
 		$configText = $this->readJsonFromPredefined( 'configexample' );
 		$config = json_decode( $configText, TRUE );
 		return $config;
+	}
+
+	/*
+	 * Load appropriate editor text into the object (if it hasn't been yet), 
+	 * and return it.  This will either be the contents of the title being
+	 * viewed, or it will be the newly-edited text being previewed.
+	 */
+	public function getEditorText() {
+		if( is_null( $this->editortext ) ) {
+			// on preview, pull $editortext out from the submitted text, so 
+			// that the author can change schemas during preview
+			$this->editortext = $this->out->getRequest()->getText( 'wpTextbox1' );
+			// wpTextbox1 is empty in normal editing, so pull it from article->getText() instead
+			if ( empty( $editortext ) ) {
+				$rev = Revision::newFromTitle( $this->title );
+				if( is_object( $rev ) ) {
+					$this->editortext = $rev->getText();
+				}
+				else {
+					$this->editortext = "";
+				}
+			}
+		}
+		return $this->editortext;
+	}
+
+	/*
+	 * Get the schema attribute from the editor text.
+	 */
+	public function getSchemaAttr() {
+		$config = $this->getConfig();
+		$editortext = $this->getEditorText();
+		$tag = $config['namespaces'][$this->nsname]['defaulttag'];
+
+		$schemaconfig = $config['tags'][$tag]['schema'];
+		$schemaAttr = null;
+		if ( isset( $schemaconfig['schemaattr'] ) && ( preg_match( '/^(\w+)$/', $schemaconfig['schemaattr'] ) > 0 ) ) {
+			if ( preg_match( '/^<[\w]+\s+([^>]+)>/m', $editortext, $matches ) > 0 ) {
+				/*
+				 * Quick and dirty regex for parsing schema attributes that hits the 99% case.
+				 * Bad matches: foo="bar' , foo='bar"
+				 * Bad misses: foo='"r' , foo="'r"
+				 * Works correctly in most common cases, though.
+				 * \x27 is single quote
+				 */
+				if ( preg_match( '/\b' . $schemaconfig['schemaattr'] . '\s*=\s*["\x27]([^"\x27]+)["\x27]/', $matches[1], $subm ) > 0 ) {
+					$schemaAttr = $subm[1];
+				}
+			}
+		}
+		return $schemaAttr;
 	}
 
 	/**
@@ -127,65 +183,34 @@ HEREDOC
 	 * b.  A configured article
 	 * c.  A configured file in wgJsonDataPredefinedData
 	 */
-	public function getSchema() {
-		global $wgJsonDataNamespace, $wgJsonDataSchemaFile, $wgJsonDataSchemaArticle;
-
-		$config = $this->getConfig();
-		$tag = $config['namespaces'][$this->nsname]['defaulttag'];
-
-		$schemaconfig = $config['tags'][$tag]['schema'];
-		$schemaTitle = null;
-		if ( isset( $schemaconfig['schemaattr'] ) && ( preg_match( '/^(\w+)$/', $schemaconfig['schemaattr'] ) > 0 ) ) {
-			// on preview, pull $revtext out from the submitted text, so that the author can change
-			// schemas during preview
-			$revtext = $this->out->getRequest()->getText( 'wpTextbox1' );
-			// wpTextbox1 is empty in normal editing, so pull it from article->getText() instead
-			if ( empty( $revtext ) ) {
-				$rev = Revision::newFromTitle( $this->title );
-				if( is_object( $rev ) ) {
-					$revtext = $rev->getText();
-				}
-				else {
-					$revtext = "";
+	public function getSchemaText() {
+		if( is_null( $this->schematext ) ) {
+			$schemaTitleText = $this->getSchemaAttr();
+			if ( !is_null( $schemaTitleText ) ) {
+				$this->schematext = $this->readJsonFromArticle( $schemaTitleText );
+				if ( $this->schematext == '' ) {
+					throw new JsonDataException( "Invalid schema definition in ${schemaTitleText}" );
 				}
 			}
-			if ( preg_match( '/^<[\w]+\s+([^>]+)>/m', $revtext, $matches ) > 0 ) {
-				/*
-				 * Quick and dirty regex for parsing schema attributes that hits the 99% case.
-				 * Bad matches: foo="bar' , foo='bar"
-				 * Bad misses: foo='"r' , foo="'r"
-				 * Works correctly in most common cases, though.
-				 * \x27 is single quote
-				 */
-				if ( preg_match( '/\b' . $schemaconfig['schemaattr'] . '\s*=\s*["\x27]([^"\x27]+)["\x27]/', $matches[1], $subm ) > 0 ) {
-					$schemaTitle = $subm[1];
+			elseif ( $config['tags'][$tag]['schema']['srctype'] == 'article' ) {
+				$schemaTitleText = $config['tags'][$tag]['schema']['src'];
+				$this->schematext = $this->readJsonFromArticle( $schemaTitleText );
+				if ( $this->schematext == '' ) {
+					throw new JsonDataException( "Invalid schema definition in ${schemaTitleText}.  Check your site configuation for this tag." );
 				}
 			}
-		}
-		if ( !is_null( $schemaTitle ) ) {
-			$schema = $this->readJsonFromArticle( $schemaTitle );
-			if ( $schema == '' ) {
-				throw new JsonDataException( "Invalid schema definition in ${schemaTitle}" );
+			elseif ( $config['tags'][$tag]['schema']['srctype'] == 'predefined' ) {
+				$schemaTitleText = $config['tags'][$tag]['schema']['src'];
+				$this->schematext = $this->readJsonFromPredefined( $schemaTitleText );
+			}
+			else {
+				throw new JsonDataException( "Invalid srctype value in JsonData site config" );
+			}
+			if ( strlen( $this->schematext ) == 0 ) {
+				throw new JsonDataException( "Zero-length schema: ". $schemaTitleText );
 			}
 		}
-		elseif ( $config['tags'][$tag]['schema']['srctype'] == 'article' ) {
-			$schemaTitle = $config['tags'][$tag]['schema']['src'];
-			$schema = $this->readJsonFromArticle( $schemaTitle );
-			if ( $schema == '' ) {
-				throw new JsonDataException( "Invalid schema definition in ${schemaTitle}.  Check your site configuation for this tag." );
-			}
-		}
-		elseif ( $config['tags'][$tag]['schema']['srctype'] == 'predefined' ) {
-			$schemaTitle = $config['tags'][$tag]['schema']['src'];
-			$schema = $this->readJsonFromPredefined( $schemaTitle );
-		}
-		else {
-			throw new JsonDataException( "Invalid srctype value in JsonData site config" );
-		}
-		if ( strlen( $schema ) == 0 ) {
-			throw new JsonDataException( "Zero-length schema: ". $schemaTitle );
-		}
-		return $schema;
+		return $this->schematext;
 	}
 
 	/*

@@ -62,7 +62,7 @@ class JsonDataHooks {
 
 		$json = $input;
 		try {
-			$schematext = $wgJsonData->getSchema();
+			$schematext = $wgJsonData->getSchemaText();
 		}
 		catch ( JsonDataException $e ) {
 			$schematext = $wgJsonData->readJsonFromPredefined( 'openschema' );
@@ -91,7 +91,7 @@ class JsonDataHooks {
 		$jsondataobj = new JsonData( $editor->getTitle() );
 		$json = JsonData::stripOuterTagsFromText( $text );
 		try {
-			$schematext = $jsondataobj->getSchema();
+			$schematext = $jsondataobj->getSchemaText();
 		}
 		catch ( JsonDataException $e ) {
 			$schematext = $jsondataobj->readJsonFromPredefined( 'openschema' );
