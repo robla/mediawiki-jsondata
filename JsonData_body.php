@@ -26,6 +26,7 @@ class JsonData {
 		$this->editortext = null;
 		$this->config = null;
 		$this->schematext = null;
+		$this->jsonref = null;
 	}
 
 
@@ -135,7 +136,7 @@ HEREDOC
 			// that the author can change schemas during preview
 			$this->editortext = $this->out->getRequest()->getText( 'wpTextbox1' );
 			// wpTextbox1 is empty in normal editing, so pull it from article->getText() instead
-			if ( empty( $editortext ) ) {
+			if ( empty( $this->editortext ) ) {
 				$rev = Revision::newFromTitle( $this->title );
 				if( is_object( $rev ) ) {
 					$this->editortext = $rev->getText();
@@ -186,6 +187,8 @@ HEREDOC
 	public function getSchemaText() {
 		if( is_null( $this->schematext ) ) {
 			$schemaTitleText = $this->getSchemaAttr();
+			$config = $this->getConfig();
+			$tag = $config['namespaces'][$this->nsname]['defaulttag'];
 			if ( !is_null( $schemaTitleText ) ) {
 				$this->schematext = $this->readJsonFromArticle( $schemaTitleText );
 				if ( $this->schematext == '' ) {
@@ -204,13 +207,30 @@ HEREDOC
 				$this->schematext = $this->readJsonFromPredefined( $schemaTitleText );
 			}
 			else {
-				throw new JsonDataException( "Invalid srctype value in JsonData site config" );
+				throw new JsonDataException( "Unknown error with JsonData site config" );
 			}
 			if ( strlen( $this->schematext ) == 0 ) {
 				throw new JsonDataException( "Zero-length schema: ". $schemaTitleText );
 			}
 		}
 		return $this->schematext;
+	}
+
+	/*
+	 *  Parse the article/editor text as well as the corresponding schema text, 
+	 *  and load the result into an object (JsonTreeRef) that associates
+	 *  each JSON node with its corresponding schema node.
+	 */
+	public function getJsonRef() {
+		if( is_null( $this->jsonref ) ) {
+			$json = JsonData::stripOuterTagsFromText( $this->getEditorText() );
+			$schematext = $this->getSchemaText();
+			$data = json_decode($json, true);
+			$schema = json_decode($schematext, true);
+			$this->jsonref = new JsonTreeRef( $data );
+			$this->jsonref->attachSchema( $schema );
+		}
+		return $this->jsonref;
 	}
 
 	/*
