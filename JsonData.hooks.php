@@ -36,7 +36,7 @@ class JsonDataHooks {
 				//TODO: clean up server error mechanism
 				$wgJsonData->servererror .= "<b>Server error</b>: " . htmlspecialchars( $e->getMessage() ) . "<br/>";
 			}
-			$wgJsonData->outputEditor();
+			$wgJsonData->outputEditor( &$editPage );
 		}
 		return true;
 	}

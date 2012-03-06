@@ -35,7 +35,7 @@ class JsonData {
 	/**
 	 * All of the PHP-generated HTML associated with JsonData goes here
 	 */
-	public function outputEditor() {
+	public function outputEditor( &$editPage ) {
 		global $wgUser;
 		$servererror = $this->servererror;
 		try {
@@ -55,7 +55,7 @@ class JsonData {
 		<ul>
 HEREDOC
 			);
-		if ( $this->out->getRequest()->getVal( 'wpPreview' ) ) {
+		if ( $editPage->preview ) {
 			$this->out->addHTML( <<<HEREDOC
 			<li><span id="je_previewpane"><a>Preview</a></span></li>
 HEREDOC
