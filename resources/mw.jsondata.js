@@ -13,8 +13,9 @@ var mwjsondata = function() {}
 mwjsondata.context = function () {
     this.addContextText = mwjsondata.context.addContextText;
     this.removeContextText = mwjsondata.context.removeContextText;
-    this.beginContext = "<json>\n";
-    this.endContext = "\n</json>";
+    var defaulttag = mw.config.get( 'egJsonDataDefaultTag' );
+    this.beginContext = "<" + defaulttag + ">\n";
+    this.endContext = "\n</" + defaulttag + ">";
 }
 
 mwjsondata.context.addContextText = function (jsontext) {

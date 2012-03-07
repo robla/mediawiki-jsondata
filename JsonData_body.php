@@ -30,14 +30,15 @@ class JsonData {
 		$this->servererror = '';
 	}
 
-
-
 	/**
 	 * All of the PHP-generated HTML associated with JsonData goes here
 	 */
 	public function outputEditor( &$editPage ) {
 		global $wgUser;
 		$servererror = $this->servererror;
+		$config = $this->getConfig();
+		$defaulttag = $config['namespaces'][$this->nsname]['defaulttag'];
+		$this->out->addJsConfigVars( 'egJsonDataDefaultTag', $defaulttag );
 		try {
 			$schema = $this->getSchemaText();
 		}
