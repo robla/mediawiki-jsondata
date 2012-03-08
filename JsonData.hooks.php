@@ -34,7 +34,7 @@ class JsonDataHooks {
 			}
 			catch ( JsonSchemaException $e ) {
 				//TODO: clean up server error mechanism
-				$wgJsonData->servererror .= "<b>Server error</b>: " . htmlspecialchars( $e->getMessage() ) . "<br/>";
+				$wgJsonData->servererror .= "<b>" . wfMessage('jsondata-server-error') . "</b>: " . htmlspecialchars( $e->getMessage() ) . "<br/>";
 			}
 			$wgJsonData->outputEditor( &$editPage );
 		}

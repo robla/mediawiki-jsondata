@@ -364,8 +364,9 @@ class JsonTreeRef {
 			$datatype = 'int';
 		}
 		if ( $datatype != $schematype ) {
+			$datatype = is_null( $datatype ) ? "null" : $datatype;
 			throw new JsonSchemaException( 'Invalid node: expecting ' . $schematype .
-				', got ' . $datatype . ' path: ' .
+				', got ' . $datatype . '.  Path: ' .
 				$this->getDataPathTitles() );
 		}
 		switch ( $schematype ) {

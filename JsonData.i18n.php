@@ -21,6 +21,7 @@ $messages['en'] = array(
 	'prefs-jsondata' => 'JsonData',
 	'jsondata-servervalidationerror' => 'Server validation error',
 	'jsondata-invalidjson' => 'Invalid JSON',
+	'jsondata-server-error' => 'Server error'
 );
 
 
