@@ -15,6 +15,8 @@
  */
 
 class JsonSchemaException extends Exception {
+	public $subtype;
+	// subtypes: "validate-fail", "validate-fail-null"
 }
 
 class JsonUtil {
@@ -364,10 +366,18 @@ class JsonTreeRef {
 			$datatype = 'int';
 		}
 		if ( $datatype != $schematype ) {
-			$datatype = is_null( $datatype ) ? "null" : $datatype;
-			throw new JsonSchemaException( 'Invalid node: expecting ' . $schematype .
-				', got ' . $datatype . '.  Path: ' .
-				$this->getDataPathTitles() );
+			if ( is_null( $datatype ) && !is_object( $this->parent )) {
+				$e = new JsonSchemaException( 'Empty data structure not valid with this schema' );
+				$e->subtype = "validate-fail-null";
+				throw($e);
+			} else {
+				$datatype = is_null( $datatype ) ? "null" : $datatype;
+				$e = new JsonSchemaException( 'Invalid node: expecting ' . $schematype .
+					', got ' . $datatype . '.  Path: ' .
+					$this->getDataPathTitles() );
+				$e->subtype = "validate-fail";
+				throw($e);
+			}
 		}
 		switch ( $schematype ) {
 			case 'map':

@@ -33,8 +33,14 @@ class JsonDataHooks {
 				$jsonref->validate();
 			}
 			catch ( JsonSchemaException $e ) {
-				//TODO: clean up server error mechanism
-				$wgJsonData->servererror .= "<b>" . wfMessage('jsondata-server-error') . "</b>: " . htmlspecialchars( $e->getMessage() ) . "<br/>";
+				// if the JSON is null, don't sweat an error, since that will
+				// frequently be the case for new pages
+				if( $e->subtype != 'validate-fail-null' ) {
+					//TODO: clean up server error mechanism
+					$wgJsonData->servererror .= "<b>" . 
+						wfMessage('jsondata-server-error') . "</b>: " . 
+						htmlspecialchars( $e->getMessage() ) . "<br/>";
+				}
 			}
 			$wgJsonData->outputEditor( &$editPage );
 		}
