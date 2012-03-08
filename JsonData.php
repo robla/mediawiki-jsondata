@@ -2,10 +2,10 @@
 /**
  * JsonData is a generic JSON editing and templating interface for MediaWiki
  *
- * @file
+ * @file JsonData.php
  * @ingroup Extensions
  * @author Rob Lanphier
- * @copyright © 2011 Rob Lanphier
+ * @copyright © 2011-2012 Rob Lanphier
  * @licence GNU General Public Licence 2.0 or later
  */
 

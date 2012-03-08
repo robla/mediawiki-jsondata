@@ -2,10 +2,10 @@
 /**
  * Internationalisation file for the JsonData extension.
  *
- * @file
+ * @file JsonData.i18n.php
  * @ingroup Extensions
  * @author Rob Lanphier
- * @copyright © 2011 Rob Lanphier
+ * @copyright © 2011-2012 Rob Lanphier
  * @license GNU General Public Licence 2.0 or later
  */
 

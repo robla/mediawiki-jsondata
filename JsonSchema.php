@@ -1,4 +1,18 @@
 <?php
+/**
+ * Json 
+ *
+ * @file JsonSchema.php
+ * @ingroup Extensions
+ * @author Rob Lanphier
+ * @copyright © 2011-2012 Rob Lanphier
+ * @licence http://jsonwidget.org/LICENSE BSD 3-clause
+ */
+
+/*
+ * Note, this is a standalone component.  Please don't mix MediaWiki-specific
+ * code or library calls into this file.
+ */
 
 class JsonSchemaException extends Exception {
 }

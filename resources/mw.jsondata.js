@@ -1,5 +1,5 @@
-// JsonData integration into MediaWiki
-// Copyright (c) 2011 Rob Lanphier.
+// Jsonwidget integration into MediaWiki as JsonData extension
+// Copyright (c) 2011-2012 Rob Lanphier.
 // See http://robla.net/jsonwidget/LICENSE for license (3-clause BSD-style)
 
 

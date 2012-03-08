@@ -1,4 +1,13 @@
 <?php
+/**
+ * JsonData is a generic JSON editing and templating interface for MediaWiki
+ *
+ * @file JsonData_body.php
+ * @ingroup Extensions
+ * @author Rob Lanphier
+ * @copyright © 2011-2012 Rob Lanphier
+ * @licence GNU General Public Licence 2.0 or later
+ */
 
 class JsonDataException extends Exception {
 }
