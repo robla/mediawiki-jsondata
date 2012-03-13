@@ -19,7 +19,14 @@ class JsonDataMarkup {
 		$markup = JsonDataMarkup::getTitleMarkup( $jsonref, $depth );
 		$markup .= "\n";
 		foreach ( $jsonref->node as $key => $value ) {
-			$jsoni = $jsonref->getMappingChildRef( $key );
+			try {
+				$jsoni = $jsonref->getMappingChildRef( $key );
+			}
+			catch ( JsonSchemaException $e ) {
+				// swallow this key and move on
+				wfDebug( __METHOD__ . ": " . htmlspecialchars( $e->getMessage() ) . "\n" );
+				next;
+			}
 			$markup .= JsonDataMarkup::getMarkup( $jsoni, $depth + 1 );
 		}
 		return $markup;
