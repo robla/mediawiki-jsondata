@@ -1115,13 +1115,7 @@ jsonwidget.editor.setView = function setView (viewtoset) {
 
     switch (viewtoset) {
     case "source":
-        // sometimes we set currentView to 'source' before calling setView to 
-        // bypass updateJSON, so that it won't smash the source field contents
-        var tryUpdateJSON = (this.currentView != 'source')
         setTimeout(function () {
-            if(tryUpdateJSON) {
-                je.updateJSON();
-            }
             document.getElementById(je.htmlids.sourcetextarea).style.display="inline";
             je.clearStatusLight();
         },this.getStatusLightDelay(null));
