@@ -164,7 +164,7 @@ HEREDOC
 	/*
 	 * Get the schema attribute from the editor text.
 	 */
-	public function getSchemaAttr() {
+	private function getSchemaAttr() {
 		$config = $this->getConfig();
 		$editortext = $this->getEditorText();
 		$tag = $config['namespaces'][$this->nsname]['defaulttag'];
@@ -188,6 +188,30 @@ HEREDOC
 		return $schemaAttr;
 	}
 
+	/*
+	 * Get the tag from the editor text.  Horrible kludge: this should probably
+	 * be done with the MediaWiki parser somehow, but for now, just using a
+	 * nasty regexp.
+	 */
+	private function getTagName() {
+		//$config = $this->getConfig();
+		$editortext = $this->getEditorText();
+		$begintag = null;
+		$endtag = null;
+		if ( preg_match( '/^<([\w]+)[^>]*>/m', $editortext, $matches ) > 0 ) {
+			$begintag = $matches[1];
+			wfDebug(__METHOD__ . ': begin tag name: ' . $begintag . "\n");
+		}
+		if ( preg_match( '/<\/([\w]+)>$/m', $editortext, $matches ) > 0 ) {
+			$endtag = $matches[1];
+			wfDebug(__METHOD__ . ': end tag name: ' . $endtag . "\n");
+		}
+		if ( $begintag != $endtag ) {
+			throw new JsonDataException( "Mismatched tags: ${begintag} and ${endtag}" );
+		}
+		return $begintag;
+	}
+
 	/**
 	 * Find the correct schema and output that schema in the right spot of
 	 * the form.  The schema may come from one of several places:
@@ -200,7 +224,10 @@ HEREDOC
 		if( is_null( $this->schematext ) ) {
 			$schemaTitleText = $this->getSchemaAttr();
 			$config = $this->getConfig();
-			$tag = $config['namespaces'][$this->nsname]['defaulttag'];
+			$tag = $this->getTagName();
+			if( is_null( $tag ) ) {
+				$tag = $config['namespaces'][$this->nsname]['defaulttag'];
+			}
 			if ( !is_null( $schemaTitleText ) ) {
 				$this->schematext = $this->readJsonFromArticle( $schemaTitleText );
 				if ( $this->schematext == '' ) {
