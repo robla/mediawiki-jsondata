@@ -28,19 +28,14 @@ class JsonDataHooks {
 
 		if ( JsonData::isJsonDataNeeded( $ns ) ) {
 			$wgJsonData = new JsonData( $title );
-			$jsonref = $wgJsonData->getJsonRef();
 			try {
+				$jsonref = $wgJsonData->getJsonRef();
 				$jsonref->validate();
 			}
-			catch ( JsonSchemaException $e ) {
-				// if the JSON is null, don't sweat an error, since that will
-				// frequently be the case for new pages
-				if( $e->subtype != 'validate-fail-null' ) {
-					//TODO: clean up server error mechanism
-					$wgJsonData->servererror .= "<b>" . 
-						wfMessage('jsondata-server-error') . "</b>: " . 
-						htmlspecialchars( $e->getMessage() ) . "<br/>";
-				}
+			catch ( Exception $e ) {
+				$wgJsonData->servererror .= "<b>" . 
+					wfMessage('jsondata-server-error') . "</b>: " . 
+					htmlspecialchars( $e->getMessage() ) . "<br/>";
 			}
 			$wgJsonData->outputEditor( &$editPage );
 		}
@@ -109,7 +104,8 @@ class JsonDataHooks {
 		}
 		catch ( JsonDataException $e ) {
 			$schematext = $jsondataobj->readJsonFromPredefined( 'openschema' );
-			wfDebug( __METHOD__ . ": " . htmlspecialchars( $e->getMessage() ) . "\n" );
+			$error = "<b>" . wfMessage( 'jsondata-servervalidationerror' ) . "</b>: ";
+			$error .= wfMessage( 'jsondata-invalidjson' );
 		}
 		$data = json_decode( $json, true );
 		if( is_null( $data ) ) {

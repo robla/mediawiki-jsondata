@@ -12,6 +12,9 @@
 class JsonDataException extends Exception {
 }
 
+class JsonDataUnknownTagException extends JsonDataException {
+}
+
 class JsonData {
 	/**
 	 * Variables referenced from context (e.g. $wg* vars)
@@ -244,6 +247,9 @@ HEREDOC
 			elseif ( $config['tags'][$tag]['schema']['srctype'] == 'predefined' ) {
 				$schemaTitleText = $config['tags'][$tag]['schema']['src'];
 				$this->schematext = $this->readJsonFromPredefined( $schemaTitleText );
+			}
+			elseif ( empty( $config['tags'][$tag] ) ) {
+				throw new JsonDataUnknownTagException( "Tag \"${tag}\" not defined in JsonData site config" );
 			}
 			else {
 				throw new JsonDataException( "Unknown error with JsonData site config" );
