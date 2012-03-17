@@ -645,6 +645,16 @@ jsonwidget.editor.getArrayInputAttrs = function (jsonref) {
             }
         }
     }
+    else if(jsonref.getType()=='seq') {
+        var schemanode = jsonref.schemaref.node.sequence[0];
+        if(jsonref.node.length == 0 && schemanode.required == true) {
+            var rownode = document.createElement("tr");
+            jsoni = this.addItemToSequence(jsonref);
+            jsoni.domparent = rownode;
+            this.attachNodeInput(jsoni);
+            tbody.appendChild(rownode);
+        }
+    }
 
     retval.appendChild(tbody);
     return retval;
@@ -759,11 +769,13 @@ jsonwidget.editor.getAddButton = function (jsonref, prop) {
 jsonwidget.editor.addItemToSequence = function (jsonref) {
     var childschema = jsonref.schemaref.node.sequence[0];
     var newname = 0;
-    var newindex = 0;
+    var newindex = ( jsonref.node instanceof Array ) ? jsonref.node.length : 0;
     var newschema = je.schemaindex.newRef(childschema, jsonref.schemaref, 0, newindex);
     var newvalue = jsonwidget.getNewValueForType(newschema.node.type);
+    var itemname = jsonwidget.getTitleFromNode(jsonref.schemaref.node.sequence[0], 0);
+    var nodename = itemname + " #" + (newindex + 1);
 
-    var newjson = new jsonwidget.jsonTreeRef(newvalue, jsonref, newindex, newindex, newschema);
+    var newjson = new jsonwidget.jsonTreeRef(newvalue, jsonref, newindex, nodename, newschema);
     if (jsonref.node instanceof Array) {
         jsonref.node.push(newvalue);
     }
@@ -771,7 +783,7 @@ jsonwidget.editor.addItemToSequence = function (jsonref) {
         jsonref.node[newindex]=newvalue;
     }
     this.jsonLookupById[newjson.fullindex]=newjson;
-	return newjson;
+    return newjson;
 }
 
 jsonwidget.editor.getAddToSeqButton = function (jsonref) {
