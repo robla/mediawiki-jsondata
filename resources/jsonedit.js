@@ -362,6 +362,7 @@ jsonwidget.editor = function () {
     this.getArrayInputAttrs = jsonwidget.editor.getArrayInputAttrs;
     this.getHelpButton = jsonwidget.editor.getHelpButton;
     this.getShowButton = jsonwidget.editor.getShowButton;
+    this.addItemToSequence = jsonwidget.editor.addItemToSequence;
     this.getAddToSeqButton = jsonwidget.editor.getAddToSeqButton;
     this.getHideButton = jsonwidget.editor.getHideButton;
     this.getDeleteButton = jsonwidget.editor.getDeleteButton;
@@ -753,6 +754,26 @@ jsonwidget.editor.getAddButton = function (jsonref, prop) {
     return addlink;
 }
 
+// Add a new schema-compliant ref to the sequence stored in jsonref, returning
+// the new ref.
+jsonwidget.editor.addItemToSequence = function (jsonref) {
+    var childschema = jsonref.schemaref.node.sequence[0];
+    var newname = 0;
+    var newindex = 0;
+    var newschema = je.schemaindex.newRef(childschema, jsonref.schemaref, 0, newindex);
+    var newvalue = jsonwidget.getNewValueForType(newschema.node.type);
+
+    var newjson = new jsonwidget.jsonTreeRef(newvalue, jsonref, newindex, newindex, newschema);
+    if (jsonref.node instanceof Array) {
+        jsonref.node.push(newvalue);
+    }
+    else {
+        jsonref.node[newindex]=newvalue;
+    }
+    this.jsonLookupById[newjson.fullindex]=newjson;
+	return newjson;
+}
+
 jsonwidget.editor.getAddToSeqButton = function (jsonref) {
     var childschema = jsonref.schemaref.node.sequence[0];
     var je = this;
@@ -761,19 +782,7 @@ jsonwidget.editor.getAddToSeqButton = function (jsonref) {
     addlink.style.textDecoration = "underline";
     addlink.style.cursor = "pointer";
     addlink.onclick = function () {
-        var newname = 0;
-        var newindex = 0;
-        var newschema = je.schemaindex.newRef(childschema, jsonref.schemaref, 0, newindex);
-        var newvalue=jsonwidget.getNewValueForType(newschema.node.type);
-
-        var newjson = new jsonwidget.jsonTreeRef(newvalue, jsonref, newindex, newindex, newschema);
-        if (jsonref.node instanceof Array) {
-            jsonref.node.push(newvalue);
-        }
-        else {
-            jsonref.node[newindex]=newvalue;
-        }
-        je.jsonLookupById[newjson.fullindex]=newjson;
+        je.addItemToSequence(jsonref);
         je.updateNode(jsonref);
     }
     var nodename = jsonref.getTitle();
