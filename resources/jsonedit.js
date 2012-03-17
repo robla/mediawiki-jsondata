@@ -687,8 +687,12 @@ jsonwidget.editor.getShowButton = function (jsonref) {
 jsonwidget.editor.getDeleteButton = function (jsonref) {
     var retval = document.createElement("span");
     var rmid='rmbutton.'+jsonref.fullindex;
-
-    if(!jsonref.schemaref.node.required) {
+    var allowdelete = !jsonref.schemaref.node.required;
+    // for sequences with required children, allow deletion if there's more than one child
+    if(jsonref.parent != null && jsonref.parent.getType() == "seq" && jsonref.parent.node.length > 1) {
+        allowdelete = true;
+    }
+    if(allowdelete) {
         retval.className="rmx";
         retval.setAttribute("title", "delete");
     }
