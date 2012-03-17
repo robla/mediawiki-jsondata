@@ -352,6 +352,7 @@ jsonwidget.editor = function () {
     this.context = new jsonwidget.context();
 
     this.formdiv = document.getElementById(this.htmlids.formdiv);
+    this.activehelp = null;
 
     this.showForm = jsonwidget.editor.showForm;
     this.clearForm = jsonwidget.editor.clearForm;
@@ -1388,6 +1389,16 @@ jsonwidget.editor.clearWarnings = function () {
 
 
 jsonwidget.editor.contextHelp = function(event, jsonnode) {
+    if(this.activehelp != null) {
+        var parent = this.activehelp.parentElement;
+        if(parent!=null) {
+            parent.removeChild(this.activehelp);
+        }
+        if(parent==jsonnode.domparent) {
+            this.activehelp = null;
+            return true;
+        }
+    }
     var helpdiv = document.createElement("div");
     var title = document.createElement("div");
     title.appendChild(document.createTextNode(jsonnode.getTitle()));
@@ -1425,6 +1436,7 @@ jsonwidget.editor.contextHelp = function(event, jsonnode) {
     }
 
     helpdiv.addEventListener('mouseout',hideContextHelp,false);
+    this.activehelp = helpdiv;
 }
 
 
