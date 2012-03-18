@@ -70,13 +70,27 @@ class JsonDataHooks {
 		$wgJsonData = new JsonData( $frame->title );
 
 		$json = $input;
+		$goodschema = true;
 		try {
 			$schematext = $wgJsonData->getSchemaText();
 		}
 		catch ( JsonDataException $e ) {
 			$schematext = $wgJsonData->readJsonFromPredefined( 'openschema' );
 			wfDebug( __METHOD__ . ": " . htmlspecialchars( $e->getMessage() ) . "\n" );
+			$goodschema = false;
 		}
+
+		$schematitletext = $wgJsonData->getSchemaTitleText();
+		if ( $goodschema && !is_null( $schematitletext ) ) {
+		    // Register dependency in templatelinks, using technique (and a
+			// little code) from http://www.mediawiki.org/wiki/Manual:Tag_extensions
+		    $schematitle = Title::newFromText( $schematitletext );
+		    $schemarev = Revision::newFromTitle( $schematitle );
+		    $schemaid = $schemarev ? $schemarev->getPage() : 0;
+		    $parser->mOutput->addTemplate( $schematitle, $schemaid,
+				$schemarev ? $schemarev->getId() : 0 );
+		}
+
 		$data = json_decode( $json, true );
 		$schema = json_decode( $schematext, true );
 		$rootjson = new JsonTreeRef( $data );

@@ -216,6 +216,23 @@ HEREDOC
 	}
 
 	/**
+	 * Return the schema title text.
+	 */
+	public function getSchemaTitleText() {
+		if( is_null( $this->schemainfo ) ) {
+			// getSchemaText populates schemainfo as an artifact
+			$this->getSchemaText();
+		}
+
+		if( $this->schemainfo['srctype'] == 'article' ) {
+			return $this->schemainfo['src'];
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
 	 * Find the correct schema and output that schema in the right spot of
 	 * the form.  The schema may come from one of several places:
 	 * a.  If the "schemaattr" is defined for a namespace, then from the
@@ -225,6 +242,7 @@ HEREDOC
 	 */
 	public function getSchemaText() {
 		if( is_null( $this->schematext ) ) {
+			$this->schemainfo = array();
 			$schemaTitleText = $this->getSchemaAttr();
 			$config = $this->getConfig();
 			$tag = $this->getTagName();
@@ -232,19 +250,23 @@ HEREDOC
 				$tag = $config['namespaces'][$this->nsname]['defaulttag'];
 			}
 			if ( !is_null( $schemaTitleText ) ) {
+				$this->schemainfo['srctype'] = 'article';
+				$this->schemainfo['src'] = $schemaTitleText;
 				$this->schematext = $this->readJsonFromArticle( $schemaTitleText );
 				if ( $this->schematext == '' ) {
 					throw new JsonDataException( "Invalid schema definition in ${schemaTitleText}" );
 				}
 			}
 			elseif ( $config['tags'][$tag]['schema']['srctype'] == 'article' ) {
-				$schemaTitleText = $config['tags'][$tag]['schema']['src'];
+				$this->schemainfo = $config['tags'][$tag]['schema'];
+				$schemaTitleText = $this->schemainfo['src'];
 				$this->schematext = $this->readJsonFromArticle( $schemaTitleText );
 				if ( $this->schematext == '' ) {
 					throw new JsonDataException( "Invalid schema definition in ${schemaTitleText}.  Check your site configuation for this tag." );
 				}
 			}
 			elseif ( $config['tags'][$tag]['schema']['srctype'] == 'predefined' ) {
+				$this->schemainfo = $config['tags'][$tag]['schema'];
 				$schemaTitleText = $config['tags'][$tag]['schema']['src'];
 				$this->schematext = $this->readJsonFromPredefined( $schemaTitleText );
 			}
