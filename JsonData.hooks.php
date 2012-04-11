@@ -111,7 +111,12 @@ class JsonDataHooks {
 	public static function validateDataEditFilter( $editor, $text, $section, &$error, $summary ) {
 		// I can't remember if jsondataobj needs to be a singleton/global, but
 		// will chance calling a new instance here.
-		$jsondataobj = new JsonData( $editor->getTitle() );
+		$title = $editor->getTitle();
+		$ns = $title->getNamespace();
+		if ( !JsonData::isJsonDataNeeded( $ns ) ) {
+			return true;
+		}
+		$jsondataobj = new JsonData( $title );
 		$json = JsonData::stripOuterTagsFromText( $text );
 		try {
 			$schematext = $jsondataobj->getSchemaText();
