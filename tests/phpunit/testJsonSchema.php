@@ -136,5 +136,12 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemafile);
 		$jsonref->validate();
 	}
+
+	public function testTypeBooleanFreeformField () {
+		$jsonfile = 'tests/phpunit/data/boolean.json';
+		$schemafile = 'schemas/openschema.json';
+		$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemafile);
+		$jsonref->validate();
+	}
 }
 

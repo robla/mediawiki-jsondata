@@ -245,7 +245,7 @@ class JsonTreeRef {
 		$nodetype = $this->schemaref->node['type'];
 
 		if ( $nodetype == 'any' ) {
-			if ( $this->node == null ) {
+			if ( $this->node === null ) {
 				return null;
 			} else {
 				return JsonUtil::getType( $this->node );
