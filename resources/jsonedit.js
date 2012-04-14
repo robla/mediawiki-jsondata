@@ -1,4 +1,4 @@
-// Copyright (c) 2005-2011 Rob Lanphier.
+// Copyright (c) 2005-2012 Rob Lanphier.
 // See http://robla.net/jsonwidget/LICENSE for license (BSD style)
 
 var jsonwidget = function() {}
@@ -18,7 +18,11 @@ jsonwidget.localstrings = {
     },
 };
 
-// faux-gettext() implementation.
+/*
+ * faux-gettext() implementation.
+ * @param {object} nodeindex - the key in a map, or index in a seq
+ * @return {string} string suitable for use as a title
+ */
 function _(s) {
     rc = s
     if (typeof(jsonwidget.language)!='undefined' &&
@@ -29,6 +33,12 @@ function _(s) {
     return rc;
 }
 
+/*
+ * Converts the string into something safe for an HTML id.
+ * performs the easiest transformation to safe id, but is lossy
+ * @param {string} str - pretransform string
+ * @return {string} result of transformation
+ */
 jsonwidget.stringToId = function (str) {
     // performs the easiest transformation to safe id, but is lossy
     if((typeof str)=='number') {
@@ -39,7 +49,12 @@ jsonwidget.stringToId = function (str) {
     }
     else error();
 }
-
+/*
+ * Pull title from the schema if its there, otherwise use the key
+ * @param {object} schemanode - schema associated with this node
+ * @param {object} nodeindex - the key in a map, or index in a seq
+ * @return {string} string suitable for use as a title
+ */
 jsonwidget.getTitleFromNode = function (schemanode, nodeindex) {
     if(undefined != schemanode.title) {
         return schemanode.title;
@@ -49,12 +64,18 @@ jsonwidget.getTitleFromNode = function (schemanode, nodeindex) {
     }
 }
 
+/*
+ * Given a type (e.g. 'map', 'int', 'str'), return the default/empty
+ * value for that type.
+ * @param {string} thistype - the type as defined in the schema
+ * @return {any} an empty value appropriate for the type
+ */
 jsonwidget.getNewValueForType = function(thistype) {
     switch(thistype) {
     case 'map':
         var newvalue = new Object();
         break;
-        
+
     case 'seq':
         var newvalue = new Array();
         break;
@@ -79,6 +100,11 @@ jsonwidget.getNewValueForType = function(thistype) {
 }
 
 
+/*
+ * Return a JSON-schema type for arbitrary data in var foo
+ * @param {any} foo - data to get the type for
+ * @return {string} JSON-schema type for the data foo
+ */
 jsonwidget.getType = function (foo) {
     if(foo==null) {
         return undefined;
@@ -93,30 +119,35 @@ jsonwidget.getType = function (foo) {
             return "map";
         }
         break;
-        
+
         case "number":
         return "number";
         break;
-        
+
         case "boolean":
         return "bool";
         break;
-        
+
         case "string":
         return "str";
         break;
-        
+
         default:
         return undefined;
         break;
     }
 }
 
+/*
+ * Generate a schema from a data example (var parent)
+ * @param {object} parent - raw data to generate schema for
+ * @return {object} a schema object appropriate for that element
+ */
 jsonwidget.getSchemaArray = function (parent) {
     var schema = new Object();
 
     schema.type = jsonwidget.getType(parent);
-    
+
     switch (schema.type) {
     case 'map':
         schema.mapping = new Object();
@@ -132,6 +163,20 @@ jsonwidget.getSchemaArray = function (parent) {
     return schema;
 }
 
+
+/*
+ * Internal terminology:
+ *   Node: "node" in the graph theory sense, but specifically, a node in the
+ *    raw Javascript data representation of the structure
+ *   Ref: a node in the object tree.  Refs contain nodes and metadata about the
+ *    nodes, as well as pointers to parent refs
+ */
+
+/*
+ * treeRef object:
+ * Structure for representing a generic tree which each node is aware of its
+ * context (can refer to its parent).  Used for schema refs.
+ */
 jsonwidget.treeRef = function (node, parent, nodeindex, nodename) {
     this.node = node;
     this.parent = parent;
@@ -139,10 +184,11 @@ jsonwidget.treeRef = function (node, parent, nodeindex, nodename) {
     this.nodename = nodename;
 }
 
-//
-// jsonTreeRef object
-//
-// not yet bothering to make this a subclass of treeRef
+/*
+ * jsonTreeRef object
+ * Structure for representing a data tree, where each node (ref) is aware of its
+ * context and associated schema.
+ */
 jsonwidget.jsonTreeRef = function (node, parent, nodeindex, nodename, schemaref) {
     this.node = node;
     this.parent = parent;
@@ -154,8 +200,8 @@ jsonwidget.jsonTreeRef = function (node, parent, nodeindex, nodename, schemaref)
     this.isUserKey = jsonwidget.jsonTreeRef.isUserKey;
     this.renamePropname = jsonwidget.jsonTreeRef.renamePropname;
     this.getType = jsonwidget.jsonTreeRef.getType;
-    this.getTitle = jsonwidget.jsonTreeRef.getTitle;    
-    this.getFullIndex = jsonwidget.jsonTreeRef.getFullIndex;    
+    this.getTitle = jsonwidget.jsonTreeRef.getTitle;
+    this.getFullIndex = jsonwidget.jsonTreeRef.getFullIndex;
     this.attachSchema = jsonwidget.jsonTreeRef.attachSchema;
 
     this.init();
@@ -167,21 +213,24 @@ jsonwidget.jsonTreeRef.init = function () {
     this.attachSchema();
 }
 
+/*
+ * Associate the relevant node of the JSON schema to this node in the JSON
+ */
 jsonwidget.jsonTreeRef.attachSchema = function () {
     if(this.schemaref.node.type == 'any') {
         if(this.getType()=='map') {
-            this.schemaref.node.mapping = { 
+            this.schemaref.node.mapping = {
                 "extension": {
-                    "title":"extension field", 
+                    "title":"extension field",
                     "type":"any"
                 }
             };
             this.schemaref.node.user_key = "extension";
         }
         else if(this.getType()=='seq') {
-            this.schemaref.node.sequence = [ 
+            this.schemaref.node.sequence = [
                     {
-                        "title":"extension field", 
+                        "title":"extension field",
                         "type":"any"
                     }
             ];
@@ -190,6 +239,10 @@ jsonwidget.jsonTreeRef.attachSchema = function () {
     }
 }
 
+/*
+ *  Return the title for this ref, typically defined in the schema as the
+ *  user-friendly string for this node.
+ */
 jsonwidget.jsonTreeRef.getTitle = function () {
     if(undefined != this.nodename) {
         return this.nodename;
@@ -199,14 +252,21 @@ jsonwidget.jsonTreeRef.getTitle = function () {
     }
 }
 
+/*
+ *  Is this node a "user key", as defined in http://jsonwidget.org/jsonschema/
+ */
 jsonwidget.jsonTreeRef.isUserKey = function () {
     return this.userkeyflag;
 }
 
+/*
+ * Rename a user key.  Useful for interactive editing/modification, but not
+ * so helpful for static interpretation.
+ */
 jsonwidget.jsonTreeRef.renamePropname = function (newindex) {
     var oldindex = this.nodeindex;
     this.parent.node[newindex] = this.node;
-    
+
     this.nodeindex = newindex;
     this.nodename = newindex;
     this.fullindex = this.getFullIndex();
@@ -214,6 +274,10 @@ jsonwidget.jsonTreeRef.renamePropname = function (newindex) {
     delete this.parent.node[oldindex];
 }
 
+/*
+ * Return the type of this node as specified in the schema.  If "any",
+ * infer it from the data.
+ */
 jsonwidget.jsonTreeRef.getType = function () {
     var nodetype = this.schemaref.node.type;
     if(nodetype == 'any') {
@@ -229,6 +293,11 @@ jsonwidget.jsonTreeRef.getType = function () {
     }
 }
 
+/*
+ * Return a unique identifier that may be used to find a node.  This
+ * is only as robust as stringToId is (i.e. not that robust), but is
+ * good enough for many cases.
+ */
 jsonwidget.jsonTreeRef.getFullIndex = function () {
     if(this.parent==undefined) {
         return "json_root";
@@ -239,10 +308,13 @@ jsonwidget.jsonTreeRef.getFullIndex = function () {
 }
 
 
-//
-// schemaIndex object
-//
-
+/*
+ * schemaIndex object
+ * The schemaIndex object holds all schema refs with an "id", and is used
+ * to resolve an idref to a schema ref.  This also holds the root of the schema
+ * tree.  This also serves as sort of a class factory for schema refs.
+ * The whole tree is indexed on instantiation of this class.
+ */
 jsonwidget.schemaIndex = function (schema) {
     this.root = schema;
     this.idtable = {};
@@ -257,9 +329,13 @@ jsonwidget.schemaIndex = function (schema) {
     this.indexSubtree(this.root);
 }
 
+/*
+ * Recursively find all of the ids in this schema, and store them in the
+ * index.
+ */
 jsonwidget.schemaIndex.indexSubtree = function (schemanode) {
     var nodetype = schemanode.type;
-    
+
     switch(nodetype) {
     case 'map':
         for(var i in schemanode.mapping) {
@@ -278,6 +354,10 @@ jsonwidget.schemaIndex.indexSubtree = function (schemanode) {
     }
 }
 
+/*
+ *  Generate a new schema ref, or return an existing one from the index if
+ *  the node is an idref.
+ */
 jsonwidget.schemaIndex.newRef = function (node, parent, nodeindex, nodename) {
     if(node.type == 'idref') {
         node =  this.idtable[node.idref];
@@ -287,9 +367,9 @@ jsonwidget.schemaIndex.newRef = function (node, parent, nodeindex, nodename) {
 
 //
 // Context object - this adds/strips context text.  For example, in MediaWiki, this
-// is used to add and remove <json>...</json> tags as appropriate.
+// is overridden to add and remove <json>...</json> tags as appropriate.  By default,
+// this doesn't do much.
 //
-
 jsonwidget.context = function () {
     this.addContextText = jsonwidget.context.addContextText;
     this.removeContextText = jsonwidget.context.removeContextText;
@@ -304,15 +384,17 @@ jsonwidget.context.removeContextText = function (jsontext) {
 }
 
 
-//
-// editor object
-//
-
+/*
+ * editor object
+ * This is the part that actually constructs the web form.  As of this writing,
+ * this object also contains important bits of schema handling mixed in (a
+ * regrettable design decision that will hopefully be untangled in the future).
+ */
 jsonwidget.editor = function () {
     this.buffer = new Array();
     this.bufferTree = document.createElement("div");
     this.bufferCurrent = this.bufferTree;
-        
+
     this.jsonLookupById = new Array();
     this.bgcolor = "#f0f0ff";
 
@@ -343,7 +425,7 @@ jsonwidget.editor = function () {
         schemaform: "je_schemaformbutton",
         schemaexample: "je_schemaexamplebutton"
     }
-    
+
     this.classname = {
         fgbutton: "je_foreground",
         bgbutton: "je_background"
@@ -402,6 +484,9 @@ jsonwidget.editor = function () {
     this.setFormOnSubmit = jsonwidget.editor.setFormOnSubmit;
 }
 
+/*
+ * If the schema editing tool is in use, initialize that too.
+ */
 jsonwidget.editor.schemaEditInit = function () {
     this.schemaedit = new jsonwidget.editor();
     var je = this;
@@ -423,10 +508,17 @@ jsonwidget.editor.schemaEditInit = function () {
     this.schemaedit.htmlids.schematextarea = this.htmlids.schemaschematextarea;
 }
 
+/*
+ * TODO: delete this.  kinda lame.  Only really used by the demo.
+ */
 jsonwidget.editor.byExampleInit = function () {
     this.showByExampleButton = true;
 }
 
+/*
+ * Generate a schema based on the JSON in the edit form.  The real work for
+ * this is done by jsonwidget.getSchemaArray()
+ */
 jsonwidget.editor.createSchemaFromExample = function () {
     this.updateJSON();
     if(this.jsondata == null) {
@@ -439,6 +531,11 @@ jsonwidget.editor.createSchemaFromExample = function () {
         this.setView(this.formview);
     }
 }
+
+/*
+ * This simply creates the button used for "create by example" function in the
+ * demo.  TODO: move this out into the demo since this isn't core functionality.
+ */
 
 jsonwidget.editor.attachByExampleText = function () {
     var examplebutton = document.createElement('span');
@@ -454,12 +551,21 @@ jsonwidget.editor.attachByExampleText = function () {
     this.formdiv.appendChild(document.createTextNode(" - clicking this button will generate a schema based on the current JSON file, and load it into the schema area.  It will also lock the current document into its current structure."));
 }
 
+
+/*
+ * There are generally at least two views: source view and form view.  This
+ * function shows form view.
+ */
 jsonwidget.editor.showForm = function (formnode) {
     this.formdiv.appendChild(formnode);
     formnode.style.background = "#ffffff";
     this.formdiv.style.display="inline";
 }
 
+/*
+ * Nuke all of the built-up form HTML.  The form gets rebuilt from JSON when
+ * switching from another view, so this can get called frequently.
+ */
 jsonwidget.editor.clearForm = function () {
     var parent = this.formdiv.parentNode;
     var nextsibling = this.formdiv.nextSibling;
@@ -468,6 +574,10 @@ jsonwidget.editor.clearForm = function () {
     parent.insertBefore(this.formdiv, nextsibling);
 }
 
+/*
+ * This is where the form-building work begins.  This builds the
+ * form for the root of the tree.
+ */
 jsonwidget.editor.attachHandlers = function () {
     var jsoneditobj = this;
     document.body.style.background = jsoneditobj.bgcolor;
@@ -491,7 +601,7 @@ jsonwidget.editor.attachHandlers = function () {
                 else if(nodetype == 'bool') {
                     var value = event.target.checked;
                 }
-                        
+
                 jsonnode.node = value;
                 if(jsonnode.parent != undefined) {
                     jsonnode.parent.node[jsonnode.nodeindex] = value;
@@ -528,6 +638,9 @@ jsonwidget.editor.attachHandlers = function () {
     }
 }
 
+/*
+ * Assign a value to this node.
+ */
 jsonwidget.editor.setNode = function (jsonnode, value) {
     if(jsonnode.parent != undefined) {
         jsonnode.parent.node[jsonnode.nodeindex] = value;
@@ -537,6 +650,10 @@ jsonwidget.editor.setNode = function (jsonnode, value) {
     }
 }
 
+/*
+ * Update the form elements of a node to match the newly updated data in
+ * that node.
+ */
 jsonwidget.editor.updateNode = function (jsonnode) {
     var value = jsonnode.node;
     if(jsonnode.parent != undefined) {
@@ -558,6 +675,9 @@ jsonwidget.editor.updateNode = function (jsonnode) {
     }
 }
 
+/*
+ * Delete the node, removing the associated HTML from the form.
+ */
 jsonwidget.editor.deleteNode = function (jsonindex) {
     var jsonnode = this.jsonLookupById[jsonindex];
     var parent = jsonnode.parent;
@@ -580,9 +700,13 @@ jsonwidget.editor.deleteNode = function (jsonindex) {
     }
 }
 
-
-
-
+/*
+ * This is where a lot of the heavy lifting is done.  This builds the form
+ * elements for array data types (maps and seqs).  The UI is recursively
+ * built for all of the data inside those arrays (calling attachNodeInput,
+ * which in turn calls attachSimplePropertyInput or attachArrayInput, which
+ * then calls this function).
+ */
 
 jsonwidget.editor.getArrayInputAttrs = function (jsonref) {
     var jsoni;
@@ -661,7 +785,9 @@ jsonwidget.editor.getArrayInputAttrs = function (jsonref) {
     return retval;
 }
 
-
+/*
+ * Get the clickable help text.
+ */
 jsonwidget.editor.getHelpButton = function (jsonref) {
     var helpid='help.'+jsonref.fullindex;
     var retval = document.createElement("span");
@@ -673,6 +799,10 @@ jsonwidget.editor.getHelpButton = function (jsonref) {
     return retval;
 }
 
+/*
+ * Get the clickable "hide" text, which collapses the UI for a section of the
+ * data hierarchy.
+ */
 jsonwidget.editor.getHideButton = function (jsonref) {
     var hideid='hide.'+jsonref.fullindex;
     var retval = document.createElement("span");
@@ -684,6 +814,9 @@ jsonwidget.editor.getHideButton = function (jsonref) {
     return retval;
 }
 
+/*
+ * Counterpart to "hide".  Clickable text to uncollapse a portion of the form.
+ */
 jsonwidget.editor.getShowButton = function (jsonref) {
     var showid='show.'+jsonref.fullindex;
     var retval = document.createElement("span");
@@ -696,6 +829,10 @@ jsonwidget.editor.getShowButton = function (jsonref) {
     return retval;
 }
 
+/*
+ * Clickable text which prunes this node and its children from the data tree.
+ * A confirmation question is inserted inline before nuking the text.
+ */
 jsonwidget.editor.getDeleteButton = function (jsonref) {
     var retval = document.createElement("span");
     var rmid='rmbutton.'+jsonref.fullindex;
@@ -715,9 +852,12 @@ jsonwidget.editor.getDeleteButton = function (jsonref) {
     retval.id=rmid;
     retval.appendChild(document.createTextNode("["+_("del")+"]"));
     return retval;
-}            
-        
+}
 
+/*
+ * This adds a new key to a map, providing as sensible default value and adding
+ * the new ref to the schemaIndex.
+ */
 jsonwidget.editor.addPropToMapping = function (jsonref, prop) {
     var newname = prop;
     var newindex = prop;
@@ -741,6 +881,8 @@ jsonwidget.editor.addPropToMapping = function (jsonref, prop) {
     var newschema = this.schemaindex.newRef(schemap[prop], jsonref.schemaref, prop, prop);
     var newvalue = jsonwidget.getNewValueForType(newschema.node.type);
     var newjson = new jsonwidget.jsonTreeRef(newvalue, jsonref, newindex, newname, newschema);
+    //TODO: figure out if this is vestigal code, or if there's ever a case
+    // where this is valid.
     if (jsonref.node instanceof Array) {
         jsonref.node.push(newvalue);
     }
@@ -751,6 +893,9 @@ jsonwidget.editor.addPropToMapping = function (jsonref, prop) {
     return newjson;
 }
 
+/*
+ * New button for adding a property to a map or a seq.
+ */
 jsonwidget.editor.getAddButton = function (jsonref, prop) {
     var schemap = jsonref.schemaref.node.mapping;
     var je = this;
@@ -787,6 +932,9 @@ jsonwidget.editor.addItemToSequence = function (jsonref) {
     return newjson;
 }
 
+/*
+ * Button to add another item to a sequence.
+ */
 jsonwidget.editor.getAddToSeqButton = function (jsonref) {
     var childschema = jsonref.schemaref.node.sequence[0];
     var je = this;
@@ -804,6 +952,10 @@ jsonwidget.editor.getAddToSeqButton = function (jsonref) {
     return addlink;
 }
 
+/*
+ * Adds the input for a map or a seq associated with the given jsonref to
+ * the form.
+ */
 jsonwidget.editor.attachArrayInput = function (jsonref) {
     var retval = document.createElement("fieldset");
     var localnode = document.createElement("legend");
@@ -845,7 +997,7 @@ jsonwidget.editor.attachArrayInput = function (jsonref) {
     }
     if(jsonref.getType()=='seq') {
         retval.appendChild(this.getAddToSeqButton(jsonref));
-    }            
+    }
     //wrap it all in a td
     if(jsonref.domparent.tagName == 'TR') {
         localnode = retval;
@@ -856,6 +1008,13 @@ jsonwidget.editor.attachArrayInput = function (jsonref) {
     jsonref.domparent.appendChild(retval);
 }
 
+/*
+ * If the schema allows for editing the map key (i.e. if this is a
+ * userkey), this function provides the input to change the name of
+ * the key (propname).  This isn't generally called directly, but rather
+ * via getPropnameSpan, which only shows the editing input after an
+ * onclick event.
+ */
 jsonwidget.editor.showPropnameInput = function (jsonref,htmlnode) {
     var nameinput = document.createElement("input");
     var nameinputid = 'nameinputid.'+jsonref.fullindex;
@@ -885,6 +1044,10 @@ jsonwidget.editor.showPropnameInput = function (jsonref,htmlnode) {
     nameinput.focus();
 }
 
+/*
+ * Displays a map key (propname) for editable keys (userkeys).  Adds an
+ * onclick handler (showPropnameInput) to edit the key onclick.
+ */
 jsonwidget.editor.getPropnameSpan = function (jsonref) {
     var nameinput = document.createElement("span");
     nameinput.appendChild(document.createTextNode(jsonref.nodename));
@@ -898,6 +1061,13 @@ jsonwidget.editor.getPropnameSpan = function (jsonref) {
     return nameinput;
 }
 
+/*
+ * This inserts an input field for simple, non-array field types (e.g.
+ * str, bool, int) via the DOM.  The HTML is appended to parent of the
+ * jsonref parameter and a reference to that DOM node is maintained within
+ * the jsonref.
+ * @param jsonref {jsonwidget.jsonTreeRef} node to associate HTML with
+ */
 jsonwidget.editor.attachSimplePropertyInput = function (jsonref) {
     var valuetype = jsonref.getType();
 
@@ -905,7 +1075,7 @@ jsonwidget.editor.attachSimplePropertyInput = function (jsonref) {
     case 'str':
         var inputelement = this.getStringInput(jsonref);
         break;
-                
+
     case 'bool':
         var inputelement = this.getBoolInput(jsonref);
         break;
@@ -914,7 +1084,7 @@ jsonwidget.editor.attachSimplePropertyInput = function (jsonref) {
     case 'int':
         var inputelement = this.getNumberInput(jsonref);
         break;
-                
+
     case 'any':
     case undefined:
         var inputelement = this.getTypeSelectInput(jsonref);
@@ -971,7 +1141,11 @@ jsonwidget.editor.attachSimplePropertyInput = function (jsonref) {
     parent.appendChild(valuenode);
     parent.appendChild(controlnode);
 }
-
+/*
+ * Return a string input, which can be a dropdown.
+ * @param {object} jsone
+ * @return {object} DOM input element
+ */
 jsonwidget.editor.getStringInput = function (jsonref) {
     var control = '';
     var curvalue = jsonref.node;
@@ -1007,6 +1181,12 @@ jsonwidget.editor.getStringInput = function (jsonref) {
     return inputelement;
 }
 
+/*
+ * When the schema allows type "any", then we need to declare what type
+ * we want the value to be.  This returns a type selection dropdown.
+ * @param {jsonTreeRef} JSON ref holding the data
+ * @return {object} DOM node with type selector.
+ */
 jsonwidget.editor.getTypeSelectInput = function (jsonref) {
     var control = '';
     var curvalue = jsonref.node;
@@ -1025,7 +1205,11 @@ jsonwidget.editor.getTypeSelectInput = function (jsonref) {
     return inputelement;
 }
 
-
+/*
+ * Return a checkbox to set a boolean value.
+ * @param {jsonTreeRef} JSON ref holding the data
+ * @return {object} DOM node with checkbox.
+ */
 jsonwidget.editor.getBoolInput = function getBoolInput(jsonref) {
     var jsoneditobj = this;
     var inputid = 'inputid.'+jsonref.fullindex;
@@ -1041,6 +1225,11 @@ jsonwidget.editor.getBoolInput = function getBoolInput(jsonref) {
     return inputelement;
 }
 
+/*
+ * Return a field to type a number into.
+ * @param {jsonTreeRef} JSON ref holding the data
+ * @return {object} DOM node with checkbox.
+ */
 jsonwidget.editor.getNumberInput = function getNumberInput(jsonref) {
     var jsoneditobj = this;
     var inputid = 'inputid.'+jsonref.fullindex;
@@ -1059,6 +1248,14 @@ jsonwidget.editor.getNumberInput = function getNumberInput(jsonref) {
     return inputelement;
 }
 
+/*
+ * Attach associated UI element to the part of the JSON tree referenced
+ * by jsonref.  This is called in a number of contexts:
+ * 1.  At the root to the JSON tree to build the UI
+ * 2.  As part of recursively building the UI (from getArrayInputAttrs)
+ * 3.  To refresh a portion of the UI
+ * @param {jsonTreeRef} JSON ref holding the data
+ */
 jsonwidget.editor.attachNodeInput = function attachNodeInput(jsonref) {
     var nodetype = jsonref.getType();
     var startTime=new Date().getTime();
@@ -1088,6 +1285,12 @@ jsonwidget.editor.attachNodeInput = function attachNodeInput(jsonref) {
     jsonref.rendertime = endTime - startTime;
 }
 
+/*
+ * Return a closure to set the view (e.g. to toggle between form and
+ * source view)
+ * @param {string} viewname - a valid view (see setView())
+ * @return {function} a callback for setting the view.
+ */
 jsonwidget.editor.getSetViewFunction = function (viewname) {
     var je = this;
     return function () {
@@ -1095,15 +1298,32 @@ jsonwidget.editor.getSetViewFunction = function (viewname) {
     }
 }
 
+/*
+ * Set the view (e.g. to toggle between form and source view).  Valid
+ * view names include:
+ * "form": automatically built form for editing JSON, derived from schema
+ *    and its data
+ * "source": edit the raw JSON source
+ * "schemaform": edit the associated schema with a form
+ * "schemasource": edit the schema source
+ * "schemaexample": a schema automatically derived from the JSON data.
+ * Other views can be defined in the viewHandler member variable.
+ * @param {string} viewtoset - a valid view to make visible
+ */
 jsonwidget.editor.setView = function setView (viewtoset) {
     this.setStatusLight("working...");
+    // iterate through all of the views, hiding all of them except for viewtoset
     for(var i in this.views) {
         var currentbutton = document.getElementById(this.htmlbuttons[this.views[i]]);
+        // don't hide viewtoset
         if(viewtoset == this.views[i]) {
             currentbutton.className = this.classname.fgbutton;
             currentbutton.onclick = null;
         }
         else {
+            // hide all of the others
+			// @todo: make all views use viewHandler[*]['hide'] instead of
+            //   having a big ugly case statement.
             switch (this.views[i]) {
             case 'form':
                 this.formdiv.style.display="none";
@@ -1128,6 +1348,8 @@ jsonwidget.editor.setView = function setView (viewtoset) {
         }
     }
 
+    // if this.currentView is a form view, make sure the JSON is updated to
+    // reflect the state of the form.
     switch (this.currentView) {
     case 'form':
         this.updateJSON();
@@ -1139,6 +1361,10 @@ jsonwidget.editor.setView = function setView (viewtoset) {
 
     var je = this;
 
+    // now show viewtoset
+    // @todo: make all views use viewHandler[*]['show'] instead of having
+    //   a big ugly case statement.
+
     switch (viewtoset) {
     case "source":
         setTimeout(function () {
@@ -1146,7 +1372,7 @@ jsonwidget.editor.setView = function setView (viewtoset) {
             je.clearStatusLight();
         },this.getStatusLightDelay(null));
         break;
-            
+
     case "form":
         setTimeout(function () {je.toggleToFormActual()},this.getStatusLightDelay(this.rootjson));
         break;
@@ -1178,7 +1404,19 @@ jsonwidget.editor.setView = function setView (viewtoset) {
     this.currentView = viewtoset;
 }
 
-
+/*
+ * Ah, I remember writing Javascript in 2005!  This was some ugly hackary
+ * for setting a status indicator, since back in 2005, Javascript (and
+ * my computer) were slow enough that it often took a while to build the
+ * form.  This function tries to guess how long the minimum time to show
+ * the status indicator should be.
+ * All of this callback stuff makes this more complicated than it needs
+ * to be with modern Javascript implementations, and can probably be
+ * ripped out.
+ * @param {jsonTreeRef} place to pull historical render time information
+ *   from
+ * @return {int} timeout value
+ */
 jsonwidget.editor.getStatusLightDelay = function (jsonref) {
     if(jsonref != null && jsonref != undefined && jsonref.rendertime != undefined) {
         var timeout = jsonref.rendertime / 20;
@@ -1194,6 +1432,10 @@ jsonwidget.editor.getStatusLightDelay = function (jsonref) {
     return timeout;
 }
 
+/*
+ * Set a status indicator (e.g. "working...")
+ * @param {string} statustext - the "working..." text
+ */
 jsonwidget.editor.setStatusLight = function (statustext) {
     var statustextnode=document.createTextNode(statustext);
     if(this.statusLight == undefined) {
@@ -1213,11 +1455,22 @@ jsonwidget.editor.setStatusLight = function (statustext) {
         this.statusLight.style.visibility = "visible";
     }
 }
-
+/*
+ * Clear the status indicator set by setStatusLight
+ */
 jsonwidget.editor.clearStatusLight = function () {
     this.statusLight.style.visibility = "hidden";
 }
 
+/*
+ * This is toggleToFormActual().  You know that function toggleToForm()?
+ * Imposter!  This is the real deal.  Ok, there's not actually a
+ * toggleToForm() function, but the purpose of toggleToFormAcutal() is
+ * to serve as a callback to call after the delay from
+ * getStatusLightDelay().  This function loads the schema and the JSON
+ * into a jsonTreeRef (implicitly validating the JSON against the schema)
+ * and then calls attachNodeInput to recursively build the form.
+ */
 jsonwidget.editor.toggleToFormActual = function () {
     var endTime;
     var startTime=new Date().getTime();
@@ -1226,9 +1479,11 @@ jsonwidget.editor.toggleToFormActual = function () {
     this.warningwindow = document.getElementById(this.htmlids.warningdiv);
     this.clearWarnings();
 
-    //need to move this
+    // I wrote "need to move this" in 2005.  I don't know why now.
     this.setFormOnSubmit();
 
+    // Get some timing info purely for performance testing.  This is
+	// debug cruft that probably isn't that important anymore.
     var startTime=new Date().getTime();
     var endTime;
     var jsonarea = document.getElementById(this.htmlids.sourcetextarea);
@@ -1257,6 +1512,9 @@ jsonwidget.editor.toggleToFormActual = function () {
     }
 
     var jsontext = jsonarea.value;
+    // remove any extra text around the JSON in question.  This was added
+    // as a hook for MediaWiki integration, so that the parser tag could
+    // be removed.
     jsontext = this.context.removeContextText(jsontext);
 
     try {
@@ -1276,13 +1534,13 @@ jsonwidget.editor.toggleToFormActual = function () {
 
     var nodename = jsonwidget.getTitleFromNode(schema, _("Root node"));
     var rootschema = this.schemaindex.newRef(schema, null, null, nodename);
+    // Associate the schema with the JSON via new jsonTreeRef object
     var rootjson = new jsonwidget.jsonTreeRef(this.jsondata, null, null, nodename, rootschema);
     this.rootjson = rootjson;
     this.jsonLookupById[rootjson.fullindex]=rootjson;
 
+    // build the form
     this.clearForm();
-
-            
     rootjson.domparent = document.createElement("form");
     this.showForm(rootjson.domparent);
     this.attachNodeInput(rootjson);
@@ -1290,14 +1548,24 @@ jsonwidget.editor.toggleToFormActual = function () {
         this.attachByExampleText();
     }
 
+    // more debug cruft
     endTime=new Date().getTime();
     this.debugOut(1, '#2 Elapsed time: '+((endTime-startTime)/1000));
+
+    // attach callbacks for the [show][hide][del] widgets
     this.attachHandlers();
     this.clearStatusLight();
 }
 
-// fills textarea with JSON serialization of data, wrapping the JSON with
-// context text
+/*
+ * Fills textarea with JSON serialization of data, wrapping the JSON with
+ * context text
+
+ * @param {object} textarea - DOM node to put JSON text into
+ * @param {object} data - Data to serialize as JSON and stuff into textarea
+ * @param {object} context - The object that can prepend/append context text
+ *   around the serialized text.
+ */
 jsonwidget.editor.updateArea = function (textarea, data, context) {
     var parent = textarea.parentNode;
     var nextsibling = textarea.nextSibling;
@@ -1315,6 +1583,9 @@ jsonwidget.editor.updateArea = function (textarea, data, context) {
     parent.insertBefore(textarea, nextsibling);
 }
 
+/*
+ * Update the textarea in the form to match the data tree.
+ */
 jsonwidget.editor.updateJSON = function () {
     var textarea = document.getElementById(this.htmlids.sourcetextarea);
     var data = this.jsondata;
@@ -1322,6 +1593,9 @@ jsonwidget.editor.updateJSON = function () {
     this.updateArea(textarea, data, context);
 }
 
+/*
+ * If using the "schema by example" feature, this will update the schema.
+ */
 jsonwidget.editor.updateSchemaExample = function () {
     var textarea = document.getElementById(this.htmlids.schemaexamplearea);
     var data = jsonwidget.getSchemaArray(je.jsondata);
@@ -1329,13 +1603,20 @@ jsonwidget.editor.updateSchemaExample = function () {
     this.updateArea(textarea, data, context);
 }
 
+/*
+ * Generic error handler for jsonwidget.editor object.
+ */
 jsonwidget.editor.error = function (m) {
     throw {
         name: 'jsonedit_error',
         message: m
     }
 }
-
+/*
+ * Attempt to gracefully handle a JSON parsing error with a descriptive
+ * and specific error message.
+ * @param {object} error - error object from JSON parser.
+ */
 jsonwidget.editor.handleParseError = function (error) {
     var errorstring = '';
     var errorpre = document.createElement("pre");
@@ -1367,13 +1648,23 @@ jsonwidget.editor.handleParseError = function (error) {
     return retval;
 }
 
+/*
+ * Output to debug window if the debug message is relevant to the current
+ * debug level.
+ * @param {int} level
+ */
+
 jsonwidget.editor.debugOut = function (level, text) {
     if(level<=this.debuglevel) {
         this.debugwindow.appendChild(document.createTextNode(text));
         this.debugwindow.appendChild(document.createElement("br"));
     }
 }
-
+/*
+ * Output a warning to the warning window.
+ * @param {text|object} Either plain text, or a DOM node.  Plain text gets
+ *   escaped on output.  Use a DOM node for formatted text.
+ */
 jsonwidget.editor.warningOut = function (text) {
     if(text instanceof Node) {
         this.warningwindow.appendChild(text);
@@ -1383,11 +1674,16 @@ jsonwidget.editor.warningOut = function (text) {
     this.warningwindow.appendChild(document.createElement("br"));
 }
 
+/*
+ * Empty the contents of the warning window.
+ */
 jsonwidget.editor.clearWarnings = function () {
     this.warningwindow.innerHTML ="";
 }
 
-
+/*
+ * Display context help based on an event.
+ */
 jsonwidget.editor.contextHelp = function(event, jsonnode) {
     if(this.activehelp != null) {
         var parent = this.activehelp.parentElement;
@@ -1425,8 +1721,8 @@ jsonwidget.editor.contextHelp = function(event, jsonnode) {
     helpdiv.style.left = event.pageX-10;
 
     var hideContextHelp = function (event) {
-        if((helpdiv.compareDocumentPosition(event.relatedTarget) 
-            & Node.DOCUMENT_POSITION_CONTAINED_BY) == 0 
+        if((helpdiv.compareDocumentPosition(event.relatedTarget)
+            & Node.DOCUMENT_POSITION_CONTAINED_BY) == 0
            && helpdiv.compareDocumentPosition(event.relatedTarget) != 0) {
                jsonnode.domparent.removeChild(helpdiv);
            }
@@ -1439,11 +1735,15 @@ jsonwidget.editor.contextHelp = function(event, jsonnode) {
     this.activehelp = helpdiv;
 }
 
-
+/*
+ * Display a makeshift confirmation dialog when deleting a node from the tree.
+ * Called from attachHandlers
+ * @param {object} the jsonwidget.editor object.
+ */
 jsonwidget.editor.confirmDelete = function (jsoneditobj, jsonref, el) {
     var rmyesid='rmyesid.'+jsonref.fullindex;
     var rmnoid='rmnoid.'+jsonref.fullindex;
-    
+
     el.innerHTML='';
     el.appendChild(document.createElement("br"));
     el.appendChild(document.createTextNode(_("delete")+"? "));
@@ -1462,7 +1762,7 @@ jsonwidget.editor.confirmDelete = function (jsoneditobj, jsonref, el) {
         }
     }
     yesbutton.appendChild(document.createTextNode("["+_("yes")+"]"));
-    
+
     var nobutton = document.createElement("span");
     nobutton.onclick = function (event) {
         // ie workarounds:
@@ -1480,14 +1780,17 @@ jsonwidget.editor.confirmDelete = function (jsoneditobj, jsonref, el) {
         }
     }
     nobutton.appendChild(document.createTextNode("["+_("no")+"]"));
-    
+
     el.appendChild(yesbutton);
     el.appendChild(nobutton);
 }
-
+/*
+ *  Pull in the schema from the (possibly hidden) textarea and parse it
+ *  @retval {object} The parsed schema
+ */
 jsonwidget.editor.getSchema = function () {
     var schemaarea = document.getElementById(this.htmlids.schematextarea);
-    
+
     try {
         var retval = JSON.parse(schemaarea.value);
     }
@@ -1512,6 +1815,10 @@ jsonwidget.editor.getSchema = function () {
     return retval;
 }
 
+/*
+ * Update the textarea from the form prior to submitting, so that the latest
+ * edits get submitted.
+ */
 jsonwidget.editor.setFormOnSubmit = function () {
     var je = this;
     var sourcetextform = document.getElementById(this.htmlids.sourcetextform);
