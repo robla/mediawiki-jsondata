@@ -63,7 +63,7 @@ class JsonData {
 <div id="je_servererror">${servererror}</div>
 <div id="je_warningdiv"></div>
 
-<div style="overflow:auto;">
+<div class="jsondata_tabs">
 	<div class="vectorTabs">
 		<ul>
 HEREDOC

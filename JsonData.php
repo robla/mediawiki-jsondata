@@ -59,7 +59,10 @@ $wgResourceModules['ext.jsonwidget'] = array(
 		'jsonedit.js',
 		'mw.jsondata.js'
 		),
-	'styles' => 'jsonwidget.css',
+	'styles' => array(
+		'mw.jsondata.css',
+		'jsonwidget.css'
+		),
 	'localBasePath' => dirname( __FILE__ ) . '/resources',
 	'remoteExtPath' => 'JsonData/resources'
 );
