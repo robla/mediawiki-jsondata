@@ -45,7 +45,14 @@ class JsonDataMarkup {
 	public static function getSimpleMarkup( $jsonref, $depth ) {
 		$markup = JsonDataMarkup::getTitleMarkup( $jsonref, $depth );
 		$markup .= ": ";
-		$markup .= $jsonref->node;
+		if ( is_bool( $jsonref->node ) ) {
+			$true = wfMessage( 'jsondata-true' );
+			$false = wfMessage( 'jsondata-false' );
+			$markup .= $jsonref->node ? $true : $false;
+		}
+		else {
+			$markup .= $jsonref->node;
+		}
 		$markup .= "\n";
 		return $markup;
 	}
