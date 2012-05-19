@@ -32,7 +32,8 @@ class JsonUtil {
 		elseif ( is_string( $var ) ) {
 			return preg_replace( '/[^a-z0-9\-_:\.]/i', '', $var );
 		} else {
-			throw new JsonSchemaException( 'Cannot convert var to id' . print_r( $var, true ) );
+			$msg = JsonUtil::uiMessage( 'jsonschema-idconvert', print_r( $var, true ) );
+			throw new JsonSchemaException( $msg );
 		}
 
 	}
@@ -125,6 +126,21 @@ class JsonUtil {
 		return $schema;
 	}
 
+	/*
+	 * User interface messages suitable for translation.
+	 * Note: this merely acts as a passthrough to MediaWiki's wfMessage call.
+	 */
+	public static function uiMessage() {
+		if( function_exists( 'wfMessage' ) ) {
+			return call_user_func_array( 'wfMessage', $params = func_get_args() );
+		}
+		else {
+			// TODO: replace this with a real solution that works without 
+			// MediaWiki
+			$params = func_get_args();
+			return $params[0];
+		}
+	}
 }
 
 
@@ -326,8 +342,9 @@ class JsonTreeRef {
 			if( array_key_exists( $key, $this->schemaref->node['mapping'] ) ) {
 				$schemadata = $this->schemaref->node['mapping'][$key];
 			} else {
-				throw new JsonSchemaException( 'Invalid key ' . $key .
-					" in ". $this->getDataPathTitles() );
+				$msg = JsonUtil::uiMessage( 'jsonschema-invalidkey',
+											$key, $this->getDataPathTitles() );
+				throw new JsonSchemaException( $msg );
 			}
 		}
 		$value = $this->node[$key];
@@ -367,16 +384,16 @@ class JsonTreeRef {
 		}
 		if ( $datatype != $schematype ) {
 			if ( is_null( $datatype ) && !is_object( $this->parent )) {
-				$e = new JsonSchemaException( 'Empty data structure not valid with this schema' );
+				$msg = JsonUtil::uiMessage( 'jsonschema-invalidempty' );
+				$e = new JsonSchemaException( $msg );
 				$e->subtype = "validate-fail-null";
-				throw($e);
+				throw( $e );
 			} else {
 				$datatype = is_null( $datatype ) ? "null" : $datatype;
-				$e = new JsonSchemaException( 'Invalid node: expecting ' . $schematype .
-					', got ' . $datatype . '.  Path: ' .
-					$this->getDataPathTitles() );
+				$msg = JsonUtil::uiMessage( 'jsonschema-invalidnode', $schematype, $datatype, $this->getDataPathTitles() );
+				$e = new JsonSchemaException( $msg );
 				$e->subtype = "validate-fail";
-				throw($e);
+				throw( $e );
 			}
 		}
 		switch ( $schematype ) {
@@ -455,7 +472,8 @@ class JsonSchemaIndex {
 				$node = $this->idtable[$node['idref']];
 			}
 			catch ( Exception $e ) {
-				throw new JsonSchemaException( 'Bad idref: ' . $node['idref'] );
+				$error = JsonUtil::uiMessage( 'jsonschema-badidref', $node['idref'] );
+				throw new JsonSchemaException( $error );
 			}
 		}
 

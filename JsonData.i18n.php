@@ -21,7 +21,12 @@ $messages['en'] = array(
 	'prefs-jsondata' => 'JsonData',
 	'jsondata-servervalidationerror' => 'Server validation error',
 	'jsondata-invalidjson' => 'Invalid JSON',
-	'jsondata-server-error' => 'Server error'
+	'jsondata-server-error' => 'Server error',
+	'jsonschema-badidref' => 'Bad idref: $1',
+	'jsonschema-idconvert' => 'Cannot convert var to id: $1', 
+	'jsonschema-invalidkey' => 'Invalid key $1 in $2',
+	'jsonschema-invalidempty' => 'Empty data structure not valid with this schema',
+	'jsonschema-invalidnode' => 'Invalid node: expecting $1, got $2.  Path: $3',
 );
 
 
