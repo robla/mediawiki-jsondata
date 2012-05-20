@@ -84,7 +84,6 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 
     /**
      * @expectedException JsonSchemaException
-     * @group legacyschema
      */
 	public function testJsonSchemaValidateBadIdref() {
 		$jsonfile = 'tests/phpunit/data/1/test5.json';
@@ -95,7 +94,6 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 
     /**
      * @expectedException JsonSchemaException
-     * @group legacyschema
      */
 	public function testJsonSchemaValidateBadData() {
 		$jsonfile = 'tests/phpunit/data/1/test5.json';
@@ -133,9 +131,6 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref->validate();
 	}
 
-    /**
-     * @group legacyschema
-     */
 	public function testExtensionFieldGetTitle () {
 		$jsonfile = 'tests/phpunit/data/ab.json';
 		$schemafile = 'schemas/openschema.json';

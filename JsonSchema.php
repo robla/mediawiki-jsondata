@@ -204,9 +204,8 @@ class JsonTreeRef {
 		}
 		if ( $this->schemaref->node['type'] == 'any' ) {
 			if ( $this->getType() == 'object' ) {
-				$this->schemaref->node['properties'] =
-					array( "extension" => array( "type" => "any" ) );
-				$this->schemaref->node['user_key'] = "extension";
+				$this->schemaref->node['additionalProperties'] =
+					array( "type" => "any" );
 			}
 
 			elseif ( $this->getType() == 'array' ) {
@@ -325,19 +324,18 @@ class JsonTreeRef {
 	 */
 	public function getMappingChildRef( $key ) {
 		$snode = $this->schemaref->node;
-		if ( array_key_exists( 'additionalProperties', $snode ) &&
-			 $snode['additionalProperties'] !== false &&
-			 !array_key_exists( $key, $this->schemaref->node['properties'] ) ) {
+		if( array_key_exists( 'properties', $snode ) &&
+			array_key_exists( $key, $snode['properties'] ) ) {
+			$schemadata = $snode['properties'][$key];
+		}
+		elseif ( array_key_exists( 'additionalProperties', $snode ) &&
+				 $snode['additionalProperties'] !== false ) {
 			$schemadata = $snode['additionalProperties'];
 		}
 		else {
-			if( array_key_exists( $key, $snode['properties'] ) ) {
-				$schemadata = $snode['properties'][$key];
-			} else {
-				$msg = JsonUtil::uiMessage( 'jsonschema-invalidkey',
-											$key, $this->getDataPathTitles() );
-				throw new JsonSchemaException( $msg );
-			}
+			$msg = JsonUtil::uiMessage( 'jsonschema-invalidkey',
+										$key, $this->getDataPathTitles() );
+			throw new JsonSchemaException( $msg );
 		}
 		$value = $this->node[$key];
 		$nodename = isset( $schemadata['title'] ) ? $schemadata['title'] : $key;
