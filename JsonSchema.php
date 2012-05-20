@@ -398,19 +398,41 @@ class JsonTreeRef {
 		}
 		switch ( $schematype ) {
 			case 'map':
-				foreach ( $this->node as $key => $value ) {
-					$jsoni = $this->getMappingChildRef( $key );
-					$jsoni->validate();
-				}
+				$this->validateObjectChildren();
 				break;
 			case 'seq':
-				for ( $i = 0; $i < count( $this->node ); $i++ ) {
-					$jsoni = $this->getSequenceChildRef( $i );
-					$jsoni->validate();
-				}
+				$this->validateArrayChildren();
 				break;
 		}
 		return true;
+	}
+
+	/*
+	 */
+	private function validateObjectChildren() {
+		foreach ( $this->schemaref->node['mapping'] as $skey => $svalue ) {
+			$keyRequired = array_key_exists( 'required', $svalue ) ? $svalue['required'] : false;
+			if( $keyRequired && !array_key_exists( $skey, $this->node ) ) {
+				$msg = JsonUtil::uiMessage( 'jsonschema-invalid-missingfield' );
+				$e = new JsonSchemaException( $msg );
+				$e->subtype = "validate-fail-missingfield";
+				throw( $e );
+			}
+		}
+		foreach ( $this->node as $key => $value ) {
+			$jsoni = $this->getMappingChildRef( $key );
+			$jsoni->validate();
+		}
+		return true;
+	}
+
+	/*
+	 */
+	private function validateArrayChildren() {
+		for ( $i = 0; $i < count( $this->node ); $i++ ) {
+			$jsoni = $this->getSequenceChildRef( $i );
+			$jsoni->validate();
+		}
 	}
 }
 

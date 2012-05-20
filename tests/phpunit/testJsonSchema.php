@@ -102,6 +102,23 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref->validate();
 	}
 
+	public function testJsonSchemaValidateGoodLocation() {
+		$jsonfile = 'tests/phpunit/data/validlocation.json';
+		$schemafile = 'tests/phpunit/data/schemalocation.json';
+		$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemafile);
+		$jsonref->validate();
+	}
+
+    /**
+     * @expectedException JsonSchemaException
+     */
+	public function testJsonSchemaValidateMissingFieldLocation() {
+		$jsonfile = 'tests/phpunit/data/missingfieldlocation.json';
+		$schemafile = 'tests/phpunit/data/schemalocation.json';
+		$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemafile);
+		$jsonref->validate();
+	}
+
     /**
      * @expectedException JsonSchemaException
      */
