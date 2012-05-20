@@ -142,9 +142,6 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$this->assertNotEquals( $atitle, $btitle );
 	}
 
-    /**
-     * @group legacyschema
-     */
 	public function testJsonSchemaValidateEmptyMap() {
 		$jsonfile = 'tests/phpunit/data/emptymap.json';
 		$schemafile = 'schemas/datatype-example-schema.json';
@@ -152,9 +149,6 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref->validate();
 	}
 
-    /**
-     * @group legacyschema
-     */
 	public function testJsonSchemaValidateInteger() {
 		$jsonfile = 'tests/phpunit/data/inttest.json';
 		$schemafile = 'schemas/datatype-example-schema.json';
@@ -162,9 +156,6 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref->validate();
 	}
 
-    /**
-     * @group legacyschema
-     */
 	public function testTypeBooleanFreeformField () {
 		$jsonfile = 'tests/phpunit/data/boolean.json';
 		$schemafile = 'schemas/openschema.json';
