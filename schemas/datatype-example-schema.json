@@ -1,74 +1,88 @@
 {
-  "type":"seq",
-  "title":"Datatype example schema (datatype-example-schema.json)\n  Not terribly useful for anything other than demonstration purposes.  Edit one\n  of the existing schemas for your purpose, or generate one using the online\n  tool at http://robla.net/2005/jsonwidget\nData",
   "desc":"Example with all datatypes in one place",
-  "sequence":
+  "optional":true,
+  "title":"Datatype example schema (datatype-example-schema.json)\n  Not terribly useful for anything other than demonstration purposes.  Edit one\n  of the existing schemas for your purpose, or generate one using the online\n  tool at http://robla.net/2005/jsonwidget\nData",
+  "type":"array",
+  "items":
   [
     {
-      "type":"map",
+      "optional":true,
       "title":"Item",
-      "mapping":
+      "type":"object",
+      "properties":
       {
         "map_example":
         {
-          "type":"map",
+          "optional":true,
           "title":"Map (map)",
-          "mapping":
+          "type":"object",
+          "properties":
           {
             "field1":
             {
-              "type":"str"
+              "optional":true,
+              "type":"string"
             },
             "field2":
             {
-              "type":"str"
+              "optional":true,
+              "type":"string"
             }
-          }
+          },
+          "additionalProperties":false
         },
         "seq_example":
         {
-          "type":"seq",
+          "optional":true,
           "title":"Sequence (seq)",
-          "sequence":
+          "type":"array",
+          "items":
           [
             {
-              "title":"Item",
-              "type":"str"
+              "optional":true,
+              "type":"string",
+              "title":"Item"
             }
           ]
         },
         "num_example":
         {
-          "title":"Number (num)",
-          "type":"number"
+          "optional":true,
+          "type":"number",
+          "title":"Number (num)"
         },
         "int_example":
         {
-          "title":"Integer (int)",
-          "type":"int"
+          "optional":true,
+          "type":"integer",
+          "title":"Integer (int)"
         },
         "str_example":
         {
-          "title":"String (str)",
-          "type":"str"
+          "optional":true,
+          "type":"string",
+          "title":"String (str)"
         },
         "bool_example":
         {
-          "title":"Boolean (bool)",
-          "type":"bool"
+          "optional":true,
+          "type":"boolean",
+          "title":"Boolean (bool)"
         },
         "str_enum_example":
         {
-          "title":"String Enumeration (str + enum)",
-          "type":"str",
+          "optional":true,
           "enum":
           [
             "value1",
             "value2",
             "value3"
-          ]
+          ],
+          "type":"string",
+          "title":"String Enumeration (str + enum)"
         }
-      }
+      },
+      "additionalProperties":false
     }
   ]
 }

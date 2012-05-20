@@ -1,4 +1,5 @@
 {
-    "title": "Freeform (unrestricted) JSON",
-    "type": "any"
+  "optional":true,
+  "type":"any",
+  "title":"Freeform (unrestricted) JSON"
 }

@@ -1,49 +1,59 @@
 {
-    "items": [
+  "items":
+  [
+    {
+      "additionalProperties":false,
+      "optional":true,
+      "properties":
+      {
+        "Address":
         {
-            "additionalProperties": false,
-            "optional": true,
-            "properties": {
-                "Address": {
-                    "optional": true,
-                    "type": "string"
-                },
-                "City": {
-                    "optional": true,
-                    "type": "string"
-                },
-                "Country": {
-                    "optional": true,
-                    "type": "string"
-                },
-                "Latitude": {
-                    "optional": false,
-                    "type": "number"
-                },
-                "Longitude": {
-                    "optional": false,
-                    "type": "number"
-                },
-                "State": {
-                    "optional": true,
-                    "type": "string"
-                },
-                "Zip": {
-                    "optional": true,
-                    "type": "string"
-                },
-                "precision": {
-                    "desc": "The size of the area being described (e.g. state, zip, city, etc)",
-                    "optional": false,
-                    "title": "Precision",
-                    "type": "string"
-                }
-            },
-            "title": "Location",
-            "type": "object"
+          "optional":true,
+          "type":"string"
+        },
+        "City":
+        {
+          "optional":true,
+          "type":"string"
+        },
+        "Country":
+        {
+          "optional":true,
+          "type":"string"
+        },
+        "Latitude":
+        {
+          "optional":false,
+          "type":"number"
+        },
+        "Longitude":
+        {
+          "optional":false,
+          "type":"number"
+        },
+        "State":
+        {
+          "optional":true,
+          "type":"string"
+        },
+        "Zip":
+        {
+          "optional":true,
+          "type":"string"
+        },
+        "precision":
+        {
+          "desc":"The size of the area being described (e.g. state, zip, city, etc)",
+          "optional":false,
+          "title":"Precision",
+          "type":"string"
         }
-    ],
-    "optional": true,
-    "title": "Location data",
-    "type": "array"
+      },
+      "title":"Location",
+      "type":"object"
+    }
+  ],
+  "optional":true,
+  "title":"Location data",
+  "type":"array"
 }

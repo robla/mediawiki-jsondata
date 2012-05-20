@@ -1,135 +1,141 @@
 {
-  "type":"seq",
+  "optional":true,
   "title":"Address Book",
-  "sequence":
+  "type":"array",
+  "items":
   [
     {
-      "type":"map",
+      "optional":true,
       "title":"Address Book Entry",
-      "mapping":
+      "type":"object",
+      "properties":
       {
         "firstName":
         {
-          "type":"str",
-          "title":"First Name",
-          "required":true
+          "optional":false,
+          "type":"string",
+          "title":"First Name"
         },
         "lastName":
         {
-          "type":"str",
-          "title":"Last Name",
-          "required":true
+          "optional":false,
+          "type":"string",
+          "title":"Last Name"
         },
         "organizations":
         {
-          "type":"seq",
-          "title":"Affiliations",
           "desc":"A list of organizations with which this person is affiliated.",
-          "sequence":
+          "optional":true,
+          "title":"Affiliations",
+          "type":"array",
+          "items":
           [
             {
-              "type":"map",
-              "required":true,
-              "mapping":
+              "optional":false,
+              "title":"Organization",
+              "type":"object",
+              "properties":
               {
                 "name":
                 {
-                  "type":"str",
-                  "required":true,
+                  "optional":false,
+                  "type":"string",
                   "title":"Organization Name"
                 },
                 "title":
                 {
-                  "type":"str",
+                  "optional":true,
+                  "type":"string",
                   "title":"Title/Role"
                 },
                 "department":
                 {
-                  "type":"str",
+                  "optional":true,
+                  "type":"string",
                   "title":"Department"
                 },
                 "type":
                 {
-                  "type":"str",
-                  "desc":"What is the nature of this person's affiliation with the organization?",
+                  "title":"Type",
                   "enum":
                   [
                     "job",
                     "school",
                     "other"
                   ],
-                  "title":"Type"
+                  "type":"string",
+                  "optional":true,
+                  "desc":"What is the nature of this person's affiliation with the organization?"
                 }
               },
-              "title":"Organization"
+              "additionalProperties":false
             }
           ]
         },
         "addresses":
         {
-          "type":"seq",
+          "optional":true,
           "title":"Mailing/Street Addresses",
-          "sequence":
+          "type":"array",
+          "items":
           [
             {
-              "type":"map",
+              "optional":false,
               "title":"Address",
-              "required":true,
-              "mapping":
+              "type":"object",
+              "properties":
               {
                 "streetAddress":
                 {
-                  "type":"str",
-                  "title":"Street Address",
-                  "required":true
+                  "optional":false,
+                  "type":"string",
+                  "title":"Street Address"
                 },
                 "locality":
                 {
-                  "type":"str",
-                  "title":"City (locality)",
-                  "required":true
+                  "optional":false,
+                  "type":"string",
+                  "title":"City (locality)"
                 },
                 "region":
                 {
-                  "type":"str",
-                  "title":"State/Provence/Region",
-                  "required":true
+                  "optional":false,
+                  "type":"string",
+                  "title":"State/Provence/Region"
                 },
                 "postalCode":
                 {
-                  "type":"str",
-                  "title":"Postal (Zip) Code",
                   "desc":"Post office code, such as zip code in the U.S.  If editing this data in JSON or YAML format directly, be sure to quote this as a string so that leading zeros aren't stripped.",
-                  "required":true
+                  "type":"string",
+                  "optional":false,
+                  "title":"Postal (Zip) Code"
                 },
                 "country":
                 {
-                  "type":"str",
-                  "title":"Country",
-                  "required":true
+                  "optional":false,
+                  "type":"string",
+                  "title":"Country"
                 }
-              }
+              },
+              "additionalProperties":false
             }
           ]
         },
         "phoneNumbers":
         {
-          "type":"seq",
+          "optional":true,
           "title":"Phone number(s)",
-          "sequence":
+          "type":"array",
+          "items":
           [
             {
-              "type":"map",
+              "optional":false,
               "title":"Phone number",
-              "required":true,
-              "mapping":
+              "type":"object",
+              "properties":
               {
                 "workhomeother":
                 {
-                  "type":"str",
-                  "required":true,
-                  "title":"Work/Home/Other",
-                  "desc":"Is this number a work phone, home phone, etc?",
                   "enum":
                   [
                     "Work",
@@ -137,82 +143,87 @@
                     "Mobile",
                     "Fax",
                     "Other"
-                  ]
+                  ],
+                  "title":"Work/Home/Other",
+                  "type":"string",
+                  "optional":false,
+                  "desc":"Is this number a work phone, home phone, etc?"
                 },
                 "Number":
                 {
-                  "type":"str",
-                  "required":true
+                  "optional":false,
+                  "type":"string"
                 },
                 "comment":
                 {
-                  "type":"str",
+                  "optional":true,
+                  "type":"string",
                   "title":"Comment"
                 }
-              }
+              },
+              "additionalProperties":false
             }
           ]
         },
         "emails":
         {
-          "type":"seq",
+          "optional":true,
           "title":"Email addresses",
-          "sequence":
+          "type":"array",
+          "items":
           [
             {
-              "type":"map",
+              "optional":false,
               "title":"Email",
-              "required":true,
-              "mapping":
+              "type":"object",
+              "properties":
               {
                 "type":
                 {
-                  "type":"str",
-                  "required":true,
-                  "title":"Work/Home/Other",
-                  "desc":"Is this email address a work address, home address, etc?",
                   "enum":
                   [
                     "work",
                     "home",
                     "other"
-                  ]
+                  ],
+                  "title":"Work/Home/Other",
+                  "type":"string",
+                  "optional":false,
+                  "desc":"Is this email address a work address, home address, etc?"
                 },
                 "value":
                 {
-                  "type":"str",
-                  "required":true,
+                  "optional":false,
+                  "type":"string",
                   "title":"Address"
                 },
                 "primary":
                 {
-                  "type":"bool",
-                  "required":true,
-                  "desc":"Is this the primary email address for this person?",
-                  "title":"Primary?"
+                  "title":"Primary?",
+                  "type":"boolean",
+                  "optional":false,
+                  "desc":"Is this the primary email address for this person?"
                 }
-              }
+              },
+              "additionalProperties":false
             }
           ]
         },
         "ims":
         {
-          "type":"seq",
+          "optional":true,
           "title":"IM Accounts",
-          "sequence":
+          "type":"array",
+          "items":
           [
             {
-              "type":"map",
+              "optional":false,
               "title":"Account",
-              "required":true,
-              "mapping":
+              "type":"object",
+              "properties":
               {
                 "type":
                 {
-                  "type":"str",
-                  "required":true,
-                  "title":"Service",
-                  "desc":"What is the service provider/protocol associated with this instant messaging address?",
                   "enum":
                   [
                     "aim",
@@ -224,29 +235,35 @@
                     "qq",
                     "yahoo"
                   ],
+                  "title":"Service",
+                  "optional":false,
                   "desc_enum":
                   {
-                    "aim":"AIM (AOL)",
+                    "qq":"QQ (Tencent)",
                     "gtalk":"GTalk (Google)",
-                    "icq":"ICQ",
                     "xmpp":"XMPP/Jabber",
+                    "yahoo":"Yahoo!",
+                    "aim":"AIM (AOL)",
                     "msn":"MSN (Microsoft)",
                     "skype":"Skype",
-                    "qq":"QQ (Tencent)",
-                    "yahoo":"Yahoo!"
-                  }
+                    "icq":"ICQ"
+                  },
+                  "type":"string",
+                  "desc":"What is the service provider/protocol associated with this instant messaging address?"
                 },
                 "value":
                 {
-                  "type":"str",
-                  "required":true,
+                  "optional":false,
+                  "type":"string",
                   "title":"Account ID"
                 }
-              }
+              },
+              "additionalProperties":false
             }
           ]
         }
-      }
+      },
+      "additionalProperties":false
     }
   ]
 }

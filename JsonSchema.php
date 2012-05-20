@@ -234,13 +234,6 @@ class JsonTreeRef {
 	}
 
 	/*
-	 *  Is this node a "user key", as defined in http://jsonwidget.org/jsonschema/
-	 */
-	public function isUserKey() {
-		return $this->userkeyflag;
-	}
-
-	/*
 	 * Rename a user key.  Useful for interactive editing/modification, but not
 	 * so helpful for static interpretation.
 	 */
@@ -331,16 +324,15 @@ class JsonTreeRef {
 	 * Return the child ref for $this ref associated with a given $key
 	 */
 	public function getMappingChildRef( $key ) {
-		if ( array_key_exists( 'user_key', $this->schemaref->node ) &&
-			!array_key_exists( $key, $this->schemaref->node['properties'] ) ) {
-			$userkeyflag = true;
-			$masterkey = $this->schemaref->node['user_key'];
-			$schemadata = $this->schemaref->node['properties'][$masterkey];
+		$snode = $this->schemaref->node;
+		if ( array_key_exists( 'additionalProperties', $snode ) &&
+			 $snode['additionalProperties'] !== false &&
+			 !array_key_exists( $key, $this->schemaref->node['properties'] ) ) {
+			$schemadata = $snode['additionalProperties'];
 		}
 		else {
-			$userkeyflag = false;
-			if( array_key_exists( $key, $this->schemaref->node['properties'] ) ) {
-				$schemadata = $this->schemaref->node['properties'][$key];
+			if( array_key_exists( $key, $snode['properties'] ) ) {
+				$schemadata = $snode['properties'][$key];
 			} else {
 				$msg = JsonUtil::uiMessage( 'jsonschema-invalidkey',
 											$key, $this->getDataPathTitles() );
@@ -489,12 +481,17 @@ class JsonSchemaIndex {
 	 *  the node is an idref.
 	 */
 	public function newRef( $node, $parent, $nodeindex, $nodename ) {
-		if ( $node['type'] == 'idref' ) {
+		if ( array_key_exists( '$ref', $node ) ) {
+			if ( strspn( $node['$ref'], '#' ) != 1 ) {
+				$error = JsonUtil::uiMessage( 'jsonschema-badidref', $node['$ref'] );
+				throw new JsonSchemaException( $error );
+			}
+			$idref = substr( $node['$ref'], 1 );
 			try {
-				$node = $this->idtable[$node['idref']];
+				$node = $this->idtable[$idref];
 			}
 			catch ( Exception $e ) {
-				$error = JsonUtil::uiMessage( 'jsonschema-badidref', $node['idref'] );
+				$error = JsonUtil::uiMessage( 'jsonschema-badidref', $node['$ref'] );
 				throw new JsonSchemaException( $error );
 			}
 		}

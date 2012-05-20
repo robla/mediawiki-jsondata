@@ -1,57 +1,59 @@
 {
-  "type":"map",
+  "optional":true,
   "title":"Address Book Entry",
-  "mapping":
+  "type":"object",
+  "properties":
   {
     "firstName":
     {
-      "type":"str",
-      "title":"First Name",
-      "required":true
+      "optional":false,
+      "type":"string",
+      "title":"First Name"
     },
     "lastName":
     {
-      "type":"str",
-      "title":"Last Name",
-      "required":true
+      "optional":false,
+      "type":"string",
+      "title":"Last Name"
     },
     "streetAddress":
     {
-      "type":"str",
-      "title":"Street Address",
-      "required":true
+      "optional":false,
+      "type":"string",
+      "title":"Street Address"
     },
     "city":
     {
-      "type":"str",
-      "title":"City",
-      "required":true
+      "optional":false,
+      "type":"string",
+      "title":"City"
     },
     "state":
     {
-      "type":"str",
-      "title":"State",
-      "required":true
+      "optional":false,
+      "type":"string",
+      "title":"State"
     },
     "postalCode":
     {
-      "type":"str",
-      "title":"Postal (Zip) Code",
-      "required":true
+      "optional":false,
+      "type":"string",
+      "title":"Postal (Zip) Code"
     },
     "phoneNumbers":
     {
-      "type":"seq",
+      "optional":false,
       "title":"Phone numbers",
-      "required":true,
-      "sequence":
+      "type":"array",
+      "items":
       [
         {
-          "type":"str",
-          "required":true,
+          "optional":false,
+          "type":"string",
           "title":"Phone number"
         }
       ]
     }
-  }
+  },
+  "additionalProperties":false
 }

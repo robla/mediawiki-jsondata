@@ -1,77 +1,89 @@
 {
-  "type":"map",
-  "mapping":
+  "optional":true,
+  "type":"object",
+  "properties":
   {
     "namespaces":
     {
-      "type":"map",
+      "optional":true,
       "title":"Namespaces",
-      "user_key":"nsname",
-      "mapping":
+      "type":"object",
+      "properties":
       {
-        "nsname":
+
+      },
+      "additionalProperties":
+      {
+        "optional":true,
+        "title":"Namespace name",
+        "type":"object",
+        "properties":
         {
-          "title":"Namespace name",
-          "type":"map",
-          "mapping":
+          "defaulttag":
           {
-            "defaulttag":
-            {
-              "type":"str",
-              "title":"Default tag"
-            }
+            "optional":true,
+            "type":"string",
+            "title":"Default tag"
           }
-        }
+        },
+        "additionalProperties":false
       }
     },
     "tags":
     {
-      "type":"map",
+      "optional":true,
       "title":"Tags",
-      "user_key":"tagname",
-      "mapping":
+      "type":"object",
+      "properties":
       {
-        "tagname":
+
+      },
+      "additionalProperties":
+      {
+        "optional":true,
+        "title":"Tag name",
+        "type":"object",
+        "properties":
         {
-          "title":"Tag name",
-          "type":"map",
-          "mapping":
+          "schema":
           {
-            "schema":
+            "optional":true,
+            "type":"object",
+            "properties":
             {
-              "type":"map",
-              "mapping":
+              "srctype":
               {
-                "srctype":
+                "desc_enum":
                 {
-                  "type":"str",
-                  "enum":
-                  [
-                    "article",
-                    "predefined"
-                  ],
-                  "desc_enum":
-                  {
-                    "article":"Article (on wiki)",
-                    "predefined":"Predefined file (from config)"
-                  },
-                  "required":true
+                  "predefined":"Predefined file (from config)",
+                  "article":"Article (on wiki)"
                 },
-                "src":
-                {
-                  "type":"str",
-                  "required":true
-                },
-                "schemaattr":
-                {
-                  "type":"str",
-                  "title":"Schema attribute"
-                }
+                "optional":false,
+                "enum":
+                [
+                  "article",
+                  "predefined"
+                ],
+                "type":"string"
+              },
+              "src":
+              {
+                "optional":false,
+                "type":"string"
+              },
+              "schemaattr":
+              {
+                "optional":true,
+                "type":"string",
+                "title":"Schema attribute"
               }
-            }
+            },
+            "additionalProperties":false
           }
-        }
+        },
+        "additionalProperties":false
       }
     }
-  }
+  },
+  "additionalProperties":false
 }

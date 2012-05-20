@@ -15,13 +15,10 @@ class JsonSchemaTestFuncs {
 
 class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @group legacyschema
-     */
 	public function getSimpleTestData() {
 		$testdata = array();
 		$json = '{"a":1,"b":2,"c":3,"d":4,"e":5}';
-		$schematext = '{"title": "Unrestricted JSON", "type": "any"}';
+		$schematext = '{"title": "Unrestricted JSON", "type": "any", "optional": true}';
 		$testdata['data'] = json_decode($json, true);
 		$testdata['schema'] = json_decode($schematext, true);
 		return array( $testdata );
@@ -29,7 +26,6 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getSimpleTestData
-     * @group legacyschema
      */
     public function testJsonSimpleTestValidate($data, $schema) {
 		$schemaIndex = new JsonSchemaIndex( $schema );
@@ -43,7 +39,6 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getSimpleTestData
-     * @group legacyschema
      */
     public function testJsonUtilGetTitleFromNode($data, $schema) {
 		$nodename = isset( $schema['title'] ) ? $schema['title'] : "Root node";
@@ -51,9 +46,6 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		return $nodename;
     }
 
-    /**
-     * @group legacyschema
-     */
 	public function getAddressTestData() {
 		$testdata = array();
 		$json = file_get_contents('example/addressexample.json');
@@ -65,11 +57,10 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getAddressTestData
-     * @group legacyschema
      */
     public function testJsonAddressTestValidate($data, $schema) {
 		$schemaIndex = new JsonSchemaIndex( $schema );
-        $this->assertEquals($schemaIndex->root['type'], 'seq');
+        $this->assertEquals($schemaIndex->root['type'], 'array');
 		$nodename = isset( $schema['title'] ) ? $schema['title'] : "Root node";
     	$rootschema = $schemaIndex->newRef($schema, null, null, $nodename);
     	$rootjson = new JsonTreeRef($data, null, null, $nodename, $rootschema);
@@ -77,9 +68,6 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		return $schemaIndex;
     }
 
-    /**
-     * @group legacyschema
-     */
 	public function testJsonSchemaValidateAddressExample() {
 		$jsonfile = 'example/addressexample.json';
 		$schemafile = 'schemas/addressbookschema.json';
@@ -87,9 +75,6 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref->validate();
 	}
 
-    /**
-     * @group legacyschema
-     */
 	public function testJsonSchemaValidateSuccessfulExample() {
 		$jsonfile = 'tests/phpunit/data/2/test5.json';
 		$schemafile = 'tests/phpunit/data/2/schematest5.json';

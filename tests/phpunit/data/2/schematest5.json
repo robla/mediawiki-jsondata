@@ -1,27 +1,29 @@
 {
-  "type":"seq",
   "id":"bloblist",
-  "sequence":
+  "optional":true,
+  "type":"array",
+  "items":
   [
     {
-      "type":"map",
+      "optional":true,
       "title":"Level 1 item",
-      "user_key":"sublevel",
-      "mapping":
+      "type":"object",
+      "properties":
       {
         "field1":
         {
-          "type":"str"
+          "optional":true,
+          "type":"string"
         },
         "field2":
         {
-          "type":"str"
-        },
-        "sublevel":
-        {
-          "type":"idref",
-          "idref":"bloblist"
+          "optional":true,
+          "type":"string"
         }
+      },
+      "additionalProperties":
+      {
+        "$ref" : "#bloblist"
       }
     }
   ]
