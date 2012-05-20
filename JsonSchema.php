@@ -39,25 +39,25 @@ class JsonUtil {
 	}
 
 	/*
-	 * Given a type (e.g. 'map', 'int', 'str'), return the default/empty
+	 * Given a type (e.g. 'object', 'integer', 'string'), return the default/empty
 	 * value for that type.
 	 */
 	public static function getNewValueForType( $thistype ) {
 		switch( $thistype ) {
-			case 'map':
+			case 'object':
 				$newvalue = array();
 				break;
-			case 'seq':
+			case 'array':
 				$newvalue = array();
 				break;
 			case 'number':
-				case 'int':
+				case 'integer':
 					$newvalue = 0;
 					break;
-				case 'str':
+				case 'string':
 					$newvalue = "";
 					break;
-				case 'bool':
+				case 'boolean':
 					$newvalue = false;
 					break;
 				default:
@@ -78,10 +78,10 @@ class JsonUtil {
 
 		switch( gettype( $foo ) ) {
 			case "array":
-				$retval = "seq";
+				$retval = "array";
 				foreach ( array_keys( $foo ) as $key ) {
 					if ( !is_int( $key ) ) {
-						$retval = "map";
+						$retval = "object";
 					}
 				}
 				return $retval;
@@ -91,10 +91,10 @@ class JsonUtil {
 				return "number";
 				break;
 			case "boolean":
-				return "bool";
+				return "boolean";
 				break;
 			case "string":
-				return "str";
+				return "string";
 				break;
 			default:
 				return null;
@@ -110,16 +110,16 @@ class JsonUtil {
 		$schema = array();
 		$schema['type'] = JsonUtil::getType( $parent );
 		switch ( $schema['type'] ) {
-			case 'map':
-				$schema['mapping'] = array();
+			case 'object':
+				$schema['properties'] = array();
 				foreach ( $parent as $name ) {
-					$schema['mapping'][$name] = JsonUtil::getSchemaArray( $parent[$name] );
+					$schema['properties'][$name] = JsonUtil::getSchemaArray( $parent[$name] );
 				}
 
 				break;
-			case 'seq':
-				$schema['sequence'] = array();
-				$schema['sequence'][0] = JsonUtil::getSchemaArray( $parent[0] );
+			case 'array':
+				$schema['items'] = array();
+				$schema['items'][0] = JsonUtil::getSchemaArray( $parent[0] );
 				break;
 		}
 
@@ -138,7 +138,7 @@ class JsonUtil {
 			// TODO: replace this with a real solution that works without 
 			// MediaWiki
 			$params = func_get_args();
-			return $params[0];
+			return implode( " ", $params );
 		}
 	}
 }
@@ -203,14 +203,14 @@ class JsonTreeRef {
 			$this->schemaindex = $this->parent->schemaindex;
 		}
 		if ( $this->schemaref->node['type'] == 'any' ) {
-			if ( $this->getType() == 'map' ) {
-				$this->schemaref->node['mapping'] =
+			if ( $this->getType() == 'object' ) {
+				$this->schemaref->node['properties'] =
 					array( "extension" => array( "type" => "any" ) );
 				$this->schemaref->node['user_key'] = "extension";
 			}
 
-			elseif ( $this->getType() == 'seq' ) {
-				$this->schemaref->node['sequence'] =
+			elseif ( $this->getType() == 'array' ) {
+				$this->schemaref->node['items'] =
 					array( array( "type" => "any" ) );
 				$this->schemaref->node['user_key'] = "extension";
 			}
@@ -332,15 +332,15 @@ class JsonTreeRef {
 	 */
 	public function getMappingChildRef( $key ) {
 		if ( array_key_exists( 'user_key', $this->schemaref->node ) &&
-			!array_key_exists( $key, $this->schemaref->node['mapping'] ) ) {
+			!array_key_exists( $key, $this->schemaref->node['properties'] ) ) {
 			$userkeyflag = true;
 			$masterkey = $this->schemaref->node['user_key'];
-			$schemadata = $this->schemaref->node['mapping'][$masterkey];
+			$schemadata = $this->schemaref->node['properties'][$masterkey];
 		}
 		else {
 			$userkeyflag = false;
-			if( array_key_exists( $key, $this->schemaref->node['mapping'] ) ) {
-				$schemadata = $this->schemaref->node['mapping'][$key];
+			if( array_key_exists( $key, $this->schemaref->node['properties'] ) ) {
+				$schemadata = $this->schemaref->node['properties'][$key];
 			} else {
 				$msg = JsonUtil::uiMessage( 'jsonschema-invalidkey',
 											$key, $this->getDataPathTitles() );
@@ -358,10 +358,10 @@ class JsonTreeRef {
 	 * Return the child ref for $this ref associated with a given index $i
 	 */
 	public function getSequenceChildRef( $i ) {
-		$schemanode = $this->schemaref->node['sequence'][0];
+		$schemanode = $this->schemaref->node['items'][0];
 		$itemname = isset( $schemanode['title'] ) ? $schemanode['title'] : "Item";
 		$nodename = $itemname . " #" . ( (string)$i + 1 );
-		$schemai = $this->schemaindex->newRef( $this->schemaref->node['sequence'][0], $this->schemaref, 0, $i );
+		$schemai = $this->schemaindex->newRef( $this->schemaref->node['items'][0], $this->schemaref, 0, $i );
 		$jsoni = new JsonTreeRef( $this->node[$i], $this, $i, $nodename, $schemai );
 		return $jsoni;
 	}
@@ -373,14 +373,14 @@ class JsonTreeRef {
 	public function validate() {
 		$datatype = JsonUtil::getType( $this->node );
 		$schematype = $this->getType();
-		if ( $datatype == 'seq' && $schematype == 'map' ) {
+		if ( $datatype == 'array' && $schematype == 'object' ) {
 			// PHP datatypes are kinda loose, so we'll fudge
-			$datatype = 'map';
+			$datatype = 'object';
 		}
-		if ( $datatype == 'number' && $schematype == 'int' &&
+		if ( $datatype == 'number' && $schematype == 'integer' &&
 			 $this->node == (int)$this->node) {
 			// Alright, it'll work as an int
-			$datatype = 'int';
+			$datatype = 'integer';
 		}
 		if ( $datatype != $schematype ) {
 			if ( is_null( $datatype ) && !is_object( $this->parent )) {
@@ -397,10 +397,10 @@ class JsonTreeRef {
 			}
 		}
 		switch ( $schematype ) {
-			case 'map':
+			case 'object':
 				$this->validateObjectChildren();
 				break;
-			case 'seq':
+			case 'array':
 				$this->validateArrayChildren();
 				break;
 		}
@@ -410,9 +410,9 @@ class JsonTreeRef {
 	/*
 	 */
 	private function validateObjectChildren() {
-		foreach ( $this->schemaref->node['mapping'] as $skey => $svalue ) {
-			$keyRequired = array_key_exists( 'required', $svalue ) ? $svalue['required'] : false;
-			if( $keyRequired && !array_key_exists( $skey, $this->node ) ) {
+		foreach ( $this->schemaref->node['properties'] as $skey => $svalue ) {
+			$keyOptional = array_key_exists( 'optional', $svalue ) ? $svalue['optional'] : false;
+			if( !$keyOptional && !array_key_exists( $skey, $this->node ) ) {
 				$msg = JsonUtil::uiMessage( 'jsonschema-invalid-missingfield' );
 				$e = new JsonSchemaException( $msg );
 				$e->subtype = "validate-fail-missingfield";
@@ -466,14 +466,14 @@ class JsonSchemaIndex {
 	public function indexSubtree( $schemanode ) {
 		$nodetype = $schemanode['type'];
 		switch( $nodetype ) {
-			case 'map':
-				foreach ( $schemanode['mapping'] as $key => $value ) {
+			case 'object':
+				foreach ( $schemanode['properties'] as $key => $value ) {
 					$this->indexSubtree( $value );
 				}
 
 				break;
-			case 'seq':
-				foreach ( $schemanode['sequence'] as $value ) {
+			case 'array':
+				foreach ( $schemanode['items'] as $value ) {
 					$this->indexSubtree( $value );
 				}
 

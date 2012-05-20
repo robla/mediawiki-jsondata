@@ -15,6 +15,9 @@ class JsonSchemaTestFuncs {
 
 class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @group legacyschema
+     */
 	public function getSimpleTestData() {
 		$testdata = array();
 		$json = '{"a":1,"b":2,"c":3,"d":4,"e":5}';
@@ -26,6 +29,7 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getSimpleTestData
+     * @group legacyschema
      */
     public function testJsonSimpleTestValidate($data, $schema) {
 		$schemaIndex = new JsonSchemaIndex( $schema );
@@ -39,6 +43,7 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getSimpleTestData
+     * @group legacyschema
      */
     public function testJsonUtilGetTitleFromNode($data, $schema) {
 		$nodename = isset( $schema['title'] ) ? $schema['title'] : "Root node";
@@ -46,6 +51,9 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		return $nodename;
     }
 
+    /**
+     * @group legacyschema
+     */
 	public function getAddressTestData() {
 		$testdata = array();
 		$json = file_get_contents('example/addressexample.json');
@@ -57,6 +65,7 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getAddressTestData
+     * @group legacyschema
      */
     public function testJsonAddressTestValidate($data, $schema) {
 		$schemaIndex = new JsonSchemaIndex( $schema );
@@ -68,6 +77,9 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		return $schemaIndex;
     }
 
+    /**
+     * @group legacyschema
+     */
 	public function testJsonSchemaValidateAddressExample() {
 		$jsonfile = 'example/addressexample.json';
 		$schemafile = 'schemas/addressbookschema.json';
@@ -75,6 +87,9 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref->validate();
 	}
 
+    /**
+     * @group legacyschema
+     */
 	public function testJsonSchemaValidateSuccessfulExample() {
 		$jsonfile = 'tests/phpunit/data/2/test5.json';
 		$schemafile = 'tests/phpunit/data/2/schematest5.json';
@@ -84,6 +99,7 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 
     /**
      * @expectedException JsonSchemaException
+     * @group legacyschema
      */
 	public function testJsonSchemaValidateBadIdref() {
 		$jsonfile = 'tests/phpunit/data/1/test5.json';
@@ -94,6 +110,7 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 
     /**
      * @expectedException JsonSchemaException
+     * @group legacyschema
      */
 	public function testJsonSchemaValidateBadData() {
 		$jsonfile = 'tests/phpunit/data/1/test5.json';
@@ -102,6 +119,8 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref->validate();
 	}
 
+    /**
+     */
 	public function testJsonSchemaValidateGoodLocation() {
 		$jsonfile = 'tests/phpunit/data/validlocation.json';
 		$schemafile = 'tests/phpunit/data/schemalocation.json';
@@ -129,6 +148,9 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref->validate();
 	}
 
+    /**
+     * @group legacyschema
+     */
 	public function testExtensionFieldGetTitle () {
 		$jsonfile = 'tests/phpunit/data/ab.json';
 		$schemafile = 'schemas/openschema.json';
@@ -140,6 +162,9 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$this->assertNotEquals( $atitle, $btitle );
 	}
 
+    /**
+     * @group legacyschema
+     */
 	public function testJsonSchemaValidateEmptyMap() {
 		$jsonfile = 'tests/phpunit/data/emptymap.json';
 		$schemafile = 'schemas/datatype-example-schema.json';
@@ -147,6 +172,9 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref->validate();
 	}
 
+    /**
+     * @group legacyschema
+     */
 	public function testJsonSchemaValidateInteger() {
 		$jsonfile = 'tests/phpunit/data/inttest.json';
 		$schemafile = 'schemas/datatype-example-schema.json';
@@ -154,6 +182,9 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref->validate();
 	}
 
+    /**
+     * @group legacyschema
+     */
 	public function testTypeBooleanFreeformField () {
 		$jsonfile = 'tests/phpunit/data/boolean.json';
 		$schemafile = 'schemas/openschema.json';
