@@ -1,5 +1,5 @@
 {
-  "desc":"A schema describing a particular JSON format",
+  "description":"A schema describing a particular JSON format",
   "id":"schemanode",
   "optional":false,
   "title":"Schema",
@@ -11,67 +11,66 @@
       "enum":
       [
         "any",
-        "str",
-        "int",
+        "string",
+        "integer",
         "number",
-        "bool",
-        "seq",
-        "map",
-        "idref"
+        "boolean",
+        "array",
+        "object"
       ],
       "title":"Type (type)",
       "optional":false,
       "desc_enum":
       {
-        "map":"Nested mapping of key/value pairs (a.k.a. 'properties').  You must also have a 'mapping' property which is itself a sequence containing a single schema definition",
-        "seq":"Nested sequence of items ('array' in many languages).  You must also have a 'sequence' property which is itself a sequence containing a single schema definition",
-        "int":"Integer number",
+        "object":"Nested mapping of key/value pairs (a.k.a. 'properties').  You may also have a 'properties' property which is itself a sequence containing a single schema definition",
+        "array":"Nested sequence of items ('array' in many languages).  You must also have a 'sequence' property which is itself a sequence containing a single schema definition",
+        "integer":"Integer number",
         "number":"Any number (floating point or integer)",
-        "bool":"Boolean (true or false) value",
-        "str":"String",
+        "boolean":"Boolean (true or false) value",
+        "string":"String",
         "any":"Any datatype allowed"
       },
       "type":"string",
-      "desc":"The datatype of the property (e.g. number, boolean, etc), used for determining the semantics of the variable described"
+      "description":"The datatype of the property (e.g. number, boolean, etc), used for determining the semantics of the variable described"
     },
     "title":
     {
       "optional":true,
-      "desc":"A user-friendly title for the property",
+      "description":"A user-friendly title for the property",
       "type":"string",
       "title":"Title (title)"
     },
     "id":
     {
       "optional":true,
-      "desc":"An identifier used to reference this property using the 'idref' property",
+      "description":"An identifier used to reference this property using the 'idref' property",
       "type":"string",
       "title":"Identifier (id)"
     },
-    "desc":
+    "description":
     {
       "optional":true,
-      "desc":"A description for use in documentation and context help",
+      "description":"A description for use in documentation and context help",
       "type":"string",
       "title":"Description (desc)"
     },
     "user_key":
     {
       "optional":true,
-      "desc":"Key for properties named by the user.  Use only when type=map, and ensure there's a corresponding property schema in the mapping",
+      "description":"Key for properties named by the user.  Use only when type=map, and ensure there's a corresponding property schema in the mapping",
       "type":"string",
       "title":"User named key (user_key)"
     },
     "idref":
     {
       "optional":true,
-      "desc":"Reference to a schema segment with the given 'id' property.  The 'type' attribute must be set to 'idref'.",
+      "description":"Reference to a schema segment with the given 'id' property.  The 'type' attribute must be set to 'idref'.",
       "type":"string",
       "title":"Identifier reference (idref)"
     },
     "enum":
     {
-      "desc":"Enumerated sequence of valid values for this property.",
+      "description":"Enumerated sequence of valid values for this property.",
       "optional":true,
       "title":"Enumeration (enum)",
       "type":"array",
@@ -94,23 +93,23 @@
       "additionalProperties":
       {
         "optional":true,
-        "desc":"A mapping containing a description for each possible value listed in the enumeration (enum) property.  Used for documentation and context help.",
+        "description":"A mapping containing a description for each possible value listed in the enumeration (enum) property.  Used for documentation and context help.",
         "type":"string",
         "title":"Description for enum value"
       }
     },
-    "required":
+    "optional":
     {
       "optional":true,
-      "desc":"If 'true', then this property must always be present",
+      "description":"If 'true', then this property doesn't need to be present",
       "type":"boolean",
-      "title":"Required property? (required)"
+      "title":"Optional property? (optional)"
     },
-    "mapping":
+    "properties":
     {
-      "desc":"A mapping containing schema segments describing each property in the mapping.  The 'type' property must be set to 'map' to use this property.",
+      "description":"A mapping containing schema segments describing each property in the mapping.  The 'type' property must be set to 'object' to use this property.",
       "optional":true,
-      "title":"Mapping (mapping)",
+      "title":"Properties (properties)",
       "type":"object",
       "properties":
       {
@@ -125,7 +124,7 @@
     },
     "sequence":
     {
-      "desc":"A sequence containing a single schema segment",
+      "description":"A sequence containing a single schema segment",
       "optional":true,
       "title":"Sequence (sequence)",
       "type":"array",
