@@ -6,9 +6,9 @@
 class JsonDataMarkup {
 	public static function getMarkup( $jsonref, $depth ) {
 		switch ( $jsonref->getType() ) {
-			case 'map':
+			case 'object':
 				return JsonDataMarkup::getMappingMarkup( $jsonref, $depth );
-			case 'seq':
+			case 'array':
 				return JsonDataMarkup::getSequenceMarkup( $jsonref, $depth );
 			default:
 				return JsonDataMarkup::getSimpleMarkup( $jsonref, $depth );
