@@ -46,6 +46,18 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		return $nodename;
     }
 
+    /**
+     * @dataProvider getSimpleTestData
+     */
+    public function testJsonSimpleTestSchemaValidate($data, $schema) {
+		$schemaschematext = file_get_contents('schemas/schemaschema.json');
+		$schemaschema = json_decode($schemaschematext, true);
+		$jsonref = new JsonTreeRef( $schema );
+		$jsonref->attachSchema( $schemaschema );
+		$jsonref->validate();
+		return $jsonref;
+    }
+
 	public function getAddressTestData() {
 		$testdata = array();
 		$json = file_get_contents('example/addressexample.json');
@@ -102,6 +114,13 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$jsonref->validate();
 	}
 
+	public function testJsonSchemaValidateTestSchema2() {
+		$jsonfile = 'tests/phpunit/data/2/schematest5.json';
+		$schemafile = 'schemas/schemaschema.json';
+		$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemafile);
+		$jsonref->validate();
+	}
+
 	public function testJsonSchemaValidateGoodLocation() {
 		$jsonfile = 'tests/phpunit/data/validlocation.json';
 		$schemafile = 'tests/phpunit/data/schemalocation.json';
@@ -125,6 +144,13 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 	public function testJsonSchemaValidateBadDataLocation() {
 		$jsonfile = 'tests/phpunit/data/invalidlocation.json';
 		$schemafile = 'tests/phpunit/data/schemalocation.json';
+		$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemafile);
+		$jsonref->validate();
+	}
+
+	public function testJsonSchemaValidateTestLocationSchema() {
+		$jsonfile = 'tests/phpunit/data/schemalocation.json';
+		$schemafile = 'schemas/schemaschema.json';
 		$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemafile);
 		$jsonref->validate();
 	}
@@ -159,6 +185,21 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 		$schemafile = 'schemas/openschema.json';
 		$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemafile);
 		$jsonref->validate();
+	}
+
+	public function testJsonSchemaValidateStandardSchemas() {
+		$schemafiles = array( 'schemas/addressbookschema.json',
+							  'schemas/datatype-example-schema.json',
+							  'schemas/jsondata-config-schema.json',
+							  'schemas/openschema.json',
+							  'schemas/schemaschema.json',
+							  'schemas/simpleaddr-schema.json' );
+		$schemaschema = 'schemas/schemaschema.json';
+		foreach( $schemafiles as $jsonfile ) {
+			$jsonfile = 'schemas/datatype-example-schema.json';
+			$jsonref = JsonSchemaTestFuncs::loadJsonRef($jsonfile, $schemaschema);
+			$jsonref->validate();
+		}
 	}
 }
 
