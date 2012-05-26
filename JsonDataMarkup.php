@@ -25,7 +25,7 @@ class JsonDataMarkup {
 			catch ( JsonSchemaException $e ) {
 				// swallow this key and move on
 				wfDebug( __METHOD__ . ": " . htmlspecialchars( $e->getMessage() ) . "\n" );
-				next;
+				continue;
 			}
 			$markup .= JsonDataMarkup::getMarkup( $jsoni, $depth + 1 );
 		}
