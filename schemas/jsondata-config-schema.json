@@ -1,27 +1,22 @@
 {
-  "optional":true,
   "type":"object",
   "properties":
   {
     "namespaces":
     {
-      "optional":true,
       "title":"Namespaces",
       "type":"object",
       "properties":
       {
-
       },
       "additionalProperties":
       {
-        "optional":true,
         "title":"Namespace name",
         "type":"object",
         "properties":
         {
           "defaulttag":
           {
-            "optional":true,
             "type":"string",
             "title":"Default tag"
           }
@@ -31,23 +26,19 @@
     },
     "tags":
     {
-      "optional":true,
       "title":"Tags",
       "type":"object",
       "properties":
       {
-
       },
       "additionalProperties":
       {
-        "optional":true,
         "title":"Tag name",
         "type":"object",
         "properties":
         {
           "schema":
           {
-            "optional":true,
             "type":"object",
             "properties":
             {
@@ -58,7 +49,7 @@
                   "predefined":"Predefined file (from config)",
                   "article":"Article (on wiki)"
                 },
-                "optional":false,
+                "required":true,
                 "enum":
                 [
                   "article",
@@ -68,12 +59,11 @@
               },
               "src":
               {
-                "optional":false,
+                "required":true,
                 "type":"string"
               },
               "schemaattr":
               {
-                "optional":true,
                 "type":"string",
                 "title":"Schema attribute"
               }

@@ -1,23 +1,19 @@
 {
   "id":"#bloblist",
-  "optional":true,
   "type":"array",
   "items":
   [
     {
-      "optional":true,
       "title":"Level 1 item",
       "type":"object",
       "properties":
       {
         "field1":
         {
-          "optional":true,
           "type":"string"
         },
         "field2":
         {
-          "optional":true,
           "type":"string"
         }
       },

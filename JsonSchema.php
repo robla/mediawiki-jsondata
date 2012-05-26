@@ -401,8 +401,8 @@ class JsonTreeRef {
 	private function validateObjectChildren() {
 		if ( array_key_exists( 'properties', $this->schemaref->node ) ) {
 			foreach ( $this->schemaref->node['properties'] as $skey => $svalue ) {
-				$keyOptional = array_key_exists( 'optional', $svalue ) ? $svalue['optional'] : false;
-				if( !$keyOptional && !array_key_exists( $skey, $this->node ) ) {
+				$keyRequired = array_key_exists( 'required', $svalue ) ? $svalue['required'] : false;
+				if( $keyRequired && !array_key_exists( $skey, $this->node ) ) {
 					$msg = JsonUtil::uiMessage( 'jsonschema-invalid-missingfield' );
 					$e = new JsonSchemaException( $msg );
 					$e->subtype = "validate-fail-missingfield";
@@ -410,6 +410,7 @@ class JsonTreeRef {
 				}
 			}
 		}
+
 		foreach ( $this->node as $key => $value ) {
 			$jsoni = $this->getMappingChildRef( $key );
 			$jsoni->validate();

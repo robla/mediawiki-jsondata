@@ -18,7 +18,7 @@ class JsonTreeRefTest extends PHPUnit_Framework_TestCase
 	public function getSimpleTestData() {
 		$testdata = array();
 		$json = '{"a":1,"b":2,"c":3,"d":4,"e":5}';
-		$schematext = '{"title": "Unrestricted JSON", "type": "any", "optional": true}';
+		$schematext = '{"title": "Unrestricted JSON", "type": "any"}';
 		$testdata['data'] = json_decode($json, true);
 		$testdata['schema'] = json_decode($schematext, true);
 		return array( $testdata );

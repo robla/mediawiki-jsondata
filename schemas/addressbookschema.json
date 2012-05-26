@@ -1,56 +1,51 @@
 {
-  "optional":true,
   "title":"Address Book",
   "type":"array",
   "items":
   [
     {
-      "optional":true,
       "title":"Address Book Entry",
       "type":"object",
       "properties":
       {
         "firstName":
         {
-          "optional":false,
+          "required":true,
           "type":"string",
           "title":"First Name"
         },
         "lastName":
         {
-          "optional":false,
+          "required":true,
           "type":"string",
           "title":"Last Name"
         },
         "organizations":
         {
           "description":"A list of organizations with which this person is affiliated.",
-          "optional":true,
           "title":"Affiliations",
           "type":"array",
           "items":
           [
             {
-              "optional":false,
+              "required":true,
               "title":"Organization",
               "type":"object",
               "properties":
               {
                 "name":
                 {
-                  "optional":false,
+                  "required":true,
                   "type":"string",
                   "title":"Organization Name"
                 },
                 "title":
                 {
-                  "optional":true,
                   "type":"string",
                   "title":"Title/Role"
                 },
                 "department":
                 {
-                  "optional":true,
                   "type":"string",
                   "title":"Department"
                 },
@@ -64,7 +59,6 @@
                     "other"
                   ],
                   "type":"string",
-                  "optional":true,
                   "description":"What is the nature of this person's affiliation with the organization?"
                 }
               },
@@ -74,32 +68,31 @@
         },
         "addresses":
         {
-          "optional":true,
           "title":"Mailing/Street Addresses",
           "type":"array",
           "items":
           [
             {
-              "optional":false,
+              "required":true,
               "title":"Address",
               "type":"object",
               "properties":
               {
                 "streetAddress":
                 {
-                  "optional":false,
+                  "required":true,
                   "type":"string",
                   "title":"Street Address"
                 },
                 "locality":
                 {
-                  "optional":false,
+                  "required":true,
                   "type":"string",
                   "title":"City (locality)"
                 },
                 "region":
                 {
-                  "optional":false,
+                  "required":true,
                   "type":"string",
                   "title":"State/Provence/Region"
                 },
@@ -107,12 +100,12 @@
                 {
                   "description":"Post office code, such as zip code in the U.S.  If editing this data in JSON or YAML format directly, be sure to quote this as a string so that leading zeros aren't stripped.",
                   "type":"string",
-                  "optional":false,
+                  "required":true,
                   "title":"Postal (Zip) Code"
                 },
                 "country":
                 {
-                  "optional":false,
+                  "required":true,
                   "type":"string",
                   "title":"Country"
                 }
@@ -123,13 +116,12 @@
         },
         "phoneNumbers":
         {
-          "optional":true,
           "title":"Phone number(s)",
           "type":"array",
           "items":
           [
             {
-              "optional":false,
+              "required":true,
               "title":"Phone number",
               "type":"object",
               "properties":
@@ -146,17 +138,16 @@
                   ],
                   "title":"Work/Home/Other",
                   "type":"string",
-                  "optional":false,
+                  "required":true,
                   "description":"Is this number a work phone, home phone, etc?"
                 },
                 "Number":
                 {
-                  "optional":false,
+                  "required":true,
                   "type":"string"
                 },
                 "comment":
                 {
-                  "optional":true,
                   "type":"string",
                   "title":"Comment"
                 }
@@ -167,13 +158,12 @@
         },
         "emails":
         {
-          "optional":true,
           "title":"Email addresses",
           "type":"array",
           "items":
           [
             {
-              "optional":false,
+              "required":true,
               "title":"Email",
               "type":"object",
               "properties":
@@ -188,12 +178,12 @@
                   ],
                   "title":"Work/Home/Other",
                   "type":"string",
-                  "optional":false,
+                  "required":true,
                   "description":"Is this email address a work address, home address, etc?"
                 },
                 "value":
                 {
-                  "optional":false,
+                  "required":true,
                   "type":"string",
                   "title":"Address"
                 },
@@ -201,7 +191,7 @@
                 {
                   "title":"Primary?",
                   "type":"boolean",
-                  "optional":false,
+                  "required":true,
                   "description":"Is this the primary email address for this person?"
                 }
               },
@@ -211,13 +201,12 @@
         },
         "ims":
         {
-          "optional":true,
           "title":"IM Accounts",
           "type":"array",
           "items":
           [
             {
-              "optional":false,
+              "required":true,
               "title":"Account",
               "type":"object",
               "properties":
@@ -236,7 +225,7 @@
                     "yahoo"
                   ],
                   "title":"Service",
-                  "optional":false,
+                  "required":true,
                   "desc_enum":
                   {
                     "qq":"QQ (Tencent)",
@@ -253,7 +242,7 @@
                 },
                 "value":
                 {
-                  "optional":false,
+                  "required":true,
                   "type":"string",
                   "title":"Account ID"
                 }

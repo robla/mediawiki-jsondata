@@ -1,54 +1,53 @@
 {
-  "optional":true,
   "title":"Address Book Entry",
   "type":"object",
   "properties":
   {
     "firstName":
     {
-      "optional":false,
+      "required":true,
       "type":"string",
       "title":"First Name"
     },
     "lastName":
     {
-      "optional":false,
+      "required":true,
       "type":"string",
       "title":"Last Name"
     },
     "streetAddress":
     {
-      "optional":false,
+      "required":true,
       "type":"string",
       "title":"Street Address"
     },
     "city":
     {
-      "optional":false,
+      "required":true,
       "type":"string",
       "title":"City"
     },
     "state":
     {
-      "optional":false,
+      "required":true,
       "type":"string",
       "title":"State"
     },
     "postalCode":
     {
-      "optional":false,
+      "required":true,
       "type":"string",
       "title":"Postal (Zip) Code"
     },
     "phoneNumbers":
     {
-      "optional":false,
+      "required":true,
       "title":"Phone numbers",
       "type":"array",
       "items":
       [
         {
-          "optional":false,
+          "required":true,
           "type":"string",
           "title":"Phone number"
         }

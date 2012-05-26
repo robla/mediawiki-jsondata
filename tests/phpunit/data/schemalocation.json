@@ -3,48 +3,42 @@
   [
     {
       "additionalProperties":false,
-      "optional":true,
       "properties":
       {
         "Address":
         {
-          "optional":true,
           "type":"string"
         },
         "City":
         {
-          "optional":true,
           "type":"string"
         },
         "Country":
         {
-          "optional":true,
           "type":"string"
         },
         "Latitude":
         {
-          "optional":false,
+          "required":true,
           "type":"number"
         },
         "Longitude":
         {
-          "optional":false,
+          "required":true,
           "type":"number"
         },
         "State":
         {
-          "optional":true,
           "type":"string"
         },
         "Zip":
         {
-          "optional":true,
           "type":"string"
         },
         "precision":
         {
           "description":"The size of the area being described (e.g. state, zip, city, etc)",
-          "optional":false,
+          "required":true,
           "title":"Precision",
           "type":"string"
         }
@@ -53,7 +47,6 @@
       "type":"object"
     }
   ],
-  "optional":true,
   "title":"Location data",
   "type":"array"
 }

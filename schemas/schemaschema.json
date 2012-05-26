@@ -1,7 +1,7 @@
 {
   "description":"A schema describing a particular JSON format",
   "id":"#schemanode",
-  "optional":false,
+  "required":true,
   "title":"Schema",
   "type":"object",
   "properties":
@@ -19,7 +19,6 @@
         "object"
       ],
       "title":"Type (type)",
-      "optional":true,
       "desc_enum":
       {
         "object":"Nested mapping of key/value pairs (a.k.a. 'properties').  You may also have a 'properties' property which is itself a sequence containing a single schema definition",
@@ -35,28 +34,24 @@
     },
     "title":
     {
-      "optional":true,
       "description":"A user-friendly title for the property",
       "type":"string",
       "title":"Title (title)"
     },
     "id":
     {
-      "optional":true,
       "description":"An identifier used to reference this property using the 'idref' property",
       "type":"string",
       "title":"Identifier (id)"
     },
     "description":
     {
-      "optional":true,
       "description":"A description for use in documentation and context help",
       "type":"string",
       "title":"Description (desc)"
     },
     "$ref":
     {
-      "optional":true,
       "description":"Reference to a schema segment with the given 'id' property.",
       "type":"string",
       "title":"Identifier reference (idref)"
@@ -64,71 +59,59 @@
     "enum":
     {
       "description":"Enumerated sequence of valid values for this property.",
-      "optional":true,
       "title":"Enumeration (enum)",
       "type":"array",
       "items":
       [
         {
-          "optional":true,
           "type":"any"
         }
       ]
     },
     "desc_enum":
     {
-      "optional":true,
       "type":"object",
       "properties":
       {
-
       },
       "additionalProperties":
       {
-        "optional":true,
         "description":"A mapping containing a description for each possible value listed in the enumeration (enum) property.  Used for documentation and context help.",
         "type":"string",
         "title":"Description for enum value"
       }
     },
-    "optional":
+    "required":
     {
-      "optional":true,
-      "description":"If 'true', then this property doesn't need to be present",
       "type":"boolean",
-      "title":"Optional property? (optional)"
+      "title":"Required property? (required)",
+      "desc":"If 'true', then this property must always be present"
     },
     "properties":
     {
       "description":"A mapping containing schema segments describing each property in the mapping.  The 'type' property must be set to 'object' to use this property.",
-      "optional":true,
       "title":"Properties (properties)",
       "type":"object",
       "properties":
       {
-
       },
       "additionalProperties":
       {
-        "optional":true,
         "$ref":"#schemanode"
       }
     },
     "additionalProperties":
     {
-       "optional":true,
        "type":"any"
     },
     "items":
     {
       "description":"A list containing the subschemas for validating list items.  Currently limited to just one.",
-      "optional":true,
       "title":"Items (items)",
       "type":"array",
       "items":
       [
         {
-          "optional":true,
           "$ref":"#schemanode"
         }
       ]

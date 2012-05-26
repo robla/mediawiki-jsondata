@@ -1,31 +1,26 @@
 {
   "description":"Example with all datatypes in one place",
-  "optional":true,
   "title":"Datatype example schema (datatype-example-schema.json)\n  Not terribly useful for anything other than demonstration purposes.  Edit one\n  of the existing schemas for your purpose, or generate one using the online\n  tool at http://robla.net/2005/jsonwidget\nData",
   "type":"array",
   "items":
   [
     {
-      "optional":true,
       "title":"Item",
       "type":"object",
       "properties":
       {
         "map_example":
         {
-          "optional":true,
           "title":"Map (map)",
           "type":"object",
           "properties":
           {
             "field1":
             {
-              "optional":true,
               "type":"string"
             },
             "field2":
             {
-              "optional":true,
               "type":"string"
             }
           },
@@ -33,13 +28,11 @@
         },
         "seq_example":
         {
-          "optional":true,
           "title":"Sequence (seq)",
           "type":"array",
           "items":
           [
             {
-              "optional":true,
               "type":"string",
               "title":"Item"
             }
@@ -47,31 +40,26 @@
         },
         "num_example":
         {
-          "optional":true,
           "type":"number",
           "title":"Number (num)"
         },
         "int_example":
         {
-          "optional":true,
           "type":"integer",
           "title":"Integer (int)"
         },
         "str_example":
         {
-          "optional":true,
           "type":"string",
           "title":"String (str)"
         },
         "bool_example":
         {
-          "optional":true,
           "type":"boolean",
           "title":"Boolean (bool)"
         },
         "str_enum_example":
         {
-          "optional":true,
           "enum":
           [
             "value1",
