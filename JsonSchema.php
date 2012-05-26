@@ -202,7 +202,8 @@ class JsonTreeRef {
 		elseif ( !is_null( $this->parent ) ) {
 			$this->schemaindex = $this->parent->schemaindex;
 		}
-		if ( $this->schemaref->node['type'] == 'any' ) {
+		if ( !array_key_exists( 'type', $this->schemaref->node ) ||
+			 $this->schemaref->node['type'] == 'any' ) {
 			if ( $this->getType() == 'object' ) {
 				$this->schemaref->node['additionalProperties'] =
 					array( "type" => "any" );
@@ -249,7 +250,12 @@ class JsonTreeRef {
 	 * infer it from the data.
 	 */
 	public function getType() {
-		$nodetype = $this->schemaref->node['type'];
+		if( array_key_exists( 'type', $this->schemaref->node ) ) {
+			$nodetype = $this->schemaref->node['type'];
+		}
+		else {
+			$nodetype = 'any';
+		}
 
 		if ( $nodetype == 'any' ) {
 			if ( $this->node === null ) {
@@ -347,10 +353,16 @@ class JsonTreeRef {
 	 * Return the child ref for $this ref associated with a given index $i
 	 */
 	public function getSequenceChildRef( $i ) {
-		$schemanode = $this->schemaref->node['items'][0];
+		// TODO: make this conform to draft-03 by also allowing single object
+		if( array_key_exists( 'items', $this->schemaref->node ) ) {
+			$schemanode = $this->schemaref->node['items'][0];
+		}
+		else {
+			$schemanode = array();
+		}
 		$itemname = isset( $schemanode['title'] ) ? $schemanode['title'] : "Item";
 		$nodename = $itemname . " #" . ( (string)$i + 1 );
-		$schemai = $this->schemaindex->newRef( $this->schemaref->node['items'][0], $this->schemaref, 0, $i );
+		$schemai = $this->schemaindex->newRef( $schemanode, $this->schemaref, 0, $i );
 		$jsoni = new JsonTreeRef( $this->node[$i], $this, $i, $nodename, $schemai );
 		return $jsoni;
 	}
