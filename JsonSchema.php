@@ -488,7 +488,7 @@ class JsonSchemaIndex {
 				$error = JsonUtil::uiMessage( 'jsonschema-badidref', $node['$ref'] );
 				throw new JsonSchemaException( $error );
 			}
-			$idref = substr( $node['$ref'], 1 );
+			$idref = $node['$ref'];
 			try {
 				$node = $this->idtable[$idref];
 			}

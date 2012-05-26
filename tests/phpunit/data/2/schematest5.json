@@ -1,5 +1,5 @@
 {
-  "id":"bloblist",
+  "id":"#bloblist",
   "optional":true,
   "type":"array",
   "items":

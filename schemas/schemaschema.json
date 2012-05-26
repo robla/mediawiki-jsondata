@@ -1,6 +1,6 @@
 {
   "description":"A schema describing a particular JSON format",
-  "id":"schemanode",
+  "id":"#schemanode",
   "optional":false,
   "title":"Schema",
   "type":"object",
