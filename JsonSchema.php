@@ -209,9 +209,8 @@ class JsonTreeRef {
 			}
 
 			elseif ( $this->getType() == 'array' ) {
-				$this->schemaref->node['items'] =
+				$this->schemaref->node['additionalItems'] =
 					array( array( "type" => "any" ) );
-				$this->schemaref->node['user_key'] = "extension";
 			}
 
 		}
@@ -456,6 +455,9 @@ class JsonSchemaIndex {
 	 * index.
 	 */
 	public function indexSubtree( $schemanode ) {
+		if( !array_key_exists( 'type', $schemanode ) ) {
+			$schemanode['type'] = 'any';
+		}
 		$nodetype = $schemanode['type'];
 		switch( $nodetype ) {
 			case 'object':

@@ -19,7 +19,7 @@
         "object"
       ],
       "title":"Type (type)",
-      "optional":false,
+      "optional":true,
       "desc_enum":
       {
         "object":"Nested mapping of key/value pairs (a.k.a. 'properties').  You may also have a 'properties' property which is itself a sequence containing a single schema definition",
@@ -54,17 +54,10 @@
       "type":"string",
       "title":"Description (desc)"
     },
-    "user_key":
+    "$ref":
     {
       "optional":true,
-      "description":"Key for properties named by the user.  Use only when type=map, and ensure there's a corresponding property schema in the mapping",
-      "type":"string",
-      "title":"User named key (user_key)"
-    },
-    "idref":
-    {
-      "optional":true,
-      "description":"Reference to a schema segment with the given 'id' property.  The 'type' attribute must be set to 'idref'.",
+      "description":"Reference to a schema segment with the given 'id' property.",
       "type":"string",
       "title":"Identifier reference (idref)"
     },
@@ -118,22 +111,20 @@
       "additionalProperties":
       {
         "optional":true,
-        "idref":"schemanode",
-        "type":"$ref"
+        "$ref":"#schemanode"
       }
     },
-    "sequence":
+    "items":
     {
-      "description":"A sequence containing a single schema segment",
+      "description":"A list containing the subschemas for validating list items.  Currently limited to just one.",
       "optional":true,
-      "title":"Sequence (sequence)",
+      "title":"Items (items)",
       "type":"array",
       "items":
       [
         {
           "optional":true,
-          "idref":"schemanode",
-          "type":"$ref"
+          "$ref":"#schemanode"
         }
       ]
     }
