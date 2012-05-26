@@ -20,7 +20,7 @@ jsonwidget.localstrings = {
 
 /*
  * faux-gettext() implementation.
- * @param {object} nodeindex - the key in a map, or index in a seq
+ * @param {object} nodeindex - the key in an object, or index in an array
  * @return {string} string suitable for use as a title
  */
 function _(s) {
@@ -52,7 +52,7 @@ jsonwidget.stringToId = function (str) {
 /*
  * Pull title from the schema if its there, otherwise use the key
  * @param {object} schemanode - schema associated with this node
- * @param {object} nodeindex - the key in a map, or index in a seq
+ * @param {object} nodeindex - the key in an object, or index in an array
  * @return {string} string suitable for use as a title
  */
 jsonwidget.getTitleFromNode = function (schemanode, nodeindex) {
@@ -65,31 +65,31 @@ jsonwidget.getTitleFromNode = function (schemanode, nodeindex) {
 }
 
 /*
- * Given a type (e.g. 'map', 'int', 'str'), return the default/empty
+ * Given a type (e.g. 'object', 'integer', 'string'), return the default/empty
  * value for that type.
  * @param {string} thistype - the type as defined in the schema
  * @return {any} an empty value appropriate for the type
  */
 jsonwidget.getNewValueForType = function(thistype) {
     switch(thistype) {
-    case 'map':
+    case 'object':
         var newvalue = new Object();
         break;
 
-    case 'seq':
+    case 'array':
         var newvalue = new Array();
         break;
 
     case 'number':
-    case 'int':
+    case 'integer':
         var newvalue = 0;
         break;
 
-    case 'str':
+    case 'string':
         var newvalue = "";
         break;
 
-    case 'bool':
+    case 'boolean':
         var newvalue = false;
         break;
     default:
@@ -113,10 +113,10 @@ jsonwidget.getType = function (foo) {
     switch(typeof foo) {
         case "object":
         if(foo.constructor == Array) {
-            return "seq";
+            return "array";
         }
         else {
-            return "map";
+            return "object";
         }
         break;
 
@@ -125,11 +125,11 @@ jsonwidget.getType = function (foo) {
         break;
 
         case "boolean":
-        return "bool";
+        return "boolean";
         break;
 
         case "string":
-        return "str";
+        return "string";
         break;
 
         default:
@@ -149,15 +149,15 @@ jsonwidget.getSchemaArray = function (parent) {
     schema.type = jsonwidget.getType(parent);
 
     switch (schema.type) {
-    case 'map':
-        schema.mapping = new Object();
+    case 'object':
+        schema.properties = new Object();
         for (var name in parent) {
-            schema.mapping[name]= jsonwidget.getSchemaArray(parent[name]);
+            schema.properties[name]= jsonwidget.getSchemaArray(parent[name]);
         }
         break;
-    case 'seq':
-        schema.sequence = new Array();
-        schema.sequence[0] = jsonwidget.getSchemaArray(parent[0]);
+    case 'array':
+        schema.items = new Array();
+        schema.items[0] = jsonwidget.getSchemaArray(parent[0]);
         break;
     }
     return schema;
@@ -218,23 +218,19 @@ jsonwidget.jsonTreeRef.init = function () {
  */
 jsonwidget.jsonTreeRef.attachSchema = function () {
     if(this.schemaref.node.type == 'any') {
-        if(this.getType()=='map') {
-            this.schemaref.node.mapping = {
-                "extension": {
-                    "title":"extension field",
-                    "type":"any"
-                }
+        if(this.getType()=='object') {
+            this.schemaref.node.additionalProperties = {
+               "title":"extension field",
+               "type":"any"
             };
-            this.schemaref.node.user_key = "extension";
         }
-        else if(this.getType()=='seq') {
-            this.schemaref.node.sequence = [
+        else if(this.getType()=='array') {
+            this.schemaref.node.additionalItems = [
                     {
                         "title":"extension field",
                         "type":"any"
                     }
             ];
-            this.schemaref.node.user_key = "extension";
         }
     }
 }
@@ -337,14 +333,14 @@ jsonwidget.schemaIndex.indexSubtree = function (schemanode) {
     var nodetype = schemanode.type;
 
     switch(nodetype) {
-    case 'map':
-        for(var i in schemanode.mapping) {
-            this.indexSubtree(schemanode.mapping[i]);
+    case 'object':
+        for(var i in schemanode.properties) {
+            this.indexSubtree(schemanode.properties[i]);
         }
         break;
-    case 'seq':
-        for(var i in schemanode.sequence) {
-            this.indexSubtree(schemanode.sequence[i]);
+    case 'array':
+        for(var i in schemanode.items) {
+            this.indexSubtree(schemanode.items[i]);
         }
         break;
     }
@@ -359,8 +355,8 @@ jsonwidget.schemaIndex.indexSubtree = function (schemanode) {
  *  the node is an idref.
  */
 jsonwidget.schemaIndex.newRef = function (node, parent, nodeindex, nodename) {
-    if(node.type == 'idref') {
-        node =  this.idtable[node.idref];
+    if(node.type == '$ref') {
+        node =  this.idtable[node['$ref']];
     }
     return new jsonwidget.treeRef(node, parent, nodeindex, nodename);
 }
@@ -592,13 +588,13 @@ jsonwidget.editor.attachHandlers = function () {
                 jsoneditobj.updateNode(jsonnode);
             }
             else {
-                if(nodetype == 'str') {
+                if(nodetype == 'string') {
                     var value = event.target.value;
                 }
-                else if(nodetype == 'number' || nodetype == 'int') {
+                else if(nodetype == 'number' || nodetype == 'integer') {
                     var value = parseInt(event.target.value);
                 }
-                else if(nodetype == 'bool') {
+                else if(nodetype == 'boolean') {
                     var value = event.target.checked;
                 }
 
@@ -702,7 +698,7 @@ jsonwidget.editor.deleteNode = function (jsonindex) {
 
 /*
  * This is where a lot of the heavy lifting is done.  This builds the form
- * elements for array data types (maps and seqs).  The UI is recursively
+ * elements for array data types (objects and arrays).  The UI is recursively
  * built for all of the data inside those arrays (calling attachNodeInput,
  * which in turn calls attachSimplePropertyInput or attachArrayInput, which
  * then calls this function).
@@ -723,31 +719,31 @@ jsonwidget.editor.getArrayInputAttrs = function (jsonref) {
 
     for(var i in jsonref.node) {
         var rownode = document.createElement("tr");
-        if(jsonref.getType()=='map') {
+        var userkeyflag;
+        if(jsonref.getType()=='object') {
             var nodename = i;
-            if(jsonref.schemaref.node.mapping[i]==undefined) {
-                if(jsonref.schemaref.node.user_key==undefined) {
+            if(jsonref.schemaref.node.properties[i]==undefined) {
+                if(jsonref.schemaref.node.additionalProperties==false) {
                     this.warningOut("warning: unrecognized key: "+i);
                     continue;
                 }
                 else {
-                    var userkeyflag = true;
-                    var j = jsonref.schemaref.node.user_key;
-                    schemai = this.schemaindex.newRef(jsonref.schemaref.node.mapping[j], jsonref.schemaref, j, j);
+                    userkeyflag = true;
+                    schemai = this.schemaindex.newRef(jsonref.schemaref.node.additionalProperties, jsonref.schemaref, null, null);
                 }
             }
             else {
-                var userkeyflag = false;
-                nodename = jsonwidget.getTitleFromNode(jsonref.schemaref.node.mapping[i], i);
-                schemai = this.schemaindex.newRef(jsonref.schemaref.node.mapping[i], jsonref.schemaref, i, i);
+                userkeyflag = false;
+                nodename = jsonwidget.getTitleFromNode(jsonref.schemaref.node.properties[i], i);
+                schemai = this.schemaindex.newRef(jsonref.schemaref.node.properties[i], jsonref.schemaref, i, i);
 
             }
             jsoni = new jsonwidget.jsonTreeRef(jsonref.node[i], jsonref, i, nodename, schemai);
         }
-        else if (jsonref.getType()=='seq') {
-            itemname = jsonwidget.getTitleFromNode(jsonref.schemaref.node.sequence[0], 0);
+        else if (jsonref.getType()=='array') {
+            itemname = jsonwidget.getTitleFromNode(jsonref.schemaref.node.items[0], 0);
             nodename = itemname + " #" + (parseInt(i)+1);
-            schemai = this.schemaindex.newRef(jsonref.schemaref.node.sequence[0], jsonref.schemaref, 0, i);
+            schemai = this.schemaindex.newRef(jsonref.schemaref.node.items[0], jsonref.schemaref, 0, i);
             jsoni = new jsonwidget.jsonTreeRef(jsonref.node[i], jsonref, i, nodename, schemai);
         }
         jsoni.userkeyflag = userkeyflag;
@@ -756,8 +752,8 @@ jsonwidget.editor.getArrayInputAttrs = function (jsonref) {
         this.attachNodeInput(jsoni);
         tbody.appendChild(rownode);
     }
-    if(jsonref.getType()=='map') {
-        var schemap = jsonref.schemaref.node.mapping;
+    if(jsonref.getType()=='object') {
+        var schemap = jsonref.schemaref.node.properties;
         for(var i in schemap) {
             //this.debugOut(1, schemap[i].required);
 
@@ -770,8 +766,8 @@ jsonwidget.editor.getArrayInputAttrs = function (jsonref) {
             }
         }
     }
-    else if(jsonref.getType()=='seq') {
-        var schemanode = jsonref.schemaref.node.sequence[0];
+    else if(jsonref.getType()=='array') {
+        var schemanode = jsonref.schemaref.node.items[0];
         if(jsonref.node.length == 0 && schemanode.required == true) {
             var rownode = document.createElement("tr");
             jsoni = this.addItemToSequence(jsonref);
@@ -838,7 +834,7 @@ jsonwidget.editor.getDeleteButton = function (jsonref) {
     var rmid='rmbutton.'+jsonref.fullindex;
     var allowdelete = !jsonref.schemaref.node.required;
     // for sequences with required children, allow deletion if there's more than one child
-    if(jsonref.parent != null && jsonref.parent.getType() == "seq" && jsonref.parent.node.length > 1) {
+    if(jsonref.parent != null && jsonref.parent.getType() == "array" && jsonref.parent.node.length > 1) {
         allowdelete = true;
     }
     if(allowdelete) {
@@ -855,16 +851,18 @@ jsonwidget.editor.getDeleteButton = function (jsonref) {
 }
 
 /*
- * This adds a new key to a map, providing as sensible default value and adding
+ * This adds a new key to an object, providing as sensible default value and adding
  * the new ref to the schemaIndex.
  */
 jsonwidget.editor.addPropToMapping = function (jsonref, prop) {
     var newname = prop;
     var newindex = prop;
-    var schemap = jsonref.schemaref.node.mapping;
+    var schemap = {};
 
-    if(prop == jsonref.schemaref.node.user_key) {
-        newindexbase = jsonwidget.stringToId(prop);
+    // 'null' key means this is a new additionalProperty
+    if(prop == null) {
+        newindexbase = jsonwidget.stringToId("newprop");
+        propschema = jsonref.schemaref.node.additionalProperties;
         for(var i=1;true;i++) {
             newindex = newindexbase + "_" + i;
             if(jsonref.node[newindex] == undefined) {
@@ -875,10 +873,11 @@ jsonwidget.editor.addPropToMapping = function (jsonref, prop) {
         }
     }
     else {
-        newname = jsonwidget.getTitleFromNode(schemap[prop], prop);
+        propschema = jsonref.schemaref.node.properties[prop];
+        newname = jsonwidget.getTitleFromNode(propschema, prop);
     }
 
-    var newschema = this.schemaindex.newRef(schemap[prop], jsonref.schemaref, prop, prop);
+    var newschema = this.schemaindex.newRef(propschema, jsonref.schemaref, prop, prop);
     var newvalue = jsonwidget.getNewValueForType(newschema.node.type);
     var newjson = new jsonwidget.jsonTreeRef(newvalue, jsonref, newindex, newname, newschema);
     //TODO: figure out if this is vestigal code, or if there's ever a case
@@ -894,10 +893,10 @@ jsonwidget.editor.addPropToMapping = function (jsonref, prop) {
 }
 
 /*
- * New button for adding a property to a map or a seq.
+ * New button for adding a property to an object or an array.
  */
 jsonwidget.editor.getAddButton = function (jsonref, prop) {
-    var schemap = jsonref.schemaref.node.mapping;
+    var schemap = jsonref.schemaref.node.properties;
     var je = this;
     var addlink = document.createElement("a");
     addlink.style.textDecoration = "underline";
@@ -913,12 +912,12 @@ jsonwidget.editor.getAddButton = function (jsonref, prop) {
 // Add a new schema-compliant ref to the sequence stored in jsonref, returning
 // the new ref.
 jsonwidget.editor.addItemToSequence = function (jsonref) {
-    var childschema = jsonref.schemaref.node.sequence[0];
+    var childschema = jsonref.schemaref.node.items[0];
     var newname = 0;
     var newindex = ( jsonref.node instanceof Array ) ? jsonref.node.length : 0;
     var newschema = je.schemaindex.newRef(childschema, jsonref.schemaref, 0, newindex);
     var newvalue = jsonwidget.getNewValueForType(newschema.node.type);
-    var itemname = jsonwidget.getTitleFromNode(jsonref.schemaref.node.sequence[0], 0);
+    var itemname = jsonwidget.getTitleFromNode(jsonref.schemaref.node.items[0], 0);
     var nodename = itemname + " #" + (newindex + 1);
 
     var newjson = new jsonwidget.jsonTreeRef(newvalue, jsonref, newindex, nodename, newschema);
@@ -936,7 +935,7 @@ jsonwidget.editor.addItemToSequence = function (jsonref) {
  * Button to add another item to a sequence.
  */
 jsonwidget.editor.getAddToSeqButton = function (jsonref) {
-    var childschema = jsonref.schemaref.node.sequence[0];
+    var childschema = jsonref.schemaref.node.items[0];
     var je = this;
     var addlink = document.createElement("a");
     var itemname = jsonwidget.getTitleFromNode(childschema, "item");
@@ -953,7 +952,7 @@ jsonwidget.editor.getAddToSeqButton = function (jsonref) {
 }
 
 /*
- * Adds the input for a map or a seq associated with the given jsonref to
+ * Adds the input for an object or an array associated with the given jsonref to
  * the form.
  */
 jsonwidget.editor.attachArrayInput = function (jsonref) {
@@ -979,11 +978,13 @@ jsonwidget.editor.attachArrayInput = function (jsonref) {
 
     retval.appendChild(this.getArrayInputAttrs(jsonref));
 
-    if(jsonref.getType()=='map') {
-        var schemap = jsonref.schemaref.node.mapping;
+    if(jsonref.getType()=='object') {
+        var schemap = jsonref.schemaref.node.properties;
         var numprops = 0;
+        var newprops = {};
         for(var i in schemap) {
-            if(jsonref.node[i]==undefined || i == jsonref.schemaref.node.user_key) {
+            if(jsonref.node[i]==undefined) {
+                newprops[i];
                 numprops++;
                 if(numprops == 1) {
                     retval.appendChild(document.createTextNode(_("Add property")+": "));
@@ -1009,8 +1010,8 @@ jsonwidget.editor.attachArrayInput = function (jsonref) {
 }
 
 /*
- * If the schema allows for editing the map key (i.e. if this is a
- * userkey), this function provides the input to change the name of
+ * If the schema allows for editing the object key (i.e. if this is an
+ * additionalProperty), this function provides the input to change the name of
  * the key (propname).  This isn't generally called directly, but rather
  * via getPropnameSpan, which only shows the editing input after an
  * onclick event.
@@ -1045,7 +1046,7 @@ jsonwidget.editor.showPropnameInput = function (jsonref,htmlnode) {
 }
 
 /*
- * Displays a map key (propname) for editable keys (userkeys).  Adds an
+ * Displays an object key (propname) for editable keys (userkeys).  Adds an
  * onclick handler (showPropnameInput) to edit the key onclick.
  */
 jsonwidget.editor.getPropnameSpan = function (jsonref) {
@@ -1072,16 +1073,16 @@ jsonwidget.editor.attachSimplePropertyInput = function (jsonref) {
     var valuetype = jsonref.getType();
 
     switch (valuetype) {
-    case 'str':
+    case 'string':
         var inputelement = this.getStringInput(jsonref);
         break;
 
-    case 'bool':
+    case 'boolean':
         var inputelement = this.getBoolInput(jsonref);
         break;
 
     case 'number':
-    case 'int':
+    case 'integer':
         var inputelement = this.getNumberInput(jsonref);
         break;
 
@@ -1192,7 +1193,7 @@ jsonwidget.editor.getTypeSelectInput = function (jsonref) {
     var curvalue = jsonref.node;
     var jsoneditobj = this;
     var inputid = 'inputid.'+jsonref.fullindex;
-    var types = ['any','str','int','number','bool','seq','map'];
+    var types = ['any','string','integer','number','boolean','array','object'];
 
     var inputelement = document.createElement("select");
     inputelement.className = "jeclass";
@@ -1272,8 +1273,8 @@ jsonwidget.editor.attachNodeInput = function attachNodeInput(jsonref) {
     }
 
     switch(nodetype) {
-        case 'map':
-        case 'seq':
+        case 'object':
+        case 'array':
         this.attachArrayInput(jsonref);
         break;
 
