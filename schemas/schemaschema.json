@@ -114,6 +114,11 @@
         "$ref":"#schemanode"
       }
     },
+    "additionalProperties":
+    {
+       "optional":true,
+       "type":"any"
+    },
     "items":
     {
       "description":"A list containing the subschemas for validating list items.  Currently limited to just one.",
