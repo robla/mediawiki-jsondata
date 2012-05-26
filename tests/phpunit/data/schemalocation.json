@@ -43,7 +43,7 @@
         },
         "precision":
         {
-          "desc":"The size of the area being described (e.g. state, zip, city, etc)",
+          "description":"The size of the area being described (e.g. state, zip, city, etc)",
           "optional":false,
           "title":"Precision",
           "type":"string"

@@ -1,5 +1,5 @@
 {
-  "desc":"Example with all datatypes in one place",
+  "description":"Example with all datatypes in one place",
   "optional":true,
   "title":"Datatype example schema (datatype-example-schema.json)\n  Not terribly useful for anything other than demonstration purposes.  Edit one\n  of the existing schemas for your purpose, or generate one using the online\n  tool at http://robla.net/2005/jsonwidget\nData",
   "type":"array",
