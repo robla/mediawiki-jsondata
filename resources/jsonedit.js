@@ -217,7 +217,8 @@ jsonwidget.jsonTreeRef.init = function () {
  * Associate the relevant node of the JSON schema to this node in the JSON
  */
 jsonwidget.jsonTreeRef.attachSchema = function () {
-    if(this.schemaref.node.type == 'any') {
+    if(this.schemaref.node.type == 'any'
+       || this.schemaref.node.type == undefined) {
         if(this.getType()=='object') {
             this.schemaref.node.additionalProperties = {
                "title":"extension field",
@@ -276,7 +277,7 @@ jsonwidget.jsonTreeRef.renamePropname = function (newindex) {
  */
 jsonwidget.jsonTreeRef.getType = function () {
     var nodetype = this.schemaref.node.type;
-    if(nodetype == 'any') {
+    if(nodetype == 'any' || nodetype == undefined) {
         if(this.node == undefined) {
             return undefined;
         }
@@ -722,7 +723,8 @@ jsonwidget.editor.getArrayInputAttrs = function (jsonref) {
         var userkeyflag;
         if(jsonref.getType()=='object') {
             var nodename = i;
-            if(jsonref.schemaref.node.properties[i]==undefined) {
+            if(jsonref.schemaref.node.properties == undefined ||
+               jsonref.schemaref.node.properties[i] == undefined) {
                 if(jsonref.schemaref.node.additionalProperties==false) {
                     this.warningOut("warning: unrecognized key: "+i);
                     continue;
@@ -741,9 +743,13 @@ jsonwidget.editor.getArrayInputAttrs = function (jsonref) {
             jsoni = new jsonwidget.jsonTreeRef(jsonref.node[i], jsonref, i, nodename, schemai);
         }
         else if (jsonref.getType()=='array') {
-            itemname = jsonwidget.getTitleFromNode(jsonref.schemaref.node.items[0], 0);
+            var schemanode = {};
+            if('items' in jsonref.schemaref.node) {
+                schema = jsonref.schemaref.node.items[0];
+            }
+            itemname = jsonwidget.getTitleFromNode(schemanode, 0);
             nodename = itemname + " #" + (parseInt(i)+1);
-            schemai = this.schemaindex.newRef(jsonref.schemaref.node.items[0], jsonref.schemaref, 0, i);
+            schemai = this.schemaindex.newRef(schemanode, jsonref.schemaref, 0, i);
             jsoni = new jsonwidget.jsonTreeRef(jsonref.node[i], jsonref, i, nodename, schemai);
         }
         jsoni.userkeyflag = userkeyflag;
@@ -767,8 +773,12 @@ jsonwidget.editor.getArrayInputAttrs = function (jsonref) {
         }
     }
     else if(jsonref.getType()=='array') {
-        var schemanode = jsonref.schemaref.node.items[0];
-        if(jsonref.node.length == 0 && schemanode.required == true) {
+        var schemanode = {};
+        if('items' in jsonref.schemaref.node) {
+            schema = jsonref.schemaref.node.items[0];
+        }
+        if(jsonref.node.length == 0 && ('required' in schemanode ) &&
+           schemanode.required == true) {
             var rownode = document.createElement("tr");
             jsoni = this.addItemToSequence(jsonref);
             jsoni.domparent = rownode;
