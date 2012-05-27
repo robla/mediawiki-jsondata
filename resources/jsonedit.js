@@ -49,20 +49,6 @@ jsonwidget.stringToId = function (str) {
     }
     else error();
 }
-/*
- * Pull title from the schema if its there, otherwise use the key
- * @param {object} schemanode - schema associated with this node
- * @param {object} nodeindex - the key in an object, or index in an array
- * @return {string} string suitable for use as a title
- */
-jsonwidget.getTitleFromNode = function (schemanode, nodeindex) {
-    if(undefined != schemanode.title) {
-        return schemanode.title;
-    }
-    else {
-        return "Item";
-    }
-}
 
 /*
  * Given a type (e.g. 'object', 'integer', 'string'), return the default/empty
@@ -177,11 +163,10 @@ jsonwidget.getSchemaArray = function (parent) {
  * Structure for representing a generic tree which each node is aware of its
  * context (can refer to its parent).  Used for schema refs.
  */
-jsonwidget.treeRef = function (node, parent, nodeindex, nodename) {
+jsonwidget.treeRef = function (node, parent, nodeindex) {
     this.node = node;
     this.parent = parent;
     this.nodeindex = nodeindex;
-    this.nodename = nodename;
 }
 
 /*
@@ -189,11 +174,10 @@ jsonwidget.treeRef = function (node, parent, nodeindex, nodename) {
  * Structure for representing a data tree, where each node (ref) is aware of its
  * context and associated schema.
  */
-jsonwidget.jsonTreeRef = function (node, parent, nodeindex, nodename, schemaref) {
+jsonwidget.jsonTreeRef = function (node, parent, nodeindex, schemaref) {
     this.node = node;
     this.parent = parent;
     this.nodeindex = nodeindex;
-    this.nodename = nodename;
     this.schemaref = schemaref;
 
     this.init = jsonwidget.jsonTreeRef.init;
@@ -233,12 +217,28 @@ jsonwidget.jsonTreeRef.attachSchema = function () {
  *  user-friendly string for this node.
  */
 jsonwidget.jsonTreeRef.getTitle = function () {
-    if(undefined != this.nodename) {
-        return this.nodename;
+    var title = this.schemaref.node.title;
+    // generate sensible defaults if title isn't defined in schema
+    if(typeof(title) != 'string') {
+        // "this" is the root node
+        if(!(this.parent instanceof jsonwidget.jsonTreeRef)) {
+            return _("Root node");
+        }
+        // "this" is a property of an object
+        else if(this.parent.getType() == 'object') {
+            return this.nodeindex;
+        }
+        // "this" is an item in an array
+        else {
+            title = "Item";
+        }
     }
-    else {
-        return jsonwidget.getTitleFromNode(this.node, this.nodeindex);
+
+    // tack on 1-based array index to title in arrays
+    if(this.parent instanceof jsonwidget.jsonTreeRef && this.parent.getType() == 'array') {
+        title = title + " #" + (parseInt(this.nodeindex)+1);
     }
+    return title;
 }
 
 /*
@@ -257,7 +257,6 @@ jsonwidget.jsonTreeRef.renamePropname = function (newindex) {
     this.parent.node[newindex] = this.node;
 
     this.nodeindex = newindex;
-    this.nodename = newindex;
     this.fullindex = this.getFullIndex();
 
     delete this.parent.node[oldindex];
@@ -347,11 +346,11 @@ jsonwidget.schemaIndex.indexSubtree = function (schemanode) {
  *  Generate a new schema ref, or return an existing one from the index if
  *  the node is an idref.
  */
-jsonwidget.schemaIndex.newRef = function (node, parent, nodeindex, nodename) {
+jsonwidget.schemaIndex.newRef = function (node, parent, nodeindex) {
     if(node.type == '$ref') {
         node =  this.idtable[node['$ref']];
     }
-    return new jsonwidget.treeRef(node, parent, nodeindex, nodename);
+    return new jsonwidget.treeRef(node, parent, nodeindex);
 }
 
 //
@@ -714,7 +713,6 @@ jsonwidget.editor.getArrayInputAttrs = function (jsonref) {
         var rownode = document.createElement("tr");
         var userkeyflag;
         if(jsonref.getType()=='object') {
-            var nodename = i;
             if(jsonref.schemaref.node.properties == undefined ||
                jsonref.schemaref.node.properties[i] == undefined) {
                 if(jsonref.schemaref.node.additionalProperties==false) {
@@ -723,26 +721,23 @@ jsonwidget.editor.getArrayInputAttrs = function (jsonref) {
                 }
                 else {
                     userkeyflag = true;
-                    schemai = this.schemaindex.newRef(jsonref.schemaref.node.additionalProperties, jsonref.schemaref, null, null);
+                    schemai = this.schemaindex.newRef(jsonref.schemaref.node.additionalProperties, jsonref.schemaref, null);
                 }
             }
             else {
                 userkeyflag = false;
-                nodename = jsonwidget.getTitleFromNode(jsonref.schemaref.node.properties[i], i);
-                schemai = this.schemaindex.newRef(jsonref.schemaref.node.properties[i], jsonref.schemaref, i, i);
+                schemai = this.schemaindex.newRef(jsonref.schemaref.node.properties[i], jsonref.schemaref, i);
 
             }
-            jsoni = new jsonwidget.jsonTreeRef(jsonref.node[i], jsonref, i, nodename, schemai);
+            jsoni = new jsonwidget.jsonTreeRef(jsonref.node[i], jsonref, i, schemai);
         }
         else if (jsonref.getType()=='array') {
             var schemanode = {};
             if('items' in jsonref.schemaref.node) {
-                schema = jsonref.schemaref.node.items[0];
+                schemanode = jsonref.schemaref.node.items[0];
             }
-            itemname = jsonwidget.getTitleFromNode(schemanode, 0);
-            nodename = itemname + " #" + (parseInt(i)+1);
-            schemai = this.schemaindex.newRef(schemanode, jsonref.schemaref, 0, i);
-            jsoni = new jsonwidget.jsonTreeRef(jsonref.node[i], jsonref, i, nodename, schemai);
+            schemai = this.schemaindex.newRef(schemanode, jsonref.schemaref, i);
+            jsoni = new jsonwidget.jsonTreeRef(jsonref.node[i], jsonref, i, schemai);
         }
         jsoni.userkeyflag = userkeyflag;
         jsoni.domparent = rownode;
@@ -876,12 +871,11 @@ jsonwidget.editor.addPropToMapping = function (jsonref, prop) {
     }
     else {
         propschema = jsonref.schemaref.node.properties[prop];
-        newname = jsonwidget.getTitleFromNode(propschema, prop);
     }
 
-    var newschema = this.schemaindex.newRef(propschema, jsonref.schemaref, prop, prop);
+    var newschema = this.schemaindex.newRef(propschema, jsonref.schemaref, prop);
     var newvalue = jsonwidget.getNewValueForType(newschema.node.type);
-    var newjson = new jsonwidget.jsonTreeRef(newvalue, jsonref, newindex, newname, newschema);
+    var newjson = new jsonwidget.jsonTreeRef(newvalue, jsonref, newindex, newschema);
     //TODO: figure out if this is vestigal code, or if there's ever a case
     // where this is valid.
     if (jsonref.node instanceof Array) {
@@ -907,7 +901,8 @@ jsonwidget.editor.getAddButton = function (jsonref, prop) {
         je.addPropToMapping(jsonref, prop);
         je.updateNode(jsonref);
     }
-    addlink.appendChild(document.createTextNode(jsonwidget.getTitleFromNode(schemap[prop], prop)));
+	var title = (undefined != schemap[prop].title) ? schemap[prop].title : prop;
+    addlink.appendChild(document.createTextNode(title));
     return addlink;
 }
 
@@ -920,12 +915,10 @@ jsonwidget.editor.addItemToSequence = function (jsonref) {
     }
     var newname = 0;
     var newindex = ( jsonref.node instanceof Array ) ? jsonref.node.length : 0;
-    var newschema = je.schemaindex.newRef(childschema, jsonref.schemaref, 0, newindex);
+    var newschema = je.schemaindex.newRef(childschema, jsonref.schemaref, newindex);
     var newvalue = jsonwidget.getNewValueForType(newschema.node.type);
-    var itemname = jsonwidget.getTitleFromNode(childschema, 0);
-    var nodename = itemname + " #" + (newindex + 1);
 
-    var newjson = new jsonwidget.jsonTreeRef(newvalue, jsonref, newindex, nodename, newschema);
+    var newjson = new jsonwidget.jsonTreeRef(newvalue, jsonref, newindex, newschema);
     if (jsonref.node instanceof Array) {
         jsonref.node.push(newvalue);
     }
@@ -946,7 +939,7 @@ jsonwidget.editor.getAddToSeqButton = function (jsonref) {
     }
     var je = this;
     var addlink = document.createElement("a");
-    var itemname = jsonwidget.getTitleFromNode(childschema, "item");
+	var itemname = (undefined != childschema.title) ? childschema.title : "Item";
     addlink.style.textDecoration = "underline";
     addlink.style.cursor = "pointer";
     addlink.onclick = function () {
@@ -971,7 +964,7 @@ jsonwidget.editor.attachArrayInput = function (jsonref) {
         localnode.appendChild(this.getPropnameSpan(jsonref));
     }
     else {
-        localnode.appendChild(document.createTextNode(jsonref.nodename));
+        localnode.appendChild(document.createTextNode(jsonref.getTitle()));
     }
 
     retval.appendChild(localnode);
@@ -1032,7 +1025,7 @@ jsonwidget.editor.showPropnameInput = function (jsonref,htmlnode) {
     nameinput.id=nameinputid;
     nameinput.size=20;
     nameinput.type="text";
-    nameinput.setAttribute("value", jsonref.nodename);
+    nameinput.setAttribute("value", jsonref.getTitle());
 
     var je = this;
     var parent = htmlnode.parentNode;
@@ -1059,7 +1052,7 @@ jsonwidget.editor.showPropnameInput = function (jsonref,htmlnode) {
  */
 jsonwidget.editor.getPropnameSpan = function (jsonref) {
     var nameinput = document.createElement("span");
-    nameinput.appendChild(document.createTextNode(jsonref.nodename));
+    nameinput.appendChild(document.createTextNode(jsonref.getTitle()));
     var nameinputid = 'nameinputid.'+jsonref.fullindex;
     nameinput.className="je_userkey";
     nameinput.id=nameinputid;
@@ -1113,7 +1106,7 @@ jsonwidget.editor.attachSimplePropertyInput = function (jsonref) {
             namenode.appendChild(this.getPropnameSpan(jsonref));
         }
         else {
-            namenode.appendChild(document.createTextNode(jsonref.nodename));
+            namenode.appendChild(document.createTextNode(jsonref.getTitle()));
         }
         var valuenode = document.createElement("td");
         var controlnode = document.createElement("td");
@@ -1121,7 +1114,7 @@ jsonwidget.editor.attachSimplePropertyInput = function (jsonref) {
     else {
         var parent = document.createElement("fieldset");
         var localnode = document.createElement("legend");
-        localnode.appendChild(document.createTextNode(jsonref.nodename));
+        localnode.appendChild(document.createTextNode(jsonref.getTitle()));
         parent.appendChild(localnode);
         jsonref.domparent.appendChild(parent);
 
@@ -1542,10 +1535,9 @@ jsonwidget.editor.toggleToFormActual = function () {
         }
     }
 
-    var nodename = jsonwidget.getTitleFromNode(schema, _("Root node"));
-    var rootschema = this.schemaindex.newRef(schema, null, null, nodename);
+    var rootschema = this.schemaindex.newRef(schema, null, null);
     // Associate the schema with the JSON via new jsonTreeRef object
-    var rootjson = new jsonwidget.jsonTreeRef(this.jsondata, null, null, nodename, rootschema);
+    var rootjson = new jsonwidget.jsonTreeRef(this.jsondata, null, null, rootschema);
     this.rootjson = rootjson;
     this.jsonLookupById[rootjson.fullindex]=rootjson;
 
