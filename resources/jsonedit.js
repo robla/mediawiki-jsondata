@@ -914,12 +914,15 @@ jsonwidget.editor.getAddButton = function (jsonref, prop) {
 // Add a new schema-compliant ref to the sequence stored in jsonref, returning
 // the new ref.
 jsonwidget.editor.addItemToSequence = function (jsonref) {
-    var childschema = jsonref.schemaref.node.items[0];
+    var childschema = {};
+    if('items' in jsonref.schemaref.node) {
+        childschema = jsonref.schemaref.node.items[0];
+    }
     var newname = 0;
     var newindex = ( jsonref.node instanceof Array ) ? jsonref.node.length : 0;
     var newschema = je.schemaindex.newRef(childschema, jsonref.schemaref, 0, newindex);
     var newvalue = jsonwidget.getNewValueForType(newschema.node.type);
-    var itemname = jsonwidget.getTitleFromNode(jsonref.schemaref.node.items[0], 0);
+    var itemname = jsonwidget.getTitleFromNode(childschema, 0);
     var nodename = itemname + " #" + (newindex + 1);
 
     var newjson = new jsonwidget.jsonTreeRef(newvalue, jsonref, newindex, nodename, newschema);
@@ -937,7 +940,10 @@ jsonwidget.editor.addItemToSequence = function (jsonref) {
  * Button to add another item to a sequence.
  */
 jsonwidget.editor.getAddToSeqButton = function (jsonref) {
-    var childschema = jsonref.schemaref.node.items[0];
+    var childschema = {};
+    if('items' in jsonref.schemaref.node) {
+        childschema = jsonref.schemaref.node.items[0];
+    }
     var je = this;
     var addlink = document.createElement("a");
     var itemname = jsonwidget.getTitleFromNode(childschema, "item");
@@ -998,7 +1004,7 @@ jsonwidget.editor.attachArrayInput = function (jsonref) {
             }
         }
     }
-    if(jsonref.getType()=='seq') {
+    if(jsonref.getType()=='array') {
         retval.appendChild(this.getAddToSeqButton(jsonref));
     }
     //wrap it all in a td
