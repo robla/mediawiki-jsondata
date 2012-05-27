@@ -862,7 +862,7 @@ jsonwidget.editor.addPropToMapping = function (jsonref, prop) {
         propschema = jsonref.schemaref.node.additionalProperties;
         for(var i=1;true;i++) {
             newindex = newindexbase + "_" + i;
-            if(jsonref.node[newindex] == undefined) {
+            if(jsonref.node[newindex] === undefined) {
                 var nodenum = i;
                 newname = newindex;
                 break;
