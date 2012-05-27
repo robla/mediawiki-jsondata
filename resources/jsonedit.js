@@ -438,7 +438,7 @@ jsonwidget.editor = function () {
     this.getHideButton = jsonwidget.editor.getHideButton;
     this.getDeleteButton = jsonwidget.editor.getDeleteButton;
     this.addPropToMapping = jsonwidget.editor.addPropToMapping;
-    this.getAddButton = jsonwidget.editor.getAddButton;
+    this.getAddToObjectLinks = jsonwidget.editor.getAddToObjectLinks;
     this.attachArrayInput = jsonwidget.editor.attachArrayInput;
     this.showPropnameInput = jsonwidget.editor.showPropnameInput;
     this.getPropnameSpan = jsonwidget.editor.getPropnameSpan;
@@ -889,21 +889,68 @@ jsonwidget.editor.addPropToMapping = function (jsonref, prop) {
 }
 
 /*
- * New button for adding a property to an object or an array.
+ * Links for adding properties to an object
  */
-jsonwidget.editor.getAddButton = function (jsonref, prop) {
-    var schemap = jsonref.schemaref.node.properties;
-    var je = this;
-    var addlink = document.createElement("a");
-    addlink.style.textDecoration = "underline";
-    addlink.style.cursor = "pointer";
-    addlink.onclick = function () {
-        je.addPropToMapping(jsonref, prop);
-        je.updateNode(jsonref);
+jsonwidget.editor.getAddToObjectLinks = function (jsonref) {
+    // build a list of properties that don't have values yet
+    var availableprops = [];
+    for(var i in jsonref.schemaref.node.properties) {
+        if(jsonref.node[i]==undefined) {
+            availableprops.push(i);
+        }
     }
-	var title = (undefined != schemap[prop].title) ? schemap[prop].title : prop;
-    addlink.appendChild(document.createTextNode(title));
-    return addlink;
+    // add a "null" to availableprops to signify something from
+    //"additionalProperties"
+    if(jsonref.schemaref.node.additionalProperties != false) {
+        availableprops.push(null);
+    }
+
+    // now build the HTML based on availableprops
+    var retval = document.createElement("div");
+    if(availableprops.length == 0) {
+         return retval;
+    }
+
+    retval.appendChild(document.createTextNode(_("Add property")+": "));
+
+    // create a comma-separated list of available properties
+    for(var i = 0; i < availableprops.length; i++) {
+        var prop = availableprops[i];
+        var propschema = {};
+        if( prop == null && (jsonref.schemaref.node.additionalProperties != undefined)) {
+            propschema = jsonref.schemaref.node.additionalProperties;
+        }
+        else {
+            propschema = jsonref.schemaref.node.properties[prop];
+        }
+
+        var je = this;
+
+        var addlink = document.createElement("a");
+        addlink.style.textDecoration = "underline";
+        addlink.style.cursor = "pointer";
+        addlink.onclick = function () {
+            je.addPropToMapping(jsonref, prop);
+            je.updateNode(jsonref);
+        }
+        var title;
+        if(typeof(propschema.title) == 'string') {
+            title = propschema.title;
+        }
+        else if (prop == null) {
+            title = "New property";
+        }
+        else {
+            title = prop;
+        }
+        addlink.appendChild(document.createTextNode(title));
+        retval.appendChild(addlink);
+
+        if(i < (availableprops.length - 1)) {
+            retval.appendChild(document.createTextNode(", "));
+        }
+    }
+    return retval;
 }
 
 // Add a new schema-compliant ref to the sequence stored in jsonref, returning
@@ -980,22 +1027,7 @@ jsonwidget.editor.attachArrayInput = function (jsonref) {
     retval.appendChild(this.getArrayInputAttrs(jsonref));
 
     if(jsonref.getType()=='object') {
-        var schemap = jsonref.schemaref.node.properties;
-        var numprops = 0;
-        var newprops = {};
-        for(var i in schemap) {
-            if(jsonref.node[i]==undefined) {
-                newprops[i];
-                numprops++;
-                if(numprops == 1) {
-                    retval.appendChild(document.createTextNode(_("Add property")+": "));
-                }
-                else {
-                    retval.appendChild(document.createTextNode(", "));
-                }
-                retval.appendChild(this.getAddButton(jsonref,i));
-            }
-        }
+        retval.appendChild(this.getAddToObjectLinks(jsonref));
     }
     if(jsonref.getType()=='array') {
         retval.appendChild(this.getAddToSeqButton(jsonref));
