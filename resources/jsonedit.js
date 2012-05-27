@@ -1468,6 +1468,7 @@ jsonwidget.editor.setStatusLight = function (statustext) {
  * Clear the status indicator set by setStatusLight
  */
 jsonwidget.editor.clearStatusLight = function () {
+    this.statusLight.innerHTML =""
     this.statusLight.style.visibility = "hidden";
 }
 
