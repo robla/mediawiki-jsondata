@@ -202,20 +202,6 @@ class JsonTreeRef {
 		elseif ( !is_null( $this->parent ) ) {
 			$this->schemaindex = $this->parent->schemaindex;
 		}
-		if ( !array_key_exists( 'type', $this->schemaref->node ) ||
-			 $this->schemaref->node['type'] == 'any' ) {
-			if ( $this->getType() == 'object' ) {
-				$this->schemaref->node['additionalProperties'] =
-					array( "type" => "any" );
-			}
-
-			elseif ( $this->getType() == 'array' ) {
-				$this->schemaref->node['additionalItems'] =
-					array( array( "type" => "any" ) );
-			}
-
-		}
-
 	}
 
 	/*
@@ -333,14 +319,21 @@ class JsonTreeRef {
 			array_key_exists( $key, $snode['properties'] ) ) {
 			$schemadata = $snode['properties'][$key];
 		}
-		elseif ( array_key_exists( 'additionalProperties', $snode ) &&
-				 $snode['additionalProperties'] !== false ) {
-			$schemadata = $snode['additionalProperties'];
+		elseif ( array_key_exists( 'additionalProperties', $snode ) ) {
+			// additionalProperties can *either* be false (a boolean) or can be
+			// defined as a schema (an object)
+			if ( $snode['additionalProperties'] == false ) {
+				$msg = JsonUtil::uiMessage( 'jsonschema-invalidkey',
+											$key, $this->getDataPathTitles() );
+				throw new JsonSchemaException( $msg );
+			}
+			else {
+				$schemadata = $snode['additionalProperties'];
+			}
 		}
 		else {
-			$msg = JsonUtil::uiMessage( 'jsonschema-invalidkey',
-										$key, $this->getDataPathTitles() );
-			throw new JsonSchemaException( $msg );
+			// return the default schema
+			$schemadata = array();
 		}
 		$value = $this->node[$key];
 		$nodename = isset( $schemadata['title'] ) ? $schemadata['title'] : $key;
