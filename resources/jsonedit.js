@@ -60,7 +60,7 @@ jsonwidget.getTitleFromNode = function (schemanode, nodeindex) {
         return schemanode.title;
     }
     else {
-        return nodeindex;
+        return "Item";
     }
 }
 
@@ -220,18 +220,10 @@ jsonwidget.jsonTreeRef.attachSchema = function () {
     if(this.schemaref.node.type == 'any'
        || this.schemaref.node.type == undefined) {
         if(this.getType()=='object') {
-            this.schemaref.node.additionalProperties = {
-               "title":"extension field",
-               "type":"any"
-            };
+            this.schemaref.node.additionalProperties = {};;
         }
         else if(this.getType()=='array') {
-            this.schemaref.node.additionalItems = [
-                    {
-                        "title":"extension field",
-                        "type":"any"
-                    }
-            ];
+            this.schemaref.node.additionalItems = [{}];
         }
     }
 }
