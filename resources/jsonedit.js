@@ -234,6 +234,13 @@ jsonwidget.jsonTreeRef.getTitle = function () {
         }
     }
 
+    // for user keys (additionalProperties), the title and the property name
+    // are used pretty interchangably, especially when it comes time to edit,
+    // so the title here needs to be the same as the nodeindex.
+    if(this.isUserKey()) {
+        return this.nodeindex;
+    }
+
     // tack on 1-based array index to title in arrays
     if(this.parent instanceof jsonwidget.jsonTreeRef && this.parent.getType() == 'array') {
         title = title + " #" + (parseInt(this.nodeindex)+1);
@@ -243,6 +250,7 @@ jsonwidget.jsonTreeRef.getTitle = function () {
 
 /*
  *  Is this node a "user key", as defined in http://jsonwidget.org/jsonschema/
+ *  TODO: rename to isAdditionalProperty
  */
 jsonwidget.jsonTreeRef.isUserKey = function () {
     return this.userkeyflag;
