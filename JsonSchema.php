@@ -315,9 +315,11 @@ class JsonTreeRef {
 	 */
 	public function getMappingChildRef( $key ) {
 		$snode = $this->schemaref->node;
+		$nodename = null;
 		if( array_key_exists( 'properties', $snode ) &&
 			array_key_exists( $key, $snode['properties'] ) ) {
 			$schemadata = $snode['properties'][$key];
+			$nodename = isset( $schemadata['title'] ) ? $schemadata['title'] : $key;
 		}
 		elseif ( array_key_exists( 'additionalProperties', $snode ) ) {
 			// additionalProperties can *either* be false (a boolean) or can be
@@ -329,14 +331,15 @@ class JsonTreeRef {
 			}
 			else {
 				$schemadata = $snode['additionalProperties'];
+				$nodename = $key;
 			}
 		}
 		else {
 			// return the default schema
 			$schemadata = array();
+			$nodename = $key;
 		}
 		$value = $this->node[$key];
-		$nodename = isset( $schemadata['title'] ) ? $schemadata['title'] : $key;
 		$schemai = $this->schemaindex->newRef( $schemadata, $this->schemaref, $key, $key );
 		$jsoni = new JsonTreeRef( $value, $this, $key, $nodename, $schemai );
 		return $jsoni;
