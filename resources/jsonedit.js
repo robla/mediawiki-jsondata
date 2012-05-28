@@ -651,10 +651,8 @@ jsonwidget.editor.updateNode = function (jsonnode) {
         var rownode = document.createElement("tr");
         jsonnode.domparent.parentNode.replaceChild(rownode, jsonnode.domparent);
         jsonnode.domparent = rownode;
+        this.attachNodeInput(jsonnode);
 
-        var je = this;
-        this.setStatusLight("working...");
-        setTimeout(function () {je.attachNodeInput(jsonnode);je.clearStatusLight();},this.getStatusLightDelay(jsonnode));
     }
     else {
         this.jsondata = value;
