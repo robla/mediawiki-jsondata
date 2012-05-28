@@ -355,8 +355,11 @@ jsonwidget.schemaIndex.indexSubtree = function (schemanode) {
  *  the node is an idref.
  */
 jsonwidget.schemaIndex.newRef = function (node, parent, nodeindex) {
-    if(node.type == '$ref') {
-        node =  this.idtable[node['$ref']];
+    if(node == undefined) {
+        node = {};
+    }
+    else if(node.type == '$ref') {
+        node = this.idtable[node['$ref']];
     }
     return new jsonwidget.treeRef(node, parent, nodeindex);
 }
@@ -446,6 +449,7 @@ jsonwidget.editor = function () {
     this.getHideButton = jsonwidget.editor.getHideButton;
     this.getDeleteButton = jsonwidget.editor.getDeleteButton;
     this.addPropToMapping = jsonwidget.editor.addPropToMapping;
+    this.getNewPropLink = jsonwidget.editor.getNewPropLink;
     this.getAddToObjectLinks = jsonwidget.editor.getAddToObjectLinks;
     this.attachArrayInput = jsonwidget.editor.attachArrayInput;
     this.showPropnameInput = jsonwidget.editor.showPropnameInput;
@@ -895,6 +899,33 @@ jsonwidget.editor.addPropToMapping = function (jsonref, prop) {
 }
 
 /*
+ * Return a link for adding a property to an object
+ */
+
+jsonwidget.editor.getNewPropLink = function (jsonref, prop, propschema) {
+    var je = this;
+    var addlink = document.createElement("a");
+    addlink.style.textDecoration = "underline";
+    addlink.style.cursor = "pointer";
+    addlink.onclick = function () {
+        je.addPropToMapping(jsonref, prop);
+        je.updateNode(jsonref);
+    }
+    var title;
+    if(typeof(propschema.title) == 'string') {
+        title = propschema.title;
+    }
+    else if (prop == null) {
+        title = "New property";
+    }
+    else {
+        title = prop;
+    }
+    addlink.appendChild(document.createTextNode(title));
+    return addlink;
+}
+
+/*
  * Links for adding properties to an object
  */
 jsonwidget.editor.getAddToObjectLinks = function (jsonref) {
@@ -923,34 +954,19 @@ jsonwidget.editor.getAddToObjectLinks = function (jsonref) {
     for(var i = 0; i < availableprops.length; i++) {
         var prop = availableprops[i];
         var propschema = {};
-        if( prop == null && (jsonref.schemaref.node.additionalProperties != undefined)) {
-            propschema = jsonref.schemaref.node.additionalProperties;
+        if( prop == null ) {
+            if(jsonref.schemaref.node.additionalProperties != undefined) {
+                propschema = jsonref.schemaref.node.additionalProperties;
+            }
+            else {
+                propschema = {};
+            }
         }
         else {
             propschema = jsonref.schemaref.node.properties[prop];
         }
 
-        var je = this;
-
-        var addlink = document.createElement("a");
-        addlink.style.textDecoration = "underline";
-        addlink.style.cursor = "pointer";
-        addlink.onclick = function () {
-            je.addPropToMapping(jsonref, prop);
-            je.updateNode(jsonref);
-        }
-        var title;
-        if(typeof(propschema.title) == 'string') {
-            title = propschema.title;
-        }
-        else if (prop == null) {
-            title = "New property";
-        }
-        else {
-            title = prop;
-        }
-        addlink.appendChild(document.createTextNode(title));
-        retval.appendChild(addlink);
+        retval.appendChild(this.getNewPropLink(jsonref, prop, propschema));
 
         if(i < (availableprops.length - 1)) {
             retval.appendChild(document.createTextNode(", "));
