@@ -431,6 +431,7 @@ jsonwidget.editor = function () {
     }
 
     this.context = new jsonwidget.context();
+    this.schemaContext = this.context;
 
     this.formdiv = document.getElementById(this.htmlids.formdiv);
     this.activehelp = null;
@@ -1655,7 +1656,7 @@ jsonwidget.editor.updateJSON = function () {
 jsonwidget.editor.updateSchemaExample = function () {
     var textarea = document.getElementById(this.htmlids.schemaexamplearea);
     var data = jsonwidget.getSchemaArray(je.jsondata);
-    var context = this.context;
+    var context = this.schemaContext;
     this.updateArea(textarea, data, context);
 }
 

@@ -49,6 +49,10 @@ if($("#je_formdiv").length > 0) {
     je.htmlids.sourcetextarea = 'wpTextbox1';
     je.htmlids.sourcetextform = 'editform';
     je.context = new mwjsondata.context();
+    je.schemaContext = new mwjsondata.context();
+    je.schemaContext.beginContext = "<jsonschema>\n";
+    je.schemaContext.endContext = "\n</jsonschema>";
+
     if($("#je_schemaexamplebutton").length > 0) {
         je.schemaEditInit();
         je.views = je.views.concat(['schemaexample']);
