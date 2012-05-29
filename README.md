@@ -1,14 +1,20 @@
-Installation instructions for JsonData
+This is an extension which allows for form-based editing of arbitrary JSON data on-wiki.
+To see this in action, visit http://jsonwidget.org/wiki/JsonData
 
+Installation instructions for JsonData
+======================================
 1.  Copy the extension as "JsonData" into the extensions directory
 2.  Configure the extension in LocalSettings.php.  An example configuration
     can be found in example/LocalSettings_example.php
 
-This should be enough to get up and running.  A few tests to try with the
-example configuration:
+This should be enough to get up and running.  
+
+Testing
+=======
+A few tests to try with the example configuration:
+
 1.  Create a page "Address:Test".  This is an example of a basic address book.
-2.  Create a page "Data:Test".  This is an example of free-form JSON editing
-    sans schema.
+2.  Create a page "Data:Test".  This is an example of free-form JSON editing sans schema.
 3.  Copy an example schema to the wiki.  Create "Schema:SimpleAddr", and copy
     in the contents of simpleaddr-schema.json.  Surround the contents with
     a <jsonschema> tag.
