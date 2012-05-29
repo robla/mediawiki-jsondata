@@ -25,7 +25,8 @@
       "schema":
       {
         "srctype":"predefined",
-        "src":"openschema"
+        "src":"openschema",
+        "schemaattr":"schema"
       }
     },
     "jsonschema":
