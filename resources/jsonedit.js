@@ -358,7 +358,7 @@ jsonwidget.schemaIndex.newRef = function (node, parent, nodeindex) {
     if(node == undefined) {
         node = {};
     }
-    else if(node.type == '$ref') {
+    else if('$ref' in node) {
         node = this.idtable[node['$ref']];
     }
     return new jsonwidget.treeRef(node, parent, nodeindex);
