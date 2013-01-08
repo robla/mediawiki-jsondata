@@ -1,6 +1,6 @@
 <?php
 /**
- * Json 
+ * Json
  *
  * @file JsonSchema.php
  * @ingroup Extensions
@@ -135,7 +135,7 @@ class JsonUtil {
 			return call_user_func_array( 'wfMessage', $params = func_get_args() );
 		}
 		else {
-			// TODO: replace this with a real solution that works without 
+			// TODO: replace this with a real solution that works without
 			// MediaWiki
 			$params = func_get_args();
 			return implode( " ", $params );
@@ -305,7 +305,7 @@ class JsonTreeRef {
 		if ( !is_object( $this->parent ) ) {
 			return $this->getTitle();
 		} else {
-			return $this->parent->getDataPathTitles() . ' -> ' 
+			return $this->parent->getDataPathTitles() . ' -> '
 				. $this->getTitle();
 		}
 	}
