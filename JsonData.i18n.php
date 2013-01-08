@@ -29,6 +29,7 @@ $messages['en'] = array(
 	'jsonschema-invalidkey' => 'Invalid key "$1" in "$2"',
 	'jsonschema-invalidempty' => 'Empty data structure not valid with this schema',
 	'jsonschema-invalidnode' => 'Invalid node: expecting "$1", got "$2". Path: "$3"',
+	'jsonschema-invalid-missingfield' => 'Missing required field "$1"',
 );
 
 

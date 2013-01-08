@@ -411,7 +411,7 @@ class JsonTreeRef {
 			foreach ( $this->schemaref->node['properties'] as $skey => $svalue ) {
 				$keyRequired = array_key_exists( 'required', $svalue ) ? $svalue['required'] : false;
 				if( $keyRequired && !array_key_exists( $skey, $this->node ) ) {
-					$msg = JsonUtil::uiMessage( 'jsonschema-invalid-missingfield' );
+					$msg = JsonUtil::uiMessage( 'jsonschema-invalid-missingfield', $skey );
 					$e = new JsonSchemaException( $msg );
 					$e->subtype = "validate-fail-missingfield";
 					throw( $e );
